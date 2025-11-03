@@ -1,0 +1,428 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>algo-chip Demo - Interactive Music Generator</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        --bg-primary: #0a0e17;
+        --bg-secondary: #141824;
+        --bg-panel: rgba(20, 28, 42, 0.85);
+        --border-color: rgba(255, 255, 255, 0.1);
+        --text-primary: #f0f4f8;
+        --text-secondary: rgba(240, 244, 248, 0.7);
+        --accent-primary: #5a9bff;
+        --accent-glow: rgba(90, 155, 255, 0.4);
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        background: linear-gradient(135deg, var(--bg-primary) 0%, #161d2e 100%);
+        color: var(--text-primary);
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        padding: 1rem;
+      }
+
+      .container {
+        max-width: 600px;
+        width: 100%;
+        margin: 0 auto;
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+        flex: 1;
+      }
+
+      header {
+        text-align: center;
+        padding: 0.75rem 0 0.5rem;
+      }
+
+      h1 {
+        font-size: clamp(1.2rem, 3vw, 1.5rem);
+        font-weight: 700;
+        letter-spacing: -0.02em;
+        margin-bottom: 0.25rem;
+      }
+
+      .subtitle {
+        color: var(--text-secondary);
+        font-size: 0.75rem;
+      }
+
+      main {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+        flex: 1;
+      }
+
+      /* Two-Axis Control Panel */
+      .panel-container {
+        background: var(--bg-panel);
+        border: 1px solid var(--border-color);
+        border-radius: 1rem;
+        padding: 1.5rem;
+        backdrop-filter: blur(10px);
+      }
+
+      .panel-wrapper {
+        position: relative;
+        width: 100%;
+        max-width: 400px;
+        margin: 0 auto;
+      }
+
+      #two-axis-panel {
+        position: relative;
+        width: 100%;
+        aspect-ratio: 1;
+        background: linear-gradient(135deg, rgba(30, 40, 60, 0.4) 0%, rgba(20, 30, 50, 0.6) 100%);
+        border: 2px solid var(--border-color);
+        border-radius: 0.75rem;
+        cursor: crosshair;
+        overflow: hidden;
+        touch-action: none;
+      }
+
+      #two-axis-canvas {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+      }
+
+      .axis-labels {
+        position: absolute;
+        font-size: 0.75rem;
+        color: var(--text-secondary);
+        pointer-events: none;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+
+      .label-top-left {
+        top: 0.75rem;
+        left: 0.75rem;
+      }
+
+      .label-top-right {
+        top: 0.75rem;
+        right: 0.75rem;
+      }
+
+      .label-bottom-left {
+        bottom: 0.75rem;
+        left: 0.75rem;
+      }
+
+      .label-bottom-right {
+        bottom: 0.75rem;
+        right: 0.75rem;
+      }
+
+      .genre-label {
+        position: absolute;
+        font-size: 0.85rem;
+        color: rgba(255, 255, 255, 0.5);
+        pointer-events: none;
+        font-weight: 600;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+      }
+
+      /* Channel Activity Indicators and Controls */
+      .indicators-container {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin-top: 1.5rem;
+        flex-wrap: nowrap;
+        justify-content: center;
+      }
+
+      .channel-indicator {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.4rem;
+        padding: 0.6rem 0.5rem;
+        background: rgba(10, 15, 25, 0.6);
+        border: 1px solid var(--border-color);
+        border-radius: 0.75rem;
+        flex-shrink: 0;
+        min-width: 60px;
+      }
+
+      .indicator-light {
+        width: 32px;
+        height: 32px;
+        border-radius: 4px;
+        position: relative;
+        transition: box-shadow 0.1s ease;
+        flex-shrink: 0;
+      }
+
+      .indicator-light::before {
+        content: '';
+        position: absolute;
+        inset: 4px;
+        border-radius: 2px;
+        background: currentColor;
+        opacity: 0.3;
+      }
+
+      .indicator-light::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        border-radius: 4px;
+        background: linear-gradient(135deg, currentColor, transparent);
+        opacity: 0;
+        transition: opacity 0.1s ease;
+      }
+
+      .indicator-light.active::after {
+        opacity: 1;
+      }
+
+      .channel-indicator[data-channel="square1"] .indicator-light {
+        color: #00ff00;
+      }
+
+      .channel-indicator[data-channel="square2"] .indicator-light {
+        color: #00ff00;
+      }
+
+      .channel-indicator[data-channel="triangle"] .indicator-light {
+        color: #00ff00;
+      }
+
+      .channel-indicator[data-channel="noise"] .indicator-light {
+        color: #00ff00;
+      }
+
+      .channel-label {
+        font-size: 0.65rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--text-secondary);
+        white-space: nowrap;
+      }
+
+      /* Playback Controls */
+      .playback-button-wrapper {
+        display: flex;
+        align-items: center;
+        flex-shrink: 0;
+      }
+
+      button {
+        background: var(--bg-secondary);
+        color: var(--text-primary);
+        border: 1px solid var(--border-color);
+        border-radius: 0.5rem;
+        padding: 0.6rem 0;
+        font-size: 0.8rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        width: 75px;
+        white-space: nowrap;
+        text-align: center;
+      }
+
+      button:hover:not(:disabled) {
+        background: rgba(90, 155, 255, 0.2);
+        border-color: var(--accent-primary);
+        transform: translateY(-1px);
+      }
+
+      button:disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+      }
+
+      button.primary {
+        background: var(--accent-primary);
+        color: #0a0e17;
+        border-color: var(--accent-primary);
+      }
+
+      button.primary:hover:not(:disabled) {
+        background: #4a8bef;
+        box-shadow: 0 4px 12px var(--accent-glow);
+      }
+
+      button.loading {
+        position: relative;
+        color: transparent;
+      }
+
+      button.loading::after {
+        content: '';
+        position: absolute;
+        width: 16px;
+        height: 16px;
+        top: 50%;
+        left: 50%;
+        margin-left: -8px;
+        margin-top: -8px;
+        border: 2px solid currentColor;
+        border-radius: 50%;
+        border-top-color: transparent;
+        animation: spin 0.6s linear infinite;
+        color: var(--text-primary);
+      }
+
+      @keyframes spin {
+        to { transform: rotate(360deg); }
+      }
+
+      /* Responsive Design */
+      @media (max-width: 767px) {
+        .container {
+          padding: 0.5rem;
+        }
+
+        .panel-container,
+        .controls-container {
+          padding: 1rem;
+        }
+
+        .indicators-container {
+          grid-template-columns: repeat(2, 1fr);
+        }
+
+        .playback-controls {
+          flex-wrap: wrap;
+        }
+
+        button {
+          flex: 1;
+          min-width: 120px;
+        }
+      }
+
+      @media (min-width: 768px) and (max-width: 1023px) {
+        .indicators-container {
+          grid-template-columns: repeat(4, 1fr);
+        }
+      }
+
+      @media (min-width: 1024px) {
+        main {
+          flex-direction: row;
+          gap: 2rem;
+        }
+
+        .panel-container {
+          flex: 2;
+        }
+
+        .sidebar {
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+          gap: 1.5rem;
+        }
+      }
+
+      /* Accessibility */
+      .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border-width: 0;
+      }
+
+      .status-message {
+        text-align: center;
+        padding: 0.75rem 0;
+        font-size: 0.8rem;
+        color: var(--text-secondary);
+        font-style: italic;
+      }
+    </style>
+    <script type="module" crossorigin src="./assets/index-CSWtPX8X.js"></script>
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <h1>algo-chip Demo</h1>
+        <p class="subtitle">Interactive Music Generator - Click anywhere on the panel to create music</p>
+      </header>
+
+      <main>
+        <div class="panel-container">
+          <div class="panel-wrapper">
+            <div id="two-axis-panel" role="application" aria-label="Music style selector, X-axis: Percussive to Melodic, Y-axis: Calm to Energetic" tabindex="0">
+              <canvas id="two-axis-canvas"></canvas>
+
+              <!-- Axis Labels -->
+              <span class="axis-labels label-top-left">Percussive / Energetic</span>
+              <span class="axis-labels label-top-right">Melodic / Energetic</span>
+              <span class="axis-labels label-bottom-left">Percussive / Calm</span>
+              <span class="axis-labels label-bottom-right">Melodic / Calm</span>
+
+              <!-- Genre Guide Labels (positioned via inline style for precision) -->
+              <span class="genre-label" style="left: 15%; top: 15%;">Dance Beat</span>
+              <span class="genre-label" style="right: 15%; top: 15%;">Power Melody</span>
+              <span class="genre-label" style="left: 15%; bottom: 15%;">Ambient Rhythm</span>
+              <span class="genre-label" style="right: 15%; bottom: 15%;">Gentle Tune</span>
+              <span class="genre-label" style="left: 50%; top: 50%; transform: translate(-50%, -50%);">Balanced</span>
+            </div>
+
+            <!-- Channel Activity Indicators -->
+            <div class="indicators-container" role="group" aria-label="Channel activity indicators and playback controls">
+              <div class="channel-indicator" data-channel="square1">
+                <div class="indicator-light" aria-hidden="true"></div>
+                <span class="channel-label">Square 1</span>
+              </div>
+              <div class="channel-indicator" data-channel="square2">
+                <div class="indicator-light" aria-hidden="true"></div>
+                <span class="channel-label">Square 2</span>
+              </div>
+              <div class="channel-indicator" data-channel="triangle">
+                <div class="indicator-light" aria-hidden="true"></div>
+                <span class="channel-label">Triangle</span>
+              </div>
+              <div class="channel-indicator" data-channel="noise">
+                <div class="indicator-light" aria-hidden="true"></div>
+                <span class="channel-label">Noise</span>
+              </div>
+
+              <div class="playback-button-wrapper">
+                <button id="play-pause-button" class="primary" aria-label="Play/Pause playback" disabled>
+                  <span id="button-text">Play</span>
+                </button>
+              </div>
+            </div>
+
+            <p class="status-message" id="status-message">Click on the panel to generate and play music</p>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <div class="sr-only" role="status" aria-live="polite" aria-atomic="true" id="sr-status"></div>
+
+  </body>
+</html>

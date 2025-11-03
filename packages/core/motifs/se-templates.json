@@ -1,0 +1,334 @@
+{
+  "templates": [
+    {
+      "id": "SE_JUMP_01",
+      "type": "jump",
+      "description": "軽快な上昇ジャンプ音（矩形波スイープ）",
+      "channels": ["square1"],
+      "durationRange": [0.12, 0.25],
+      "channelParams": {
+        "square1": {
+          "pitchStart": { "min": 50, "max": 62 },
+          "pitchEnd": { "min": 72, "max": 84 },
+          "dutyCycle": [0.25, 0.5],
+          "velocityRange": [96, 122]
+        }
+      },
+      "pitchSweep": {
+        "enabled": true,
+        "curveOptions": ["linear", "exponential"],
+        "durationRange": [0.14, 0.26]
+      }
+    },
+    {
+      "id": "SE_JUMP_02",
+      "type": "jump",
+      "description": "力強いジャンプ音（線形スイープ、低音域開始）",
+      "channels": ["square2"],
+      "durationRange": [0.15, 0.30],
+      "channelParams": {
+        "square2": {
+          "pitchStart": { "min": 40, "max": 52 },
+          "pitchEnd": { "min": 64, "max": 76 },
+          "dutyCycle": [0.5],
+          "velocityRange": [94, 120]
+        }
+      },
+      "pitchSweep": {
+        "enabled": true,
+        "curveOptions": ["linear", "exponential"],
+        "durationRange": [0.16, 0.32]
+      }
+    },
+    {
+      "id": "SE_COIN_01",
+      "type": "coin",
+      "description": "キラキラ感のあるコイン取得音（2音アルペジオ）",
+      "channels": ["square1"],
+      "durationRange": [0.18, 0.24],
+      "channelParams": {
+        "square1": {
+          "pitchStart": { "min": 72, "max": 84 },
+          "dutyCycle": [0.5],
+          "velocityRange": [102, 124]
+        }
+      },
+      "noteSequence": {
+        "intervals": [0, 4],
+        "noteDurations": [0.04, 0.16]
+      }
+    },
+    {
+      "id": "SE_COIN_02",
+      "type": "coin",
+      "description": "スーパーマリオ風コイン音（3音アルペジオ、高音域）",
+      "channels": ["square1"],
+      "durationRange": [0.20, 0.28],
+      "channelParams": {
+        "square1": {
+          "pitchStart": { "min": 76, "max": 84 },
+          "dutyCycle": [0.5]
+        }
+      },
+      "noteSequence": {
+        "intervals": [0, 4, 12],
+        "noteDurations": [0.04, 0.04, 0.16]
+      }
+    },
+    {
+      "id": "SE_EXPLOSION_01",
+      "type": "explosion",
+      "description": "衝撃的な爆発音（ノイズ + 三角波ベーススイープ）",
+      "channels": ["noise", "triangle"],
+      "durationRange": [0.80, 1.20],
+      "channelParams": {
+        "noise": {
+          "noiseMode": "long",
+          "envelope": "percussive",
+          "velocityRange": [92, 120],
+          "releaseRange": [0.5, 0.8]
+        },
+        "triangle": {
+          "pitchStart": { "min": 36, "max": 43 },
+          "pitchEnd": { "min": 24, "max": 31 }
+        }
+      },
+      "pitchSweep": {
+        "enabled": true,
+        "curveType": "linear"
+      }
+    },
+    {
+      "id": "SE_EXPLOSION_02",
+      "type": "explosion",
+      "description": "短めの爆発音（ノイズのみ、高周波）",
+      "channels": ["noise"],
+      "durationRange": [0.40, 0.60],
+      "channelParams": {
+        "noise": {
+          "noiseMode": "short",
+          "envelope": "percussive",
+          "velocityRange": [90, 118],
+          "releaseRange": [0.22, 0.4]
+        }
+      }
+    },
+    {
+      "id": "SE_HIT_01",
+      "type": "hit",
+      "description": "被ダメージ音（短い下降アルペジオ）",
+      "channels": ["square1"],
+      "durationRange": [0.08, 0.12],
+      "channelParams": {
+        "square1": {
+          "pitchStart": { "min": 60, "max": 72 },
+          "dutyCycle": [0.125],
+          "envelope": "percussive",
+          "velocityRange": [100, 126]
+        }
+      },
+      "noteSequence": {
+        "intervals": [0, -2, -5],
+        "noteDurations": [0.03, 0.03, 0.03]
+      }
+    },
+    {
+      "id": "SE_HIT_02",
+      "type": "hit",
+      "description": "鋭いダメージ音（ノイズ + 矩形波の組み合わせ）",
+      "channels": ["square1", "noise"],
+      "durationRange": [0.10, 0.15],
+      "channelParams": {
+        "square1": {
+          "pitchStart": { "min": 48, "max": 60 },
+          "dutyCycle": [0.125],
+          "velocityRange": [96, 120]
+        },
+        "noise": {
+          "noiseMode": "short",
+          "envelope": "percussive",
+          "velocityRange": [94, 120],
+          "releaseRange": [0.12, 0.2]
+        }
+      }
+    },
+    {
+      "id": "SE_POWERUP_01",
+      "type": "powerup",
+      "description": "パワーアップ音（上昇アルペジオ）",
+      "channels": ["square1"],
+      "durationRange": [0.33, 0.46],
+      "channelParams": {
+        "square1": {
+          "pitchStart": { "min": 60, "max": 67 },
+          "dutyCycle": [0.5]
+        }
+      },
+      "noteSequence": {
+        "intervals": [0, 4, 7, 12],
+        "noteDurations": [0.08, 0.08, 0.08, 0.13]
+      }
+    },
+    {
+      "id": "SE_POWERUP_02",
+      "type": "powerup",
+      "description": "華やかなパワーアップ音（5音アルペジオ、高音域）",
+      "channels": ["square2"],
+      "durationRange": [0.40, 0.52],
+      "channelParams": {
+        "square2": {
+          "pitchStart": { "min": 64, "max": 72 },
+          "dutyCycle": [0.25]
+        }
+      },
+      "noteSequence": {
+        "intervals": [0, 4, 7, 12, 16],
+        "noteDurations": [0.07, 0.07, 0.07, 0.07, 0.16]
+      }
+    },
+    {
+      "id": "SE_SELECT_01",
+      "type": "select",
+      "description": "メニュー選択音（短い単音）",
+      "channels": ["square1"],
+      "durationRange": [0.05, 0.08],
+      "channelParams": {
+        "square1": {
+          "pitchStart": { "min": 72, "max": 84 },
+          "dutyCycle": [0.25]
+        }
+      }
+    },
+    {
+      "id": "SE_SELECT_02",
+      "type": "select",
+      "description": "選択音（2音上昇アルペジオ）",
+      "channels": ["square1"],
+      "durationRange": [0.06, 0.10],
+      "channelParams": {
+        "square1": {
+          "pitchStart": { "min": 72, "max": 84 },
+          "dutyCycle": [0.5]
+        }
+      },
+      "noteSequence": {
+        "intervals": [0, 4],
+        "noteDurations": [0.03, 0.04]
+      }
+    },
+    {
+      "id": "SE_LASER_01",
+      "type": "laser",
+      "description": "レーザー発射音（高速下降スイープ）",
+      "channels": ["square1"],
+      "durationRange": [0.10, 0.15],
+      "channelParams": {
+        "square1": {
+          "pitchStart": { "min": 72, "max": 84 },
+          "pitchEnd": { "min": 48, "max": 60 },
+          "dutyCycle": [0.125, 0.25]
+        }
+      },
+      "pitchSweep": {
+        "enabled": true,
+        "curveType": "exponential"
+      }
+    },
+    {
+      "id": "SE_LASER_02",
+      "type": "laser",
+      "description": "レーザー発射音（線形下降スイープ）",
+      "channels": ["square2"],
+      "durationRange": [0.12, 0.20],
+      "channelParams": {
+        "square2": {
+          "pitchStart": { "min": 76, "max": 88 },
+          "pitchEnd": { "min": 52, "max": 64 },
+          "dutyCycle": [0.125]
+        }
+      },
+      "pitchSweep": {
+        "enabled": true,
+        "curveType": "linear"
+      }
+    },
+    {
+      "id": "SE_CLICK_01",
+      "type": "click",
+      "description": "クリック音（極短・高音）",
+      "channels": ["square1"],
+      "durationRange": [0.02, 0.03],
+      "channelParams": {
+        "square1": {
+          "pitchStart": { "min": 84, "max": 96 },
+          "dutyCycle": [0.125],
+          "envelope": "percussive"
+        }
+      }
+    },
+    {
+      "id": "SE_CLICK_02",
+      "type": "click",
+      "description": "クリック音（やや長め）",
+      "channels": ["square1"],
+      "durationRange": [0.03, 0.04],
+      "channelParams": {
+        "square1": {
+          "pitchStart": { "min": 88, "max": 100 },
+          "dutyCycle": [0.125],
+          "envelope": "percussive"
+        }
+      }
+    },
+    {
+      "id": "SE_SYNTH_01",
+      "type": "synth",
+      "description": "シンセ単音（矩形波）",
+      "channels": ["square1"],
+      "durationRange": [0.15, 0.30],
+      "channelParams": {
+        "square1": {
+          "pitchStart": { "min": 48, "max": 72 },
+          "dutyCycle": [0.125, 0.25, 0.5]
+        }
+      }
+    },
+    {
+      "id": "SE_SYNTH_02",
+      "type": "synth",
+      "description": "シンセ単音（三角波）",
+      "channels": ["triangle"],
+      "durationRange": [0.20, 0.40],
+      "channelParams": {
+        "triangle": {
+          "pitchStart": { "min": 60, "max": 84 }
+        }
+      }
+    },
+    {
+      "id": "SE_TONE_01",
+      "type": "tone",
+      "description": "基本トーン（矩形波・中音域）",
+      "channels": ["square1"],
+      "durationRange": [0.10, 0.20],
+      "channelParams": {
+        "square1": {
+          "pitchStart": { "min": 60, "max": 72 },
+          "dutyCycle": [0.5]
+        }
+      }
+    },
+    {
+      "id": "SE_TONE_02",
+      "type": "tone",
+      "description": "基本トーン（三角波・中音域）",
+      "channels": ["triangle"],
+      "durationRange": [0.12, 0.30],
+      "channelParams": {
+        "triangle": {
+          "pitchStart": { "min": 60, "max": 72 }
+        }
+      }
+    }
+  ]
+}

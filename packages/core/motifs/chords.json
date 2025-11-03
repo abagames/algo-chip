@@ -1,0 +1,106 @@
+{
+  "C_Major": {
+    "simple": [
+      ["C", "G", "Am", "F"],
+      ["C", "Em", "F", "G"],
+      ["Am", "F", "C", "G"],
+      ["C", "Am", "Dm", "G"],
+      ["C", "F", "G", "C"]
+    ],
+    "town_peaceful": [
+      ["C", "F", "C", "G"],
+      ["C", "G", "Em", "Am"],
+      ["F", "G", "Em", "Am"],
+      ["C", "F", "Am", "G"],
+      ["C", "G", "F", "C"]
+    ],
+    "heroic_fanfare": [
+      ["C", "Am", "F", "G"],
+      ["C", "G", "Am", "Em"],
+      ["F", "C", "G", "Am"],
+      ["C", "Dm", "G", "C"],
+      ["Am", "F", "G", "C"]
+    ],
+    "playful": [
+      ["C", "F", "G", "Am"],
+      ["C", "Em", "Am", "F"],
+      ["F", "G", "C", "Am"],
+      ["C", "G", "F", "Em"],
+      ["Am", "G", "F", "C"]
+    ]
+  },
+  "E_Minor": {
+    "castle_majestic": [
+      ["Em", "C", "G", "D"],
+      ["Em", "B7", "Em", "C"],
+      ["C", "G", "D", "Em"],
+      ["Em", "C", "D", "G"],
+      ["Em", "Em", "C", "D"]
+    ],
+    "dark": [
+      ["Em", "D", "C", "B7"],
+      ["Em", "C", "Am", "B7"],
+      ["Em", "Bm", "C", "G"],
+      ["Em", "C", "D", "Bm"],
+      ["Em", "G", "F", "B7"]
+    ],
+    "ending_sorrowful": [
+      ["Em", "C", "G", "D"],
+      ["Em", "Bm", "C", "G"],
+      ["Em", "D", "C", "B7"],
+      ["Em", "G", "D", "C"],
+      ["Em", "C", "Am", "B7"]
+    ],
+    "final_battle_tense": [
+      ["Em", "C", "D", "B7"],
+      ["Em", "G", "D", "Em"],
+      ["C", "D", "Em", "Em"],
+      ["Em", "Bm", "C", "D"],
+      ["G", "D", "Em", "C"]
+    ],
+    "mysterious": [
+      ["Em", "Am", "F", "C"],
+      ["Am", "Em", "G", "C"],
+      ["Em", "F", "G", "Em"],
+      ["Dm", "Am", "G", "C"],
+      ["Em", "C", "Am", "Bm"]
+    ],
+    "epic_adventure": [
+      ["Em", "C", "G", "D"],
+      ["G", "Em", "C", "D"],
+      ["C", "G", "Am", "Em"],
+      ["Em", "D", "C", "G"],
+      ["Am", "Em", "G", "D"]
+    ]
+  },
+  "G_Major": {
+    "heroic": [
+      ["G", "C", "D", "G"],
+      ["G", "Em", "C", "D"],
+      ["C", "D", "G", "G"],
+      ["G", "B7", "Em", "C"],
+      ["Em", "C", "G", "D"]
+    ],
+    "overworld_bright": [
+      ["G", "D", "Em", "C"],
+      ["C", "G", "D", "G"],
+      ["G", "Em", "Am", "D"],
+      ["G", "C", "D", "G"],
+      ["G", "B7", "Em", "C"]
+    ],
+    "triumph": [
+      ["G", "D", "C", "G"],
+      ["C", "D", "G", "Em"],
+      ["G", "C", "Am", "D"],
+      ["Em", "C", "D", "G"],
+      ["G", "D", "Em", "D"]
+    ],
+    "adventure": [
+      ["G", "Em", "C", "D"],
+      ["Am", "D", "G", "C"],
+      ["G", "C", "D", "Em"],
+      ["C", "Am", "G", "D"],
+      ["G", "D", "C", "Am"]
+    ]
+  }
+}

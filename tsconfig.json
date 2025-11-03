@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "outDir": "dist",
+    "rootDir": "./",
+    "strict": true,
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "skipLibCheck": true
+  },
+  "include": [
+    "packages/core/src/**/*.ts",
+    "packages/core/motifs/**/*.json",
+    "packages/demo/src/**/*.ts",
+    "packages/demo/scripts/**/*.ts"
+  ]
+}

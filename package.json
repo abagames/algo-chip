@@ -1,0 +1,46 @@
+{
+  "name": "algo-chip",
+  "version": "1.0.0",
+  "description": "High-quality automatic BGM and sound effect composition engine with 4-channel chiptune synthesis",
+  "type": "module",
+  "author": "abagames",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/abagames/algo-chip.git"
+  },
+  "homepage": "https://github.com/abagames/algo-chip#readme",
+  "bugs": {
+    "url": "https://github.com/abagames/algo-chip/issues"
+  },
+  "keywords": [
+    "chiptune",
+    "music-generation",
+    "procedural-music",
+    "bgm",
+    "sound-effects",
+    "web-audio",
+    "retro",
+    "8bit"
+  ],
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "npm run build -ws --if-present",
+    "build:core": "npm run build -w packages/core",
+    "build:demo": "npm run build -w packages/demo",
+    "build:pages": "npm run build:core && npm run build:demo && npm run copy:artifacts",
+    "copy:artifacts": "rm -rf docs/assets docs/worklets docs/motifs && mkdir -p docs/lib && cp packages/core/dist/algo-chip.umd.js* docs/lib/ && cp -r packages/demo/dist/* docs/",
+    "test": "node --loader ts-node/esm --test \"packages/core/src/test/**/*.spec.ts\"",
+    "dev": "npm run dev -w packages/demo",
+    "preview": "npm run preview -w packages/demo",
+    "prepare": "npm run build:core"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.8",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.4.5",
+    "vite": "^5.3.4"
+  }
+}

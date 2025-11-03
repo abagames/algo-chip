@@ -1,0 +1,43 @@
+{
+  "name": "@algo-chip/core",
+  "version": "1.0.0",
+  "description": "High-quality automatic BGM composition engine with chiptune synthesis and Web Audio playback",
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": [
+    "dist",
+    "worklets",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "vite build",
+    "dev": "vite build --watch",
+    "test": "node --loader ts-node/esm --test src/test/**/*.spec.ts"
+  },
+  "keywords": [
+    "music",
+    "composition",
+    "generative",
+    "chiptune",
+    "bgm",
+    "web-audio",
+    "synthesizer",
+    "retro"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^20.14.8",
+    "typescript": "^5.4.5",
+    "vite": "^5.3.4",
+    "vite-plugin-dts": "^4.5.4"
+  }
+}

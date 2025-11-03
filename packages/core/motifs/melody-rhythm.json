@@ -1,0 +1,2973 @@
+[
+  {
+    "id": "MR001",
+    "length": 4,
+    "pattern": [
+      {
+        "value": 4
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 8,
+        "rest": true
+      },
+      {
+        "value": 8
+      }
+    ],
+    "tags": [
+      "start",
+      "simple",
+      "drive",
+      "loop_safe"
+    ]
+  },
+  {
+    "id": "MR002",
+    "length": 4,
+    "pattern": [
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 4
+      }
+    ],
+    "tags": [
+      "middle",
+      "syncopated",
+      "drive"
+    ]
+  },
+  {
+    "id": "MR003",
+    "length": 4,
+    "pattern": [
+      {
+        "value": 4
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 4
+      }
+    ],
+    "tags": [
+      "start",
+      "legato",
+      "simple"
+    ]
+  },
+  {
+    "id": "MR004",
+    "length": 4,
+    "pattern": [
+      {
+        "value": 8,
+        "rest": true
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 8,
+        "rest": true
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 4
+      }
+    ],
+    "tags": [
+      "middle",
+      "rest_heavy",
+      "staccato"
+    ]
+  },
+  {
+    "id": "MR005",
+    "length": 4,
+    "pattern": [
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 4
+      }
+    ],
+    "tags": [
+      "middle",
+      "syncopated",
+      "drive"
+    ]
+  },
+  {
+    "id": "MR006",
+    "length": 4,
+    "pattern": [
+      {
+        "value": 4
+      },
+      {
+        "value": 8,
+        "rest": true
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 8,
+        "rest": true
+      },
+      {
+        "value": 8
+      }
+    ],
+    "tags": [
+      "middle",
+      "legato",
+      "rest_heavy"
+    ]
+  },
+  {
+    "id": "MR007",
+    "length": 4,
+    "pattern": [
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      }
+    ],
+    "tags": [
+      "start",
+      "staccato",
+      "drive"
+    ]
+  },
+  {
+    "id": "MR008",
+    "length": 8,
+    "pattern": [
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 8,
+        "rest": true
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 8,
+        "rest": true
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 4
+      }
+    ],
+    "tags": [
+      "start",
+      "bridge",
+      "legato"
+    ]
+  },
+  {
+    "id": "MR009",
+    "length": 4,
+    "pattern": [
+      {
+        "value": 4
+      },
+      {
+        "value": 8,
+        "rest": true
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 8,
+        "rest": true
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      }
+    ],
+    "tags": [
+      "end",
+      "legato",
+      "loop_safe",
+      "cadence"
+    ]
+  },
+  {
+    "id": "MR010",
+    "length": 4,
+    "pattern": [
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 8,
+        "rest": true
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 4
+      }
+    ],
+    "tags": [
+      "end",
+      "syncopated",
+      "staccato",
+      "loop_safe",
+      "cadence"
+    ]
+  },
+  {
+    "id": "MR011",
+    "length": 4,
+    "pattern": [
+      {
+        "value": 8,
+        "rest": true
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 8,
+        "rest": true
+      },
+      {
+        "value": 16,
+        "rest": true
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 4
+      }
+    ],
+    "tags": [
+      "start",
+      "legato",
+      "rest_heavy",
+      "loop_safe"
+    ]
+  },
+  {
+    "id": "MR012",
+    "length": 4,
+    "pattern": [
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      }
+    ],
+    "tags": [
+      "middle",
+      "staccato",
+      "drive",
+      "syncopated"
+    ]
+  },
+  {
+    "id": "MR013",
+    "length": 4,
+    "pattern": [
+      {
+        "value": 8,
+        "rest": true
+      },
+      {
+        "value": 8,
+        "rest": true
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 4
+      }
+    ],
+    "tags": [
+      "middle",
+      "rest_heavy",
+      "simple"
+    ]
+  },
+  {
+    "id": "MR014",
+    "length": 4,
+    "pattern": [
+      {
+        "value": 4
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 16,
+        "rest": true
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 8
+      }
+    ],
+    "tags": [
+      "middle",
+      "syncopated",
+      "drive",
+      "accented"
+    ]
+  },
+  {
+    "id": "MR015",
+    "length": 4,
+    "pattern": [
+      {
+        "value": 8,
+        "rest": true
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 8,
+        "rest": true
+      },
+      {
+        "value": 16,
+        "rest": true
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      }
+    ],
+    "tags": [
+      "end",
+      "legato",
+      "rest_heavy",
+      "loop_safe"
+    ]
+  },
+  {
+    "id": "MR016",
+    "length": 8,
+    "pattern": [
+      {
+        "value": 4
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 16,
+        "rest": true
+      },
+      {
+        "value": 16,
+        "rest": true
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 4
+      }
+    ],
+    "tags": [
+      "bridge",
+      "legato",
+      "rest_heavy"
+    ]
+  },
+  {
+    "id": "MR017",
+    "length": 8,
+    "pattern": [
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 8,
+        "rest": true
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 8,
+        "rest": true
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 4
+      }
+    ],
+    "tags": [
+      "bridge",
+      "syncopated",
+      "drive"
+    ]
+  },
+  {
+    "id": "MR018",
+    "length": 8,
+    "pattern": [
+      {
+        "value": 4
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 8,
+        "rest": true
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 8,
+        "rest": true
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 4
+      }
+    ],
+    "tags": [
+      "end",
+      "legato",
+      "loop_safe",
+      "cadence"
+    ]
+  },
+  {
+    "id": "MR019",
+    "length": 4,
+    "pattern": [
+      {
+        "value": 4
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 16,
+        "rest": true
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16,
+        "rest": true
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      }
+    ],
+    "tags": [
+      "start",
+      "drive",
+      "accented"
+    ]
+  },
+  {
+    "id": "MR020",
+    "length": 4,
+    "pattern": [
+      {
+        "value": 8,
+        "rest": true
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 8,
+        "rest": true
+      },
+      {
+        "value": 16,
+        "rest": true
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      }
+    ],
+    "tags": [
+      "middle",
+      "rest_heavy",
+      "simple"
+    ]
+  },
+  {
+    "id": "MR021",
+    "length": 4,
+    "pattern": [
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 8,
+        "rest": true
+      },
+      {
+        "value": 8
+      }
+    ],
+    "tags": [
+      "middle",
+      "staccato",
+      "drive",
+      "syncopated"
+    ]
+  },
+  {
+    "id": "MR022",
+    "length": 4,
+    "pattern": [
+      {
+        "value": 4
+      },
+      {
+        "value": 8,
+        "rest": true
+      },
+      {
+        "value": 16,
+        "rest": true
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 8,
+        "rest": true
+      },
+      {
+        "value": 8
+      }
+    ],
+    "tags": [
+      "end",
+      "legato",
+      "loop_safe"
+    ]
+  },
+  {
+    "id": "MR023",
+    "length": 8,
+    "pattern": [
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 8,
+        "rest": true
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 8,
+        "rest": true
+      },
+      {
+        "value": 8
+      }
+    ],
+    "tags": [
+      "bridge",
+      "syncopated",
+      "drive",
+      "accented"
+    ]
+  },
+  {
+    "id": "MR024",
+    "length": 8,
+    "pattern": [
+      {
+        "value": 4
+      },
+      {
+        "value": 8,
+        "rest": true
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 8,
+        "rest": true
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 8,
+        "rest": true
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 4
+      }
+    ],
+    "tags": [
+      "bridge",
+      "legato",
+      "rest_heavy"
+    ]
+  },
+  {
+    "id": "MR025",
+    "length": 8,
+    "pattern": [
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 8,
+        "rest": true
+      },
+      {
+        "value": 8,
+        "rest": true
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 8,
+        "rest": true
+      },
+      {
+        "value": 8,
+        "rest": true
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 4
+      }
+    ],
+    "tags": [
+      "end",
+      "legato",
+      "loop_safe",
+      "cadence"
+    ]
+  },
+  {
+    "id": "MR026",
+    "length": 4,
+    "pattern": [
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      }
+    ],
+    "tags": [
+      "start",
+      "texture_loop",
+      "grid16",
+      "drive",
+      "loop_safe"
+    ]
+  },
+  {
+    "id": "MR027",
+    "length": 4,
+    "pattern": [
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      }
+    ],
+    "tags": [
+      "middle",
+      "texture_loop",
+      "grid16",
+      "loop_safe",
+      "percussive_layer"
+    ]
+  },
+  {
+    "id": "MR028",
+    "length": 4,
+    "pattern": [
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      }
+    ],
+    "tags": [
+      "start",
+      "middle",
+      "texture_loop",
+      "simple",
+      "loop_safe",
+      "percussive_layer"
+    ]
+  },
+  {
+    "id": "MR029",
+    "length": 4,
+    "pattern": [
+      {
+        "value": 8
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      }
+    ],
+    "tags": [
+      "middle",
+      "texture_loop",
+      "loop_safe",
+      "percussive_layer"
+    ]
+  },
+  {
+    "id": "MR030",
+    "length": 4,
+    "pattern": [
+      {
+        "value": 4
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      }
+    ],
+    "tags": [
+      "start",
+      "middle",
+      "texture_loop",
+      "loop_safe",
+      "percussive_layer"
+    ]
+  },
+  {
+    "id": "MR031",
+    "length": 4,
+    "pattern": [
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 8
+      }
+    ],
+    "tags": [
+      "start",
+      "middle",
+      "texture_loop",
+      "grid16",
+      "loop_safe",
+      "percussive_layer"
+    ]
+  },
+  {
+    "id": "MR032",
+    "length": 4,
+    "pattern": [
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 8
+      }
+    ],
+    "tags": [
+      "middle",
+      "texture_loop",
+      "loop_safe",
+      "percussive_layer",
+      "syncopated"
+    ]
+  },
+  {
+    "id": "MR033",
+    "length": 4,
+    "pattern": [
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 8
+      }
+    ],
+    "tags": [
+      "start",
+      "middle",
+      "texture_loop",
+      "grid16",
+      "loop_safe",
+      "percussive_layer"
+    ]
+  },
+  {
+    "id": "MR034",
+    "length": 8,
+    "pattern": [
+      {
+        "value": 4
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 16,
+        "rest": true
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16,
+        "rest": true
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 16,
+        "rest": true
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16,
+        "rest": true
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 16,
+        "rest": true
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16,
+        "rest": true
+      },
+      {
+        "value": 16
+      }
+    ],
+    "tags": [
+      "middle",
+      "end",
+      "staccato",
+      "rest_heavy",
+      "percussive_layer",
+      "loop_safe"
+    ]
+  },
+  {
+    "id": "MR035",
+    "length": 4,
+    "pattern": [
+      {
+        "value": 8
+      },
+      {
+        "value": 16,
+        "rest": true
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 16,
+        "rest": true
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 16,
+        "rest": true
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 16,
+        "rest": true
+      },
+      {
+        "value": 16
+      }
+    ],
+    "tags": [
+      "start",
+      "middle",
+      "staccato",
+      "rest_heavy",
+      "percussive_layer",
+      "loop_safe"
+    ]
+  },
+  {
+    "id": "MR036",
+    "length": 4,
+    "pattern": [
+      {
+        "value": 4
+      },
+      {
+        "value": 8,
+        "rest": true
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 8,
+        "rest": true
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      }
+    ],
+    "tags": [
+      "start",
+      "middle",
+      "rest_heavy",
+      "loop_safe",
+      "simple"
+    ]
+  },
+  {
+    "id": "MR037",
+    "length": 4,
+    "pattern": [
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      }
+    ],
+    "tags": [
+      "middle",
+      "end",
+      "texture_loop",
+      "grid16",
+      "loop_safe",
+      "percussive_layer"
+    ]
+  },
+  {
+    "id": "MR038",
+    "length": 8,
+    "pattern": [
+      {
+        "value": 4
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 4
+      }
+    ],
+    "tags": [
+      "start",
+      "drive",
+      "syncopated"
+    ]
+  },
+  {
+    "id": "MR039",
+    "length": 8,
+    "pattern": [
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 4
+      }
+    ],
+    "tags": [
+      "start",
+      "simple",
+      "drive"
+    ]
+  },
+  {
+    "id": "MR040",
+    "length": 8,
+    "pattern": [
+      {
+        "value": 4
+      },
+      {
+        "value": 8,
+        "rest": true
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 8,
+        "rest": true
+      },
+      {
+        "value": 8
+      }
+    ],
+    "tags": [
+      "start",
+      "legato",
+      "rest_heavy"
+    ]
+  },
+  {
+    "id": "MR041",
+    "length": 8,
+    "pattern": [
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 4
+      }
+    ],
+    "tags": [
+      "start",
+      "syncopated",
+      "drive"
+    ]
+  },
+  {
+    "id": "MR042",
+    "length": 8,
+    "pattern": [
+      {
+        "value": 4
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 4
+      }
+    ],
+    "tags": [
+      "start",
+      "simple",
+      "legato"
+    ]
+  },
+  {
+    "id": "MR043",
+    "length": 8,
+    "pattern": [
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 4
+      }
+    ],
+    "tags": [
+      "start",
+      "staccato",
+      "drive"
+    ]
+  },
+  {
+    "id": "MR044",
+    "length": 8,
+    "pattern": [
+      {
+        "value": 8,
+        "rest": true
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 8,
+        "rest": true
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 4
+      }
+    ],
+    "tags": [
+      "start",
+      "rest_heavy",
+      "simple"
+    ]
+  },
+  {
+    "id": "MR045",
+    "length": 8,
+    "pattern": [
+      {
+        "value": 4
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 4
+      }
+    ],
+    "tags": [
+      "start",
+      "syncopated",
+      "accented"
+    ]
+  },
+  {
+    "id": "MR046",
+    "length": 8,
+    "pattern": [
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 4
+      }
+    ],
+    "tags": [
+      "middle",
+      "drive",
+      "syncopated"
+    ]
+  },
+  {
+    "id": "MR047",
+    "length": 8,
+    "pattern": [
+      {
+        "value": 4
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 4
+      }
+    ],
+    "tags": [
+      "middle",
+      "simple",
+      "legato"
+    ]
+  },
+  {
+    "id": "MR048",
+    "length": 8,
+    "pattern": [
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 4
+      }
+    ],
+    "tags": [
+      "middle",
+      "staccato",
+      "drive"
+    ]
+  },
+  {
+    "id": "MR049",
+    "length": 8,
+    "pattern": [
+      {
+        "value": 4
+      },
+      {
+        "value": 8,
+        "rest": true
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 8,
+        "rest": true
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 4
+      }
+    ],
+    "tags": [
+      "middle",
+      "rest_heavy",
+      "legato"
+    ]
+  },
+  {
+    "id": "MR050",
+    "length": 8,
+    "pattern": [
+      {
+        "value": 8
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 4
+      }
+    ],
+    "tags": [
+      "middle",
+      "syncopated",
+      "accented"
+    ]
+  },
+  {
+    "id": "MR051",
+    "length": 8,
+    "pattern": [
+      {
+        "value": 4
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 4
+      }
+    ],
+    "tags": [
+      "middle",
+      "simple",
+      "drive"
+    ]
+  },
+  {
+    "id": "MR052",
+    "length": 8,
+    "pattern": [
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 4
+      }
+    ],
+    "tags": [
+      "middle",
+      "staccato",
+      "syncopated"
+    ]
+  },
+  {
+    "id": "MR053",
+    "length": 8,
+    "pattern": [
+      {
+        "value": 8,
+        "rest": true
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 8,
+        "rest": true
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 4
+      }
+    ],
+    "tags": [
+      "middle",
+      "rest_heavy",
+      "staccato"
+    ]
+  },
+  {
+    "id": "MR054",
+    "length": 8,
+    "pattern": [
+      {
+        "value": 4
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 4
+      }
+    ],
+    "tags": [
+      "end",
+      "legato",
+      "loop_safe",
+      "cadence"
+    ]
+  },
+  {
+    "id": "MR055",
+    "length": 8,
+    "pattern": [
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 8,
+        "rest": true
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 4
+      }
+    ],
+    "tags": [
+      "end",
+      "syncopated",
+      "loop_safe",
+      "cadence"
+    ]
+  },
+  {
+    "id": "MR056",
+    "length": 8,
+    "pattern": [
+      {
+        "value": 4
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 4
+      }
+    ],
+    "tags": [
+      "end",
+      "simple",
+      "loop_safe",
+      "cadence"
+    ]
+  },
+  {
+    "id": "MR057",
+    "length": 8,
+    "pattern": [
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      }
+    ],
+    "tags": [
+      "middle",
+      "texture_loop",
+      "grid16",
+      "loop_safe",
+      "percussive_layer"
+    ]
+  },
+  {
+    "id": "MR058",
+    "length": 8,
+    "pattern": [
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      }
+    ],
+    "tags": [
+      "middle",
+      "texture_loop",
+      "simple",
+      "loop_safe",
+      "percussive_layer"
+    ]
+  },
+  {
+    "id": "MR059",
+    "length": 8,
+    "pattern": [
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 8
+      }
+    ],
+    "tags": [
+      "middle",
+      "texture_loop",
+      "grid16",
+      "loop_safe",
+      "percussive_layer"
+    ]
+  },
+  {
+    "id": "MR060",
+    "length": 8,
+    "pattern": [
+      {
+        "value": 8
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      }
+    ],
+    "tags": [
+      "middle",
+      "end",
+      "texture_loop",
+      "loop_safe",
+      "percussive_layer"
+    ]
+  },
+  {
+    "id": "MR061",
+    "length": 8,
+    "pattern": [
+      {
+        "value": 4
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      }
+    ],
+    "tags": [
+      "middle",
+      "texture_loop",
+      "grid16",
+      "loop_safe",
+      "percussive_layer"
+    ]
+  },
+  {
+    "id": "MR062",
+    "length": 4,
+    "pattern": [
+      {
+        "value": 16,
+        "accent": true
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16,
+        "rest": true
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16,
+        "accent": true
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16,
+        "rest": true
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16,
+        "accent": true
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16,
+        "rest": true
+      },
+      {
+        "value": 16,
+        "accent": true
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16,
+        "rest": true
+      },
+      {
+        "value": 16,
+        "accent": true
+      },
+      {
+        "value": 16
+      }
+    ],
+    "tags": [
+      "middle",
+      "texture_loop",
+      "grid16",
+      "syncopated",
+      "drive"
+    ]
+  },
+  {
+    "id": "MR063",
+    "length": 4,
+    "pattern": [
+      {
+        "value": 8,
+        "accent": true
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16,
+        "accent": true
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 8,
+        "rest": true
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      }
+    ],
+    "tags": [
+      "middle",
+      "texture_loop",
+      "grid16",
+      "percussive_layer",
+      "ostinato"
+    ]
+  },
+  {
+    "id": "MR064",
+    "length": 4,
+    "pattern": [
+      {
+        "value": 4,
+        "accent": true
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      }
+    ],
+    "tags": [
+      "start",
+      "texture_loop",
+      "grid16",
+      "percussive_layer",
+      "loop_safe"
+    ]
+  }
+]

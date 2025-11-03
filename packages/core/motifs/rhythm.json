@@ -1,0 +1,3364 @@
+[
+  {
+    "id": "RM001",
+    "length": 4,
+    "pattern": [
+      4,
+      4,
+      4,
+      4
+    ],
+    "tags": [
+      "start",
+      "straight",
+      "loop_safe",
+      "loop_safe"
+    ],
+    "variations": [
+      "RM002",
+      "RM003"
+    ]
+  },
+  {
+    "id": "RM002",
+    "length": 4,
+    "pattern": [
+      4,
+      8,
+      8,
+      4,
+      4
+    ],
+    "tags": [
+      "start",
+      "straight",
+      "loop_safe",
+      "kick"
+    ],
+    "variations": [
+      "RM003",
+      "RM004"
+    ]
+  },
+  {
+    "id": "RM003",
+    "length": 4,
+    "pattern": [
+      8,
+      8,
+      8,
+      8,
+      4,
+      4
+    ],
+    "tags": [
+      "start",
+      "straight",
+      "loop_safe",
+      "sfx_long"
+    ],
+    "variations": [
+      "RM004",
+      "RM005"
+    ]
+  },
+  {
+    "id": "RM004",
+    "length": 4,
+    "pattern": [
+      4,
+      8,
+      8,
+      4,
+      4
+    ],
+    "tags": [
+      "start",
+      "straight",
+      "loop_safe"
+    ],
+    "variations": [
+      "RM005",
+      "RM006"
+    ]
+  },
+  {
+    "id": "RM005",
+    "length": 4,
+    "pattern": [
+      8,
+      8,
+      4,
+      8,
+      8,
+      4
+    ],
+    "tags": [
+      "start",
+      "straight",
+      "loop_safe"
+    ],
+    "variations": [
+      "RM006",
+      "RM007"
+    ]
+  },
+  {
+    "id": "RM006",
+    "length": 4,
+    "pattern": [
+      8,
+      8,
+      4,
+      8,
+      8,
+      4
+    ],
+    "tags": [
+      "start",
+      "syncopation",
+      "loop_safe",
+      "anacrusis"
+    ],
+    "variations": [
+      "RM007",
+      "RM008"
+    ]
+  },
+  {
+    "id": "RM007",
+    "length": 4,
+    "pattern": [
+      8,
+      16,
+      16,
+      8,
+      16,
+      16,
+      4,
+      4
+    ],
+    "tags": [
+      "start",
+      "syncopation",
+      "loop_safe",
+      "anacrusis"
+    ],
+    "variations": [
+      "RM008",
+      "RM027"
+    ]
+  },
+  {
+    "id": "RM008",
+    "length": 4,
+    "pattern": [
+      4,
+      8,
+      8,
+      4,
+      8,
+      8
+    ],
+    "tags": [
+      "start",
+      "syncopation",
+      "loop_safe",
+      "anacrusis"
+    ],
+    "variations": [
+      "RM027",
+      "RM028"
+    ]
+  },
+  {
+    "id": "RM009",
+    "length": 4,
+    "pattern": [
+      8,
+      8,
+      4,
+      8,
+      8,
+      4
+    ],
+    "tags": [
+      "middle",
+      "straight",
+      "bridge"
+    ],
+    "variations": [
+      "RM010",
+      "RM011"
+    ]
+  },
+  {
+    "id": "RM010",
+    "length": 4,
+    "pattern": [
+      4,
+      4,
+      8,
+      8,
+      4
+    ],
+    "tags": [
+      "middle",
+      "straight",
+      "bridge"
+    ],
+    "variations": [
+      "RM011",
+      "RM012"
+    ]
+  },
+  {
+    "id": "RM011",
+    "length": 4,
+    "pattern": [
+      4,
+      4,
+      4,
+      8,
+      8
+    ],
+    "tags": [
+      "middle",
+      "straight",
+      "bridge"
+    ],
+    "variations": [
+      "RM012",
+      "RM013"
+    ]
+  },
+  {
+    "id": "RM012",
+    "length": 8,
+    "pattern": [
+      8,
+      8,
+      4,
+      4,
+      8,
+      8,
+      4,
+      4,
+      4,
+      4
+    ],
+    "tags": [
+      "middle",
+      "syncopation",
+      "bridge"
+    ],
+    "variations": [
+      "RM013",
+      "RM014"
+    ]
+  },
+  {
+    "id": "RM013",
+    "length": 8,
+    "pattern": [
+      4,
+      8,
+      8,
+      4,
+      8,
+      8,
+      4,
+      4,
+      4,
+      4
+    ],
+    "tags": [
+      "middle",
+      "syncopation",
+      "bridge"
+    ],
+    "variations": [
+      "RM014",
+      "RM015"
+    ]
+  },
+  {
+    "id": "RM014",
+    "length": 8,
+    "pattern": [
+      8,
+      8,
+      8,
+      8,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4
+    ],
+    "tags": [
+      "middle",
+      "syncopation",
+      "bridge"
+    ],
+    "variations": [
+      "RM015",
+      "RM016"
+    ]
+  },
+  {
+    "id": "RM015",
+    "length": 8,
+    "pattern": [
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4
+    ],
+    "tags": [
+      "middle",
+      "sustain",
+      "open"
+    ],
+    "variations": [
+      "RM016",
+      "RM017"
+    ]
+  },
+  {
+    "id": "RM016",
+    "length": 8,
+    "pattern": [
+      4,
+      8,
+      8,
+      4,
+      4,
+      4,
+      8,
+      8,
+      4,
+      4
+    ],
+    "tags": [
+      "middle",
+      "sustain",
+      "open"
+    ],
+    "variations": [
+      "RM017",
+      "RM018"
+    ]
+  },
+  {
+    "id": "RM017",
+    "length": 4,
+    "pattern": [
+      8,
+      16,
+      16,
+      8,
+      16,
+      16,
+      8,
+      16,
+      16,
+      4
+    ],
+    "tags": [
+      "middle",
+      "swing_hint",
+      "bridge"
+    ],
+    "variations": [
+      "RM018",
+      "RM029"
+    ]
+  },
+  {
+    "id": "RM018",
+    "length": 4,
+    "pattern": [
+      8,
+      16,
+      16,
+      4,
+      8,
+      16,
+      16,
+      4
+    ],
+    "tags": [
+      "middle",
+      "swing_hint",
+      "bridge"
+    ],
+    "variations": [
+      "RM029",
+      "RM030"
+    ]
+  },
+  {
+    "id": "RM019",
+    "length": 4,
+    "pattern": [
+      4,
+      4,
+      4,
+      4
+    ],
+    "tags": [
+      "end",
+      "straight",
+      "loop_safe"
+    ],
+    "variations": [
+      "RM020",
+      "RM021"
+    ]
+  },
+  {
+    "id": "RM020",
+    "length": 4,
+    "pattern": [
+      8,
+      8,
+      4,
+      8,
+      8,
+      4
+    ],
+    "tags": [
+      "end",
+      "straight",
+      "loop_safe"
+    ],
+    "variations": [
+      "RM021",
+      "RM022"
+    ]
+  },
+  {
+    "id": "RM021",
+    "length": 4,
+    "pattern": [
+      4,
+      8,
+      8,
+      4,
+      4
+    ],
+    "tags": [
+      "end",
+      "straight",
+      "loop_safe"
+    ],
+    "variations": [
+      "RM022",
+      "RM023"
+    ]
+  },
+  {
+    "id": "RM022",
+    "length": 4,
+    "pattern": [
+      4,
+      4,
+      4,
+      4
+    ],
+    "tags": [
+      "end",
+      "cadence"
+    ],
+    "variations": [
+      "RM023",
+      "RM024"
+    ]
+  },
+  {
+    "id": "RM023",
+    "length": 4,
+    "pattern": [
+      8,
+      8,
+      4,
+      4,
+      4
+    ],
+    "tags": [
+      "end",
+      "cadence"
+    ],
+    "variations": [
+      "RM024",
+      "RM025"
+    ]
+  },
+  {
+    "id": "RM024",
+    "length": 4,
+    "pattern": [
+      4,
+      8,
+      8,
+      4,
+      4
+    ],
+    "tags": [
+      "end",
+      "cadence"
+    ],
+    "variations": [
+      "RM025",
+      "RM026"
+    ]
+  },
+  {
+    "id": "RM025",
+    "length": 8,
+    "pattern": [
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4
+    ],
+    "tags": [
+      "end",
+      "cadence",
+      "loop_safe"
+    ],
+    "variations": [
+      "RM026",
+      "RM019"
+    ]
+  },
+  {
+    "id": "RM026",
+    "length": 8,
+    "pattern": [
+      8,
+      8,
+      4,
+      4,
+      4,
+      8,
+      8,
+      4,
+      4,
+      4
+    ],
+    "tags": [
+      "end",
+      "cadence",
+      "loop_safe"
+    ],
+    "variations": [
+      "RM019",
+      "RM020"
+    ]
+  },
+  {
+    "id": "RM027",
+    "length": 4,
+    "pattern": [
+      8,
+      8,
+      8,
+      8,
+      8,
+      8,
+      4
+    ],
+    "tags": [
+      "start",
+      "staccato",
+      "anacrusis"
+    ],
+    "variations": [
+      "RM028",
+      "RM001"
+    ]
+  },
+  {
+    "id": "RM028",
+    "length": 4,
+    "pattern": [
+      8,
+      8,
+      8,
+      8,
+      4,
+      8,
+      8
+    ],
+    "tags": [
+      "start",
+      "staccato",
+      "anacrusis"
+    ],
+    "variations": [
+      "RM001",
+      "RM002"
+    ]
+  },
+  {
+    "id": "RM029",
+    "length": 8,
+    "pattern": [
+      8,
+      8,
+      4,
+      8,
+      8,
+      4,
+      8,
+      8,
+      4,
+      4,
+      4
+    ],
+    "tags": [
+      "middle",
+      "syncopation",
+      "bridge",
+      "loop_safe"
+    ],
+    "variations": [
+      "RM030",
+      "RM031"
+    ]
+  },
+  {
+    "id": "RM030",
+    "length": 8,
+    "pattern": [
+      8,
+      8,
+      4,
+      8,
+      8,
+      4,
+      8,
+      8,
+      4,
+      4,
+      4
+    ],
+    "tags": [
+      "middle",
+      "syncopation",
+      "bridge",
+      "loop_safe"
+    ],
+    "variations": [
+      "RM031",
+      "RM032"
+    ]
+  },
+  {
+    "id": "RM031",
+    "length": 8,
+    "pattern": [
+      8,
+      8,
+      4,
+      8,
+      8,
+      4,
+      8,
+      8,
+      4,
+      4,
+      4
+    ],
+    "tags": [
+      "middle",
+      "syncopation",
+      "bridge",
+      "loop_safe"
+    ],
+    "variations": [
+      "RM032",
+      "RM033"
+    ]
+  },
+  {
+    "id": "RM032",
+    "length": 8,
+    "pattern": [
+      8,
+      8,
+      4,
+      8,
+      8,
+      4,
+      8,
+      8,
+      4,
+      4,
+      4
+    ],
+    "tags": [
+      "middle",
+      "syncopation",
+      "bridge",
+      "loop_safe"
+    ],
+    "variations": [
+      "RM033",
+      "RM034"
+    ]
+  },
+  {
+    "id": "RM033",
+    "length": 8,
+    "pattern": [
+      8,
+      8,
+      4,
+      8,
+      8,
+      4,
+      8,
+      8,
+      4,
+      4,
+      4
+    ],
+    "tags": [
+      "middle",
+      "syncopation",
+      "bridge",
+      "loop_safe"
+    ],
+    "variations": [
+      "RM034",
+      "RM035"
+    ]
+  },
+  {
+    "id": "RM034",
+    "length": 8,
+    "pattern": [
+      8,
+      8,
+      4,
+      8,
+      8,
+      4,
+      8,
+      8,
+      4,
+      4,
+      4
+    ],
+    "tags": [
+      "middle",
+      "syncopation",
+      "bridge",
+      "loop_safe"
+    ],
+    "variations": [
+      "RM035",
+      "RM036"
+    ]
+  },
+  {
+    "id": "RM035",
+    "length": 8,
+    "pattern": [
+      8,
+      8,
+      4,
+      8,
+      8,
+      4,
+      8,
+      8,
+      4,
+      4,
+      4
+    ],
+    "tags": [
+      "middle",
+      "syncopation",
+      "bridge",
+      "loop_safe"
+    ],
+    "variations": [
+      "RM036",
+      "RM037"
+    ]
+  },
+  {
+    "id": "RM036",
+    "length": 8,
+    "pattern": [
+      8,
+      8,
+      4,
+      8,
+      8,
+      4,
+      8,
+      8,
+      4,
+      4,
+      4
+    ],
+    "tags": [
+      "middle",
+      "syncopation",
+      "bridge",
+      "loop_safe"
+    ],
+    "variations": [
+      "RM037",
+      "RM038"
+    ]
+  },
+  {
+    "id": "RM037",
+    "length": 8,
+    "pattern": [
+      8,
+      8,
+      4,
+      8,
+      8,
+      4,
+      8,
+      8,
+      4,
+      4,
+      4
+    ],
+    "tags": [
+      "middle",
+      "syncopation",
+      "bridge",
+      "loop_safe"
+    ],
+    "variations": [
+      "RM038",
+      "RM039"
+    ]
+  },
+  {
+    "id": "RM038",
+    "length": 8,
+    "pattern": [
+      8,
+      8,
+      4,
+      8,
+      8,
+      4,
+      8,
+      8,
+      4,
+      4,
+      4
+    ],
+    "tags": [
+      "middle",
+      "syncopation",
+      "bridge",
+      "loop_safe"
+    ],
+    "variations": [
+      "RM039",
+      "RM040"
+    ]
+  },
+  {
+    "id": "RM039",
+    "length": 8,
+    "pattern": [
+      8,
+      8,
+      4,
+      8,
+      8,
+      4,
+      8,
+      8,
+      4,
+      4,
+      4
+    ],
+    "tags": [
+      "middle",
+      "syncopation",
+      "bridge",
+      "loop_safe"
+    ],
+    "variations": [
+      "RM040",
+      "RM041"
+    ]
+  },
+  {
+    "id": "RM040",
+    "length": 8,
+    "pattern": [
+      8,
+      8,
+      4,
+      8,
+      8,
+      4,
+      8,
+      8,
+      4,
+      4,
+      4
+    ],
+    "tags": [
+      "middle",
+      "syncopation",
+      "bridge",
+      "loop_safe"
+    ],
+    "variations": [
+      "RM041",
+      "RM042"
+    ]
+  },
+  {
+    "id": "RM041",
+    "length": 8,
+    "pattern": [
+      8,
+      8,
+      4,
+      8,
+      8,
+      4,
+      8,
+      8,
+      4,
+      4,
+      4
+    ],
+    "tags": [
+      "middle",
+      "syncopation",
+      "bridge",
+      "loop_safe"
+    ],
+    "variations": [
+      "RM042",
+      "RM043"
+    ]
+  },
+  {
+    "id": "RM042",
+    "length": 8,
+    "pattern": [
+      8,
+      8,
+      4,
+      8,
+      8,
+      4,
+      8,
+      8,
+      4,
+      4,
+      4
+    ],
+    "tags": [
+      "middle",
+      "syncopation",
+      "bridge",
+      "loop_safe"
+    ],
+    "variations": [
+      "RM043",
+      "RM044"
+    ]
+  },
+  {
+    "id": "RM043",
+    "length": 8,
+    "pattern": [
+      8,
+      8,
+      4,
+      8,
+      8,
+      4,
+      8,
+      8,
+      4,
+      4,
+      4
+    ],
+    "tags": [
+      "middle",
+      "syncopation",
+      "bridge",
+      "loop_safe"
+    ],
+    "variations": [
+      "RM044",
+      "RM045"
+    ]
+  },
+  {
+    "id": "RM044",
+    "length": 8,
+    "pattern": [
+      8,
+      8,
+      4,
+      8,
+      8,
+      4,
+      8,
+      8,
+      4,
+      4,
+      4
+    ],
+    "tags": [
+      "middle",
+      "syncopation",
+      "bridge",
+      "loop_safe"
+    ],
+    "variations": [
+      "RM045",
+      "RM046"
+    ]
+  },
+  {
+    "id": "RM045",
+    "length": 8,
+    "pattern": [
+      8,
+      8,
+      4,
+      8,
+      8,
+      4,
+      8,
+      8,
+      4,
+      4,
+      4
+    ],
+    "tags": [
+      "middle",
+      "syncopation",
+      "bridge",
+      "loop_safe"
+    ],
+    "variations": [
+      "RM046",
+      "RM047"
+    ]
+  },
+  {
+    "id": "RM046",
+    "length": 8,
+    "pattern": [
+      8,
+      8,
+      4,
+      8,
+      8,
+      4,
+      8,
+      8,
+      4,
+      4,
+      4
+    ],
+    "tags": [
+      "middle",
+      "syncopation",
+      "bridge",
+      "loop_safe"
+    ],
+    "variations": [
+      "RM047",
+      "RM048"
+    ]
+  },
+  {
+    "id": "RM047",
+    "length": 8,
+    "pattern": [
+      8,
+      8,
+      4,
+      8,
+      8,
+      4,
+      8,
+      8,
+      4,
+      4,
+      4
+    ],
+    "tags": [
+      "middle",
+      "syncopation",
+      "bridge",
+      "loop_safe"
+    ],
+    "variations": [
+      "RM048",
+      "RM049"
+    ]
+  },
+  {
+    "id": "RM048",
+    "length": 8,
+    "pattern": [
+      8,
+      8,
+      4,
+      8,
+      8,
+      4,
+      8,
+      8,
+      4,
+      4,
+      4
+    ],
+    "tags": [
+      "middle",
+      "syncopation",
+      "bridge",
+      "loop_safe"
+    ],
+    "variations": [
+      "RM049",
+      "RM050"
+    ]
+  },
+  {
+    "id": "RM049",
+    "length": 8,
+    "pattern": [
+      8,
+      8,
+      4,
+      8,
+      8,
+      4,
+      8,
+      8,
+      4,
+      4,
+      4
+    ],
+    "tags": [
+      "middle",
+      "syncopation",
+      "bridge",
+      "loop_safe"
+    ],
+    "variations": [
+      "RM050",
+      "RM009"
+    ]
+  },
+  {
+    "id": "RM050",
+    "length": 8,
+    "pattern": [
+      8,
+      8,
+      4,
+      8,
+      8,
+      4,
+      8,
+      8,
+      4,
+      4,
+      4
+    ],
+    "tags": [
+      "middle",
+      "syncopation",
+      "bridge",
+      "loop_safe"
+    ],
+    "variations": [
+      "RM009",
+      "RM010"
+    ]
+  },
+  {
+    "id": "RM051",
+    "length": 4,
+    "pattern": [
+      8,
+      8,
+      4,
+      8,
+      8,
+      4
+    ],
+    "tags": [
+      "start",
+      "accented",
+      "syncopation",
+      "loop_safe"
+    ],
+    "variations": [
+      "RM052",
+      "RM053"
+    ]
+  },
+  {
+    "id": "RM052",
+    "length": 4,
+    "pattern": [
+      4,
+      8,
+      8,
+      4,
+      4
+    ],
+    "tags": [
+      "middle",
+      "accented",
+      "bridge",
+      "loop_safe"
+    ],
+    "variations": [
+      "RM051",
+      "RM053"
+    ]
+  },
+  {
+    "id": "RM053",
+    "length": 4,
+    "pattern": [
+      8,
+      8,
+      8,
+      8,
+      4,
+      4
+    ],
+    "tags": [
+      "end",
+      "accented",
+      "cadence",
+      "loop_safe"
+    ],
+    "variations": [
+      "RM051",
+      "RM052"
+    ]
+  },
+  {
+    "id": "RM054",
+    "length": 4,
+    "pattern": [
+      4,
+      4,
+      8,
+      8,
+      8,
+      8
+    ],
+    "tags": [
+      "middle",
+      "accented",
+      "variation",
+      "loop_safe"
+    ],
+    "variations": [
+      "RM052",
+      "RM055"
+    ]
+  },
+  {
+    "id": "RM055",
+    "length": 4,
+    "pattern": [
+      4,
+      8,
+      8,
+      8,
+      8,
+      4
+    ],
+    "tags": [
+      "start",
+      "accented",
+      "bridge",
+      "loop_safe"
+    ],
+    "variations": [
+      "RM051",
+      "RM054"
+    ]
+  },
+  {
+    "id": "RM056",
+    "length": 4,
+    "pattern": [
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16
+    ],
+    "tags": [
+      "start",
+      "straight",
+      "texture_loop",
+      "grid16",
+      "loop_safe"
+    ],
+    "variations": [
+      "RM057"
+    ]
+  },
+  {
+    "id": "RM057",
+    "length": 4,
+    "pattern": [
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      8,
+      8,
+      16,
+      16,
+      16,
+      16,
+      16
+    ],
+    "tags": [
+      "middle",
+      "texture_loop",
+      "grid16",
+      "percussive_layer",
+      "loop_safe"
+    ],
+    "variations": [
+      "RM056"
+    ]
+  },
+  {
+    "id": "RM058",
+    "length": 4,
+    "pattern": [
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16
+    ],
+    "tags": [
+      "start",
+      "middle",
+      "texture_loop",
+      "grid16",
+      "loop_safe",
+      "simple"
+    ],
+    "variations": [
+      "RM059",
+      "RM060"
+    ]
+  },
+  {
+    "id": "RM059",
+    "length": 4,
+    "pattern": [
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      8,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16
+    ],
+    "tags": [
+      "middle",
+      "texture_loop",
+      "grid16",
+      "loop_safe",
+      "percussive_layer"
+    ],
+    "variations": [
+      "RM058",
+      "RM060"
+    ]
+  },
+  {
+    "id": "RM060",
+    "length": 4,
+    "pattern": [
+      16,
+      16,
+      8,
+      16,
+      16,
+      16,
+      16,
+      8,
+      16,
+      16,
+      16,
+      16,
+      8
+    ],
+    "tags": [
+      "middle",
+      "texture_loop",
+      "grid16",
+      "loop_safe",
+      "syncopation"
+    ],
+    "variations": [
+      "RM058",
+      "RM059"
+    ]
+  },
+  {
+    "id": "RM061",
+    "length": 4,
+    "pattern": [
+      8,
+      8,
+      8,
+      8,
+      8,
+      8,
+      8,
+      8
+    ],
+    "tags": [
+      "start",
+      "middle",
+      "texture_loop",
+      "loop_safe",
+      "straight"
+    ],
+    "variations": [
+      "RM062"
+    ]
+  },
+  {
+    "id": "RM062",
+    "length": 4,
+    "pattern": [
+      8,
+      8,
+      8,
+      16,
+      16,
+      8,
+      8,
+      8,
+      16,
+      16
+    ],
+    "tags": [
+      "middle",
+      "texture_loop",
+      "loop_safe",
+      "straight"
+    ],
+    "variations": [
+      "RM061"
+    ]
+  },
+  {
+    "id": "RM063",
+    "length": 4,
+    "pattern": [
+      16,
+      16,
+      16,
+      16,
+      8,
+      16,
+      16,
+      16,
+      16,
+      8,
+      16,
+      16,
+      16,
+      16
+    ],
+    "tags": [
+      "start",
+      "middle",
+      "texture_loop",
+      "grid16",
+      "loop_safe",
+      "percussive_layer"
+    ],
+    "variations": [
+      "RM064"
+    ]
+  },
+  {
+    "id": "RM064",
+    "length": 4,
+    "pattern": [
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      8,
+      16,
+      16,
+      16,
+      16,
+      8
+    ],
+    "tags": [
+      "middle",
+      "texture_loop",
+      "grid16",
+      "loop_safe",
+      "percussive_layer"
+    ],
+    "variations": [
+      "RM063"
+    ]
+  },
+  {
+    "id": "RM065",
+    "length": 4,
+    "pattern": [
+      4,
+      16,
+      16,
+      16,
+      16,
+      4,
+      16,
+      16,
+      16,
+      16
+    ],
+    "tags": [
+      "start",
+      "middle",
+      "texture_loop",
+      "loop_safe",
+      "simple"
+    ],
+    "variations": [
+      "RM066"
+    ]
+  },
+  {
+    "id": "RM066",
+    "length": 4,
+    "pattern": [
+      4,
+      16,
+      16,
+      16,
+      16,
+      8,
+      8,
+      16,
+      16,
+      16,
+      16
+    ],
+    "tags": [
+      "middle",
+      "texture_loop",
+      "loop_safe"
+    ],
+    "variations": [
+      "RM065"
+    ]
+  },
+  {
+    "id": "RM067",
+    "length": 4,
+    "pattern": [
+      8,
+      16,
+      16,
+      8,
+      16,
+      16,
+      8,
+      16,
+      16,
+      8,
+      16,
+      16
+    ],
+    "tags": [
+      "start",
+      "middle",
+      "texture_loop",
+      "loop_safe",
+      "straight"
+    ],
+    "variations": [
+      "RM068"
+    ]
+  },
+  {
+    "id": "RM068",
+    "length": 4,
+    "pattern": [
+      8,
+      16,
+      16,
+      8,
+      8,
+      8,
+      16,
+      16,
+      8,
+      16,
+      16
+    ],
+    "tags": [
+      "middle",
+      "texture_loop",
+      "loop_safe",
+      "syncopation"
+    ],
+    "variations": [
+      "RM067"
+    ]
+  },
+  {
+    "id": "RM069",
+    "length": 4,
+    "pattern": [
+      16,
+      16,
+      8,
+      16,
+      16,
+      8,
+      16,
+      16,
+      8,
+      16,
+      16,
+      8
+    ],
+    "tags": [
+      "start",
+      "middle",
+      "texture_loop",
+      "grid16",
+      "loop_safe",
+      "percussive_layer"
+    ],
+    "variations": [
+      "RM070"
+    ]
+  },
+  {
+    "id": "RM070",
+    "length": 4,
+    "pattern": [
+      16,
+      16,
+      8,
+      8,
+      16,
+      16,
+      8,
+      16,
+      16,
+      8,
+      16,
+      16
+    ],
+    "tags": [
+      "middle",
+      "texture_loop",
+      "grid16",
+      "loop_safe",
+      "percussive_layer"
+    ],
+    "variations": [
+      "RM069"
+    ]
+  },
+  {
+    "id": "RM071",
+    "length": 4,
+    "pattern": [
+      4,
+      4,
+      16,
+      16,
+      16,
+      16,
+      4
+    ],
+    "tags": [
+      "start",
+      "middle",
+      "texture_loop",
+      "loop_safe",
+      "accented"
+    ],
+    "variations": [
+      "RM072"
+    ]
+  },
+  {
+    "id": "RM072",
+    "length": 4,
+    "pattern": [
+      4,
+      8,
+      8,
+      16,
+      16,
+      16,
+      16,
+      4
+    ],
+    "tags": [
+      "middle",
+      "end",
+      "texture_loop",
+      "loop_safe",
+      "accented"
+    ],
+    "variations": [
+      "RM071"
+    ]
+  },
+  {
+    "id": "RM073",
+    "length": 8,
+    "pattern": [
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4
+    ],
+    "tags": [
+      "end",
+      "cadence",
+      "loop_safe",
+      "final"
+    ],
+    "variations": [
+      "RM074",
+      "RM075"
+    ]
+  },
+  {
+    "id": "RM074",
+    "length": 8,
+    "pattern": [
+      4,
+      8,
+      8,
+      4,
+      4,
+      4,
+      8,
+      8,
+      4,
+      4
+    ],
+    "tags": [
+      "end",
+      "cadence",
+      "loop_safe",
+      "final"
+    ],
+    "variations": [
+      "RM073",
+      "RM075"
+    ]
+  },
+  {
+    "id": "RM075",
+    "length": 8,
+    "pattern": [
+      8,
+      8,
+      4,
+      4,
+      4,
+      2,
+      2
+    ],
+    "tags": [
+      "end",
+      "cadence",
+      "loop_safe",
+      "ritardando"
+    ],
+    "variations": [
+      "RM073",
+      "RM074"
+    ]
+  },
+  {
+    "id": "RM076",
+    "length": 4,
+    "pattern": [
+      8,
+      8,
+      8,
+      8,
+      4,
+      4
+    ],
+    "tags": [
+      "start",
+      "anacrusis",
+      "staccato",
+      "loop_safe"
+    ],
+    "variations": [
+      "RM077",
+      "RM078"
+    ]
+  },
+  {
+    "id": "RM077",
+    "length": 4,
+    "pattern": [
+      16,
+      16,
+      16,
+      16,
+      8,
+      8,
+      4,
+      4
+    ],
+    "tags": [
+      "start",
+      "anacrusis",
+      "drive",
+      "loop_safe"
+    ],
+    "variations": [
+      "RM076",
+      "RM078"
+    ]
+  },
+  {
+    "id": "RM078",
+    "length": 4,
+    "pattern": [
+      8,
+      8,
+      4,
+      8,
+      8,
+      4
+    ],
+    "tags": [
+      "start",
+      "anacrusis",
+      "syncopation",
+      "loop_safe"
+    ],
+    "variations": [
+      "RM076",
+      "RM077"
+    ]
+  },
+  {
+    "id": "RM079",
+    "length": 4,
+    "pattern": [
+      8,
+      16,
+      16,
+      4,
+      8,
+      16,
+      16,
+      4
+    ],
+    "tags": [
+      "middle",
+      "syncopation",
+      "drive",
+      "loop_safe"
+    ],
+    "variations": [
+      "RM080",
+      "RM081"
+    ]
+  },
+  {
+    "id": "RM080",
+    "length": 4,
+    "pattern": [
+      4,
+      16,
+      16,
+      8,
+      8,
+      4,
+      8
+    ],
+    "tags": [
+      "middle",
+      "syncopation",
+      "accented",
+      "loop_safe"
+    ],
+    "variations": [
+      "RM079",
+      "RM082"
+    ]
+  },
+  {
+    "id": "RM081",
+    "length": 4,
+    "pattern": [
+      16,
+      16,
+      8,
+      16,
+      16,
+      8,
+      16,
+      16,
+      8,
+      4
+    ],
+    "tags": [
+      "start",
+      "syncopation",
+      "staccato",
+      "loop_safe"
+    ],
+    "variations": [
+      "RM079",
+      "RM082"
+    ]
+  },
+  {
+    "id": "RM082",
+    "length": 4,
+    "pattern": [
+      8,
+      8,
+      16,
+      16,
+      16,
+      16,
+      8,
+      8,
+      4
+    ],
+    "tags": [
+      "middle",
+      "syncopation",
+      "drive",
+      "loop_safe"
+    ],
+    "variations": [
+      "RM080",
+      "RM083"
+    ]
+  },
+  {
+    "id": "RM083",
+    "length": 4,
+    "pattern": [
+      4,
+      8,
+      16,
+      16,
+      8,
+      8,
+      4
+    ],
+    "tags": [
+      "middle",
+      "syncopation",
+      "bridge",
+      "loop_safe"
+    ],
+    "variations": [
+      "RM082",
+      "RM084"
+    ]
+  },
+  {
+    "id": "RM084",
+    "length": 8,
+    "pattern": [
+      8,
+      16,
+      16,
+      8,
+      16,
+      16,
+      4,
+      4,
+      8,
+      16,
+      16,
+      8,
+      16,
+      16,
+      4,
+      4
+    ],
+    "tags": [
+      "middle",
+      "syncopation",
+      "drive",
+      "loop_safe"
+    ],
+    "variations": [
+      "RM083",
+      "RM085"
+    ]
+  },
+  {
+    "id": "RM085",
+    "length": 8,
+    "pattern": [
+      4,
+      8,
+      8,
+      4,
+      4,
+      8,
+      8,
+      4,
+      4,
+      4
+    ],
+    "tags": [
+      "end",
+      "syncopation",
+      "cadence",
+      "loop_safe"
+    ],
+    "variations": [
+      "RM084",
+      "RM079"
+    ]
+  },
+  {
+    "id": "RM086",
+    "length": 8,
+    "pattern": [
+      8,
+      8,
+      4,
+      8,
+      8,
+      4,
+      8,
+      8,
+      4,
+      8,
+      8,
+      4
+    ],
+    "tags": [
+      "middle",
+      "bridge",
+      "syncopation",
+      "loop_safe"
+    ],
+    "variations": [
+      "RM087",
+      "RM088"
+    ]
+  },
+  {
+    "id": "RM087",
+    "length": 8,
+    "pattern": [
+      4,
+      4,
+      8,
+      8,
+      8,
+      8,
+      4,
+      4,
+      8,
+      8,
+      8,
+      8
+    ],
+    "tags": [
+      "middle",
+      "bridge",
+      "straight",
+      "loop_safe"
+    ],
+    "variations": [
+      "RM086",
+      "RM089"
+    ]
+  },
+  {
+    "id": "RM088",
+    "length": 8,
+    "pattern": [
+      16,
+      16,
+      16,
+      16,
+      8,
+      8,
+      4,
+      4,
+      16,
+      16,
+      16,
+      16,
+      8,
+      8,
+      4,
+      4
+    ],
+    "tags": [
+      "middle",
+      "bridge",
+      "drive",
+      "loop_safe"
+    ],
+    "variations": [
+      "RM086",
+      "RM089"
+    ]
+  },
+  {
+    "id": "RM089",
+    "length": 8,
+    "pattern": [
+      8,
+      8,
+      8,
+      8,
+      4,
+      4,
+      8,
+      8,
+      8,
+      8,
+      4,
+      4
+    ],
+    "tags": [
+      "middle",
+      "bridge",
+      "sustain",
+      "loop_safe"
+    ],
+    "variations": [
+      "RM087",
+      "RM090"
+    ]
+  },
+  {
+    "id": "RM090",
+    "length": 8,
+    "pattern": [
+      4,
+      8,
+      8,
+      4,
+      4,
+      8,
+      8,
+      4,
+      4,
+      4
+    ],
+    "tags": [
+      "middle",
+      "bridge",
+      "variation",
+      "loop_safe"
+    ],
+    "variations": [
+      "RM089",
+      "RM086"
+    ]
+  },
+  {
+    "id": "RM091",
+    "length": 4,
+    "pattern": [
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16
+    ],
+    "tags": [
+      "middle",
+      "texture_loop",
+      "grid16",
+      "percussive_layer",
+      "loop_safe",
+      "straight"
+    ]
+  },
+  {
+    "id": "RM092",
+    "length": 4,
+    "pattern": [
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16
+    ],
+    "tags": [
+      "middle",
+      "texture_loop",
+      "grid16",
+      "percussive_layer",
+      "loop_safe",
+      "syncopation"
+    ]
+  },
+  {
+    "id": "RM093",
+    "length": 4,
+    "pattern": [
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16
+    ],
+    "tags": [
+      "middle",
+      "texture_loop",
+      "grid16",
+      "percussive_layer",
+      "loop_safe",
+      "simple"
+    ]
+  },
+  {
+    "id": "RM094",
+    "length": 4,
+    "pattern": [
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16
+    ],
+    "tags": [
+      "middle",
+      "texture_loop",
+      "grid16",
+      "percussive_layer",
+      "loop_safe",
+      "accented"
+    ]
+  },
+  {
+    "id": "RM095",
+    "length": 4,
+    "pattern": [
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16
+    ],
+    "tags": [
+      "middle",
+      "texture_loop",
+      "grid16",
+      "percussive_layer",
+      "loop_safe",
+      "straight"
+    ]
+  },
+  {
+    "id": "RM096",
+    "length": 4,
+    "pattern": [
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16
+    ],
+    "tags": [
+      "start",
+      "texture_loop",
+      "grid16",
+      "percussive_layer",
+      "loop_safe",
+      "straight"
+    ]
+  },
+  {
+    "id": "RM097",
+    "length": 4,
+    "pattern": [
+      8,
+      8,
+      16,
+      16,
+      16,
+      16,
+      8,
+      8,
+      16,
+      16,
+      16,
+      16
+    ],
+    "tags": [
+      "start",
+      "texture_loop",
+      "grid16",
+      "percussive_layer",
+      "loop_safe",
+      "syncopation"
+    ]
+  },
+  {
+    "id": "RM098",
+    "length": 4,
+    "pattern": [
+      16,
+      16,
+      8,
+      16,
+      16,
+      8,
+      16,
+      16,
+      8,
+      16,
+      16,
+      8
+    ],
+    "tags": [
+      "start",
+      "texture_loop",
+      "grid16",
+      "percussive_layer",
+      "loop_safe",
+      "simple"
+    ]
+  },
+  {
+    "id": "RM099",
+    "length": 4,
+    "pattern": [
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16
+    ],
+    "tags": [
+      "start",
+      "texture_loop",
+      "grid16",
+      "percussive_layer",
+      "loop_safe",
+      "accented"
+    ]
+  },
+  {
+    "id": "RM100",
+    "length": 4,
+    "pattern": [
+      8,
+      16,
+      16,
+      16,
+      16,
+      8,
+      16,
+      16,
+      16,
+      16,
+      8,
+      8
+    ],
+    "tags": [
+      "start",
+      "texture_loop",
+      "grid16",
+      "percussive_layer",
+      "loop_safe",
+      "open"
+    ]
+  },
+  {
+    "id": "RM101",
+    "length": 4,
+    "pattern": [
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16
+    ],
+    "tags": [
+      "end",
+      "texture_loop",
+      "grid16",
+      "percussive_layer",
+      "loop_safe",
+      "straight"
+    ]
+  },
+  {
+    "id": "RM102",
+    "length": 4,
+    "pattern": [
+      8,
+      16,
+      16,
+      16,
+      16,
+      8,
+      8,
+      16,
+      16,
+      16,
+      16,
+      8
+    ],
+    "tags": [
+      "end",
+      "texture_loop",
+      "grid16",
+      "percussive_layer",
+      "loop_safe",
+      "syncopation"
+    ]
+  },
+  {
+    "id": "RM103",
+    "length": 4,
+    "pattern": [
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16
+    ],
+    "tags": [
+      "end",
+      "texture_loop",
+      "grid16",
+      "percussive_layer",
+      "loop_safe",
+      "simple"
+    ]
+  },
+  {
+    "id": "RM104",
+    "length": 4,
+    "pattern": [
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16
+    ],
+    "tags": [
+      "end",
+      "texture_loop",
+      "grid16",
+      "percussive_layer",
+      "loop_safe",
+      "accented"
+    ]
+  },
+  {
+    "id": "RM105",
+    "length": 4,
+    "pattern": [
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16
+    ],
+    "tags": [
+      "end",
+      "texture_loop",
+      "grid16",
+      "percussive_layer",
+      "loop_safe",
+      "open"
+    ]
+  },
+  {
+    "id": "RM106",
+    "length": 4,
+    "pattern": [
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16
+    ],
+    "tags": [
+      "middle",
+      "texture_loop",
+      "grid16",
+      "percussive_layer",
+      "straight"
+    ]
+  },
+  {
+    "id": "RM107",
+    "length": 4,
+    "pattern": [
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16
+    ],
+    "tags": [
+      "middle",
+      "texture_loop",
+      "grid16",
+      "percussive_layer",
+      "syncopation"
+    ]
+  },
+  {
+    "id": "RM108",
+    "length": 4,
+    "pattern": [
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16
+    ],
+    "tags": [
+      "middle",
+      "texture_loop",
+      "grid16",
+      "percussive_layer",
+      "simple"
+    ]
+  },
+  {
+    "id": "RM109",
+    "length": 4,
+    "pattern": [
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16
+    ],
+    "tags": [
+      "middle",
+      "texture_loop",
+      "grid16",
+      "percussive_layer",
+      "accented"
+    ]
+  },
+  {
+    "id": "RM110",
+    "length": 4,
+    "pattern": [
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16
+    ],
+    "tags": [
+      "middle",
+      "texture_loop",
+      "grid16",
+      "percussive_layer",
+      "open"
+    ]
+  },
+  {
+    "id": "RM111",
+    "length": 4,
+    "pattern": [
+      {
+        "value": 16,
+        "accent": true
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16,
+        "accent": true
+      },
+      {
+        "value": 16,
+        "rest": true
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16,
+        "accent": true
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16,
+        "rest": true
+      },
+      {
+        "value": 16,
+        "accent": true
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16,
+        "accent": true
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16,
+        "rest": true
+      },
+      {
+        "value": 16,
+        "accent": true
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      }
+    ],
+    "tags": [
+      "middle",
+      "texture_loop",
+      "grid16",
+      "syncopation",
+      "percussive_layer"
+    ]
+  },
+  {
+    "id": "RM112",
+    "length": 4,
+    "pattern": [
+      {
+        "value": 8,
+        "accent": true
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16,
+        "accent": true
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 8,
+        "rest": true
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      }
+    ],
+    "tags": [
+      "middle",
+      "texture_loop",
+      "grid16",
+      "percussive_layer",
+      "drive"
+    ]
+  },
+  {
+    "id": "RM113",
+    "length": 4,
+    "pattern": [
+      {
+        "value": 4,
+        "accent": true
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16,
+        "rest": true
+      },
+      {
+        "value": 16,
+        "accent": true
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16,
+        "rest": true
+      },
+      {
+        "value": 16,
+        "accent": true
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      }
+    ],
+    "tags": [
+      "middle",
+      "texture_loop",
+      "grid16",
+      "syncopation",
+      "break"
+    ]
+  },
+  {
+    "id": "RM114",
+    "length": 4,
+    "pattern": [
+      {
+        "value": 16,
+        "accent": true
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16,
+        "accent": true
+      },
+      {
+        "value": 16,
+        "rest": true
+      },
+      {
+        "value": 16,
+        "accent": true
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16,
+        "accent": true
+      },
+      {
+        "value": 16,
+        "rest": true
+      },
+      {
+        "value": 16,
+        "accent": true
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16,
+        "accent": true
+      },
+      {
+        "value": 16,
+        "rest": true
+      },
+      {
+        "value": 16,
+        "accent": true
+      }
+    ],
+    "tags": [
+      "middle",
+      "loop_safe",
+      "grid16",
+      "syncopation",
+      "breakbeat"
+    ]
+  },
+  {
+    "id": "RM115",
+    "length": 4,
+    "pattern": [
+      {
+        "value": 8,
+        "accent": true
+      },
+      {
+        "value": 16,
+        "rest": true
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 16,
+        "rest": true
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 16,
+        "rest": true
+      },
+      {
+        "value": 8,
+        "accent": true
+      },
+      {
+        "value": 16,
+        "rest": true
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16,
+        "rest": true
+      }
+    ],
+    "tags": [
+      "middle",
+      "loop_safe",
+      "swing_hint",
+      "rest_heavy",
+      "lofi"
+    ]
+  },
+  {
+    "id": "RM116",
+    "length": 4,
+    "pattern": [
+      {
+        "value": 8,
+        "accent": true
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 8,
+        "accent": true
+      },
+      {
+        "value": 16,
+        "rest": true
+      },
+      {
+        "value": 16,
+        "accent": true
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 16,
+        "accent": true
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 8,
+        "accent": true
+      },
+      {
+        "value": 16,
+        "rest": true
+      },
+      {
+        "value": 16,
+        "accent": true
+      }
+    ],
+    "tags": [
+      "middle",
+      "loop_safe",
+      "syncopation",
+      "grid16",
+      "breakbeat"
+    ]
+  },
+  {
+    "id": "RM117",
+    "length": 4,
+    "pattern": [
+      {
+        "value": 16,
+        "accent": true
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16,
+        "accent": true
+      },
+      {
+        "value": 16,
+        "rest": true
+      },
+      {
+        "value": 16,
+        "accent": true
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16,
+        "accent": true
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16,
+        "rest": true
+      },
+      {
+        "value": 16,
+        "accent": true
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16,
+        "accent": true
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16,
+        "rest": true
+      },
+      {
+        "value": 16,
+        "accent": true
+      }
+    ],
+    "tags": [
+      "middle",
+      "loop_safe",
+      "grid16",
+      "syncopation",
+      "breakbeat",
+      "variation"
+    ]
+  },
+  {
+    "id": "RM118",
+    "length": 4,
+    "pattern": [
+      {
+        "value": 8,
+        "accent": true
+      },
+      {
+        "value": 16,
+        "rest": true
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 16,
+        "rest": true
+      },
+      {
+        "value": 8,
+        "accent": true
+      },
+      {
+        "value": 8,
+        "rest": true
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 16,
+        "rest": true
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 16,
+        "rest": true
+      }
+    ],
+    "tags": [
+      "middle",
+      "loop_safe",
+      "swing_hint",
+      "rest_heavy",
+      "lofi"
+    ]
+  },
+  {
+    "id": "RM119",
+    "length": 4,
+    "pattern": [
+      {
+        "value": 8,
+        "accent": true
+      },
+      {
+        "value": 16,
+        "rest": true
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 16,
+        "rest": true
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 16,
+        "rest": true
+      },
+      {
+        "value": 8,
+        "accent": true
+      },
+      {
+        "value": 16,
+        "rest": true
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      }
+    ],
+    "tags": [
+      "start",
+      "loop_safe",
+      "swing_hint",
+      "rest_heavy",
+      "lofi",
+      "variation"
+    ]
+  }
+]

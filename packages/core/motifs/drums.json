@@ -1,0 +1,969 @@
+[
+  {
+    "id": "DP001",
+    "length_beats": 4,
+    "type": "beat",
+    "pattern": "K-H-S-H-K-H-S-H-",
+    "tags": [
+      "loop_safe"
+    ]
+  },
+  {
+    "id": "DP002",
+    "length_beats": 4,
+    "type": "beat",
+    "pattern": "H-S-H-K-H-S-H-K-",
+    "tags": [
+      "loop_safe",
+      "variation"
+    ]
+  },
+  {
+    "id": "DP003",
+    "length_beats": 4,
+    "type": "beat",
+    "pattern": "K---S---K-H-S-H",
+    "tags": [
+      "bridge"
+    ]
+  },
+  {
+    "id": "DP004",
+    "length_beats": 4,
+    "type": "beat",
+    "pattern": "--S---K-H-S-HK-",
+    "tags": [
+      "bridge",
+      "variation"
+    ]
+  },
+  {
+    "id": "DP005",
+    "length_beats": 4,
+    "type": "beat",
+    "pattern": "K-H-K---S-H-K---",
+    "tags": [
+      "build"
+    ]
+  },
+  {
+    "id": "DP006",
+    "length_beats": 4,
+    "type": "beat",
+    "pattern": "H-K---S-H-K---K-",
+    "tags": [
+      "build",
+      "variation"
+    ]
+  },
+  {
+    "id": "DP007",
+    "length_beats": 4,
+    "type": "beat",
+    "pattern": "K---S-H-K---S-H-",
+    "tags": [
+      "straight"
+    ]
+  },
+  {
+    "id": "DP008",
+    "length_beats": 4,
+    "type": "beat",
+    "pattern": "--S-H-K---S-H-K-",
+    "tags": [
+      "straight",
+      "variation"
+    ]
+  },
+  {
+    "id": "DP009",
+    "length_beats": 4,
+    "type": "beat",
+    "pattern": "K-H---S-K-H---S-",
+    "tags": [
+      "syncopation"
+    ]
+  },
+  {
+    "id": "DP010",
+    "length_beats": 4,
+    "type": "beat",
+    "pattern": "H---S-K-H---S-K-",
+    "tags": [
+      "syncopation",
+      "variation"
+    ]
+  },
+  {
+    "id": "DP011",
+    "length_beats": 4,
+    "type": "beat",
+    "pattern": "K---H-K-S---H-K-",
+    "tags": [
+      "open"
+    ]
+  },
+  {
+    "id": "DP012",
+    "length_beats": 4,
+    "type": "beat",
+    "pattern": "--H-K-S---H-K-K-",
+    "tags": [
+      "open",
+      "variation"
+    ]
+  },
+  {
+    "id": "DP013",
+    "length_beats": 4,
+    "type": "beat",
+    "pattern": "K-H-K-H-S-H-K-H-",
+    "tags": [
+      "loop_safe"
+    ]
+  },
+  {
+    "id": "DP014",
+    "length_beats": 4,
+    "type": "beat",
+    "pattern": "H-K-H-S-H-K-H-K-",
+    "tags": [
+      "loop_safe",
+      "variation"
+    ]
+  },
+  {
+    "id": "DP015",
+    "length_beats": 4,
+    "type": "beat",
+    "pattern": "K---S---K---H---",
+    "tags": [
+      "simple"
+    ]
+  },
+  {
+    "id": "DP016",
+    "length_beats": 4,
+    "type": "beat",
+    "pattern": "--S---K---H---K-",
+    "tags": [
+      "simple",
+      "variation"
+    ]
+  },
+  {
+    "id": "DP017",
+    "length_beats": 4,
+    "type": "beat",
+    "pattern": "K-H---K-S-H---K-",
+    "tags": [
+      "bridge"
+    ]
+  },
+  {
+    "id": "DP018",
+    "length_beats": 4,
+    "type": "beat",
+    "pattern": "H---K-S-H---K-K-",
+    "tags": [
+      "bridge",
+      "variation"
+    ]
+  },
+  {
+    "id": "DP019",
+    "length_beats": 4,
+    "type": "beat",
+    "pattern": "K--H-K--S-H-K--",
+    "tags": [
+      "swing_hint"
+    ]
+  },
+  {
+    "id": "DP020",
+    "length_beats": 4,
+    "type": "beat",
+    "pattern": "-H-K--S-H-K--K-",
+    "tags": [
+      "swing_hint",
+      "variation"
+    ]
+  },
+  {
+    "id": "DP021",
+    "length_beats": 4,
+    "type": "fill",
+    "pattern": "S-S-S-S-S-S-O---",
+    "tags": [
+      "cadence"
+    ]
+  },
+  {
+    "id": "DP022",
+    "length_beats": 4,
+    "type": "fill",
+    "pattern": "S-S-S-S-O---S-S-",
+    "tags": [
+      "cadence",
+      "variation"
+    ]
+  },
+  {
+    "id": "DP023",
+    "length_beats": 8,
+    "type": "fill",
+    "pattern": "S-S-S-S-S-S-O---S-S-S-S-S-S-O---",
+    "tags": [
+      "cadence",
+      "extended"
+    ]
+  },
+  {
+    "id": "DP024",
+    "length_beats": 4,
+    "type": "fill",
+    "pattern": "KSKO-KSKO-KSKO-K",
+    "tags": [
+      "build"
+    ]
+  },
+  {
+    "id": "DP025",
+    "length_beats": 4,
+    "type": "fill",
+    "pattern": "-KSKO-KSKO-KKSKO",
+    "tags": [
+      "build",
+      "variation"
+    ]
+  },
+  {
+    "id": "DP026",
+    "length_beats": 8,
+    "type": "fill",
+    "pattern": "KSKO-KSKO-KSKO-KKSKO-KSKO-KSKO-K",
+    "tags": [
+      "build",
+      "extended"
+    ]
+  },
+  {
+    "id": "DP027",
+    "length_beats": 4,
+    "type": "fill",
+    "pattern": "S-HS-HS-HS-HS-HS",
+    "tags": [
+      "bridge"
+    ]
+  },
+  {
+    "id": "DP028",
+    "length_beats": 4,
+    "type": "fill",
+    "pattern": "-HS-HS-HS-HSS-HS",
+    "tags": [
+      "bridge",
+      "variation"
+    ]
+  },
+  {
+    "id": "DP029",
+    "length_beats": 8,
+    "type": "fill",
+    "pattern": "S-HS-HS-HS-HS-HSS-HS-HS-HS-HS-HS",
+    "tags": [
+      "bridge",
+      "extended"
+    ]
+  },
+  {
+    "id": "DP030",
+    "length_beats": 4,
+    "type": "fill",
+    "pattern": "K-SK-SK-SK-SK-SK",
+    "tags": [
+      "build"
+    ]
+  },
+  {
+    "id": "DP031",
+    "length_beats": 4,
+    "type": "fill",
+    "pattern": "-SK-SK-SK-SKK-SK",
+    "tags": [
+      "build",
+      "variation"
+    ]
+  },
+  {
+    "id": "DP032",
+    "length_beats": 8,
+    "type": "fill",
+    "pattern": "K-SK-SK-SK-SK-SKK-SK-SK-SK-SK-SK",
+    "tags": [
+      "build",
+      "extended"
+    ]
+  },
+  {
+    "id": "DP033",
+    "length_beats": 4,
+    "type": "fill",
+    "pattern": "S--S-HHS--S-HHS-",
+    "tags": [
+      "break"
+    ]
+  },
+  {
+    "id": "DP034",
+    "length_beats": 4,
+    "type": "fill",
+    "pattern": "-HHS--S-HHS-S--S",
+    "tags": [
+      "break",
+      "variation"
+    ]
+  },
+  {
+    "id": "DP035",
+    "length_beats": 8,
+    "type": "fill",
+    "pattern": "S--S-HHS--S-HHS-S--S-HHS--S-HHS-",
+    "tags": [
+      "break",
+      "extended"
+    ]
+  },
+  {
+    "id": "DP036",
+    "length_beats": 4,
+    "type": "fill",
+    "pattern": "K-K-K-K-S-S-S-S-",
+    "tags": [
+      "cadence"
+    ]
+  },
+  {
+    "id": "DP037",
+    "length_beats": 4,
+    "type": "fill",
+    "pattern": "K-K-S-S-S-S-K-K-",
+    "tags": [
+      "cadence",
+      "variation"
+    ]
+  },
+  {
+    "id": "DP038",
+    "length_beats": 8,
+    "type": "fill",
+    "pattern": "K-K-K-K-S-S-S-S-K-K-K-K-S-S-S-S-",
+    "tags": [
+      "cadence",
+      "extended"
+    ]
+  },
+  {
+    "id": "DP039",
+    "length_beats": 4,
+    "type": "fill",
+    "pattern": "S-S-H-H-S-S-H-H-",
+    "tags": [
+      "bridge"
+    ]
+  },
+  {
+    "id": "DP040",
+    "length_beats": 4,
+    "type": "fill",
+    "pattern": "H-H-S-S-H-H-S-S-",
+    "tags": [
+      "bridge",
+      "variation"
+    ]
+  },
+  {
+    "id": "DP041",
+    "length_beats": 8,
+    "type": "fill",
+    "pattern": "S-S-H-H-S-S-H-H-S-S-H-H-S-S-H-H-",
+    "tags": [
+      "bridge",
+      "extended"
+    ]
+  },
+  {
+    "id": "DP042",
+    "length_beats": 4,
+    "type": "fill",
+    "pattern": "KSTK-KSTK-KSTK-K",
+    "tags": [
+      "toms"
+    ]
+  },
+  {
+    "id": "DP043",
+    "length_beats": 4,
+    "type": "fill",
+    "pattern": "-KSTK-KSTK-KKSTK",
+    "tags": [
+      "toms",
+      "variation"
+    ]
+  },
+  {
+    "id": "DP044",
+    "length_beats": 8,
+    "type": "fill",
+    "pattern": "KSTK-KSTK-KSTK-KKSTK-KSTK-KSTK-K",
+    "tags": [
+      "toms",
+      "extended"
+    ]
+  },
+  {
+    "id": "DP045",
+    "length_beats": 4,
+    "type": "fill",
+    "pattern": "S--S--S--S--S--S",
+    "tags": [
+      "loop_safe"
+    ]
+  },
+  {
+    "id": "DP046",
+    "length_beats": 4,
+    "type": "fill",
+    "pattern": "--S--S--S--SS--S",
+    "tags": [
+      "loop_safe",
+      "variation"
+    ]
+  },
+  {
+    "id": "DP047",
+    "length_beats": 8,
+    "type": "fill",
+    "pattern": "S--S--S--S--S--SS--S--S--S--S--S",
+    "tags": [
+      "loop_safe",
+      "extended"
+    ]
+  },
+  {
+    "id": "DP048",
+    "length_beats": 4,
+    "type": "fill",
+    "pattern": "K-S-H-K-S-H-K-S-",
+    "tags": [
+      "bridge"
+    ]
+  },
+  {
+    "id": "DP049",
+    "length_beats": 4,
+    "type": "fill",
+    "pattern": "H-K-S-H-K-S-K-S-",
+    "tags": [
+      "bridge",
+      "variation"
+    ]
+  },
+  {
+    "id": "DP050",
+    "length_beats": 8,
+    "type": "fill",
+    "pattern": "K-S-H-K-S-H-K-S-K-S-H-K-S-H-K-S-",
+    "tags": [
+      "bridge",
+      "extended"
+    ]
+  },
+  {
+    "id": "DP051",
+    "length_beats": 4,
+    "type": "beat",
+    "pattern": "K-H-K-H-K-H-K-H-",
+    "tags": [
+      "loop_safe",
+      "four_on_floor",
+      "straight",
+      "percussive_layer",
+      "texture_loop"
+    ]
+  },
+  {
+    "id": "DP052",
+    "length_beats": 4,
+    "type": "beat",
+    "pattern": "K-HO-K-H-K-O-K-H-",
+    "tags": [
+      "loop_safe",
+      "four_on_floor",
+      "straight",
+      "variation",
+      "percussive_layer"
+    ]
+  },
+  {
+    "id": "DP053",
+    "length_beats": 4,
+    "type": "beat",
+    "pattern": "K-HH-K-HH-K-HH-K-HH",
+    "tags": [
+      "loop_safe",
+      "grid16",
+      "texture_loop",
+      "percussive_layer"
+    ]
+  },
+  {
+    "id": "DP054",
+    "length_beats": 4,
+    "type": "beat",
+    "pattern": "K--S--K-K--S--K-",
+    "tags": [
+      "rock",
+      "drive",
+      "loop_safe"
+    ]
+  },
+  {
+    "id": "DP055",
+    "length_beats": 4,
+    "type": "beat",
+    "pattern": "K-K-S---K-K-S-K-",
+    "tags": [
+      "dance",
+      "syncopation",
+      "loop_safe"
+    ]
+  },
+  {
+    "id": "DP056",
+    "length_beats": 4,
+    "type": "beat",
+    "pattern": "K-----S-K-----S-",
+    "tags": [
+      "ballad",
+      "simple",
+      "loop_safe"
+    ]
+  },
+  {
+    "id": "DP057",
+    "length_beats": 4,
+    "type": "beat",
+    "pattern": "K-H-S-K-K-H-S-H-",
+    "tags": [
+      "rock",
+      "energetic",
+      "loop_safe",
+      "variation"
+    ]
+  },
+  {
+    "id": "DP058",
+    "length_beats": 4,
+    "type": "beat",
+    "pattern": "K-S-K-S-K-S-K-S-",
+    "tags": [
+      "dance",
+      "four_on_floor",
+      "loop_safe"
+    ]
+  },
+  {
+    "id": "DP059",
+    "length_beats": 4,
+    "type": "beat",
+    "pattern": "K---S-K-K---S---",
+    "tags": [
+      "syncopation",
+      "upbeat",
+      "loop_safe"
+    ]
+  },
+  {
+    "id": "DP060",
+    "length_beats": 4,
+    "type": "beat",
+    "pattern": "K-H-S-H-K---S-H-",
+    "tags": [
+      "rock",
+      "variation",
+      "loop_safe"
+    ]
+  },
+  {
+    "id": "DP061",
+    "length_beats": 4,
+    "type": "beat",
+    "pattern": "K-K---S-K-K-S---",
+    "tags": [
+      "dance",
+      "syncopation",
+      "tense",
+      "loop_safe"
+    ]
+  },
+  {
+    "id": "DP062",
+    "length_beats": 4,
+    "type": "beat",
+    "pattern": "K-H-S---K-H-S-K-",
+    "tags": [
+      "rock",
+      "drive",
+      "loop_safe",
+      "variation"
+    ]
+  },
+  {
+    "id": "DP063",
+    "length_beats": 4,
+    "type": "beat",
+    "pattern": "K-----S---K-S---",
+    "tags": [
+      "ballad",
+      "peaceful",
+      "simple",
+      "loop_safe"
+    ]
+  },
+  {
+    "id": "DP064",
+    "length_beats": 4,
+    "type": "beat",
+    "pattern": "K-K-S-K-K-K-S-K-",
+    "tags": [
+      "dance",
+      "energetic",
+      "drive",
+      "loop_safe"
+    ]
+  },
+  {
+    "id": "DP065",
+    "length_beats": 4,
+    "type": "beat",
+    "pattern": "K-H-S-K---H-S-H-",
+    "tags": [
+      "syncopation",
+      "rock",
+      "variation",
+      "loop_safe"
+    ]
+  },
+  {
+    "id": "DP066",
+    "length_beats": 4,
+    "type": "beat",
+    "pattern": "K---S---K-K-S-K-",
+    "tags": [
+      "dance",
+      "syncopation",
+      "build",
+      "loop_safe"
+    ]
+  },
+  {
+    "id": "DP067",
+    "length_beats": 4,
+    "type": "beat",
+    "pattern": "K-H-S-H-K-H-S---",
+    "tags": [
+      "rock",
+      "cadence",
+      "loop_safe"
+    ]
+  },
+  {
+    "id": "DP068",
+    "length_beats": 4,
+    "type": "beat",
+    "pattern": "K-K-K-K-S-S-S-S-",
+    "tags": [
+      "experimental",
+      "build",
+      "tense",
+      "loop_safe"
+    ]
+  },
+  {
+    "id": "DP069",
+    "length_beats": 4,
+    "type": "beat",
+    "pattern": "K-HO-K-HO-K-HO-K-HO",
+    "tags": [
+      "loop_safe",
+      "four_on_floor",
+      "texture_loop",
+      "percussive_layer",
+      "variation"
+    ]
+  },
+  {
+    "id": "DP070",
+    "length_beats": 4,
+    "type": "beat",
+    "pattern": "K-HS-K-HK-HS-K-HK-HS",
+    "tags": [
+      "loop_safe",
+      "four_on_floor",
+      "grid16",
+      "percussive_layer",
+      "texture_loop"
+    ]
+  },
+  {
+    "id": "DP071",
+    "length_beats": 4,
+    "type": "beat",
+    "pattern": "K-H-K-S-K-H-O-S-",
+    "tags": [
+      "loop_safe",
+      "four_on_floor",
+      "syncopation",
+      "percussive_layer",
+      "variation"
+    ]
+  },
+  {
+    "id": "DP072",
+    "length_beats": 4,
+    "type": "beat",
+    "pattern": "K-HH-K-S-K-HH-K-S",
+    "tags": [
+      "loop_safe",
+      "four_on_floor",
+      "grid16",
+      "percussive_layer",
+      "build"
+    ]
+  },
+  {
+    "id": "DP073",
+    "length_beats": 4,
+    "type": "beat",
+    "pattern": "KH-HSHKHOHSHKHSH",
+    "tags": [
+      "loop_safe",
+      "grid16",
+      "syncopation",
+      "breakbeat",
+      "percussive_layer"
+    ]
+  },
+  {
+    "id": "DP074",
+    "length_beats": 4,
+    "type": "beat",
+    "pattern": "KH-HSH-KHSOHK-SH",
+    "tags": [
+      "loop_safe",
+      "grid16",
+      "syncopation",
+      "breakbeat",
+      "variation",
+      "percussive_layer"
+    ]
+  },
+  {
+    "id": "DP075",
+    "length_beats": 4,
+    "type": "fill",
+    "pattern": "KHSHKHSHKTSHKHSH",
+    "tags": [
+      "break",
+      "breakbeat",
+      "drum_fill",
+      "grid16",
+      "syncopation"
+    ]
+  },
+  {
+    "id": "DP076",
+    "length_beats": 4,
+    "type": "beat",
+    "pattern": "K--H-K--S-H--H--",
+    "tags": [
+      "loop_safe",
+      "swing_hint",
+      "simple",
+      "rest_heavy",
+      "lofi"
+    ]
+  },
+  {
+    "id": "DP077",
+    "length_beats": 4,
+    "type": "beat",
+    "pattern": "K-H--K-HS--H--H-",
+    "tags": [
+      "loop_safe",
+      "swing_hint",
+      "rest_heavy",
+      "lofi",
+      "variation"
+    ]
+  },
+  {
+    "id": "DP078",
+    "length_beats": 4,
+    "type": "beat",
+    "pattern": "K-HS-K-HSK-H-SH-",
+    "tags": [
+      "loop_safe",
+      "grid16",
+      "syncopation",
+      "breakbeat",
+      "percussive_layer"
+    ]
+  },
+  {
+    "id": "DP079",
+    "length_beats": 4,
+    "type": "beat",
+    "pattern": "K-HO-KS-HK-S-HO-",
+    "tags": [
+      "loop_safe",
+      "grid16",
+      "syncopation",
+      "breakbeat",
+      "percussive_layer",
+      "variation"
+    ]
+  },
+  {
+    "id": "DP080",
+    "length_beats": 4,
+    "type": "fill",
+    "pattern": "KHSHKHSKTSHKHSS-",
+    "tags": [
+      "break",
+      "breakbeat",
+      "drum_fill",
+      "grid16",
+      "syncopation"
+    ]
+  },
+  {
+    "id": "DP081",
+    "length_beats": 4,
+    "type": "beat",
+    "pattern": "K---H---S-H-----",
+    "tags": [
+      "loop_safe",
+      "swing_hint",
+      "rest_heavy",
+      "lofi"
+    ]
+  },
+  {
+    "id": "DP082",
+    "length_beats": 4,
+    "type": "beat",
+    "pattern": "K--H---HS--H-K--",
+    "tags": [
+      "loop_safe",
+      "swing_hint",
+      "rest_heavy",
+      "lofi",
+      "variation"
+    ]
+  },
+  {
+    "id": "DP083",
+    "length_beats": 4,
+    "type": "fill",
+    "pattern": "N---S---N---H---",
+    "tags": [
+      "lofi",
+      "drum_fill",
+      "rest_heavy",
+      "transition"
+    ]
+  },
+  {
+    "id": "DP084",
+    "length_beats": 4,
+    "type": "beat",
+    "pattern": "KHHH-HSHKH-HSHK-",
+    "tags": [
+      "loop_safe",
+      "grid16",
+      "syncopation",
+      "breakbeat",
+      "percussive_layer"
+    ]
+  },
+  {
+    "id": "DP085",
+    "length_beats": 4,
+    "type": "beat",
+    "pattern": "KH-HKHSH-HSHKHSO",
+    "tags": [
+      "loop_safe",
+      "grid16",
+      "syncopation",
+      "breakbeat",
+      "percussive_layer",
+      "variation"
+    ]
+  },
+  {
+    "id": "DP086",
+    "length_beats": 4,
+    "type": "beat",
+    "pattern": "K-HHKSH-HK-SHH-H",
+    "tags": [
+      "loop_safe",
+      "grid16",
+      "syncopation",
+      "breakbeat",
+      "percussive_layer"
+    ]
+  },
+  {
+    "id": "DP087",
+    "length_beats": 4,
+    "type": "beat",
+    "pattern": "KHHSHK-HSHK-SHOH",
+    "tags": [
+      "loop_safe",
+      "grid16",
+      "syncopation",
+      "breakbeat",
+      "percussive_layer",
+      "variation"
+    ]
+  },
+  {
+    "id": "DP088",
+    "length_beats": 4,
+    "type": "fill",
+    "pattern": "KHSHSHKTSHSHKSH-",
+    "tags": [
+      "break",
+      "breakbeat",
+      "drum_fill",
+      "grid16",
+      "syncopation"
+    ]
+  },
+  {
+    "id": "DP089",
+    "length_beats": 4,
+    "type": "fill",
+    "pattern": "KHSKHSKTSHSKHSKO",
+    "tags": [
+      "break",
+      "breakbeat",
+      "drum_fill",
+      "grid16",
+      "syncopation",
+      "variation"
+    ]
+  }
+]

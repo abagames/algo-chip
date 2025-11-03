@@ -1,0 +1,37 @@
+# Dependencies
+node_modules/
+
+# Build outputs (packages only - NOT docs/)
+packages/*/dist/
+*.tsbuildinfo
+
+# Vite cache
+packages/demo/node_modules/.vite/
+
+# Editor files
+.vscode/
+.idea/
+.claude/
+.serena/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+
+# Environment
+.env
+.env.local
+
+# Note: docs/ is NOT ignored - it's committed for GitHub Pages deployment
+# docs/ contains:
+#   - index.html (demo page)
+#   - assets/ (Vite build output)
+#   - worklets/ (Web Audio processors)
+#   - lib/ (UMD bundles)

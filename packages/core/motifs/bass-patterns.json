@@ -1,0 +1,262 @@
+{
+  "patterns": [
+    {
+      "id": "BP_STEADY_ROOT_DRIVE",
+      "texture": "steady",
+      "steps": ["root", "root", "fifth", "root", "fifth", "root", "fifth", "approach"],
+      "tags": ["default", "loop_safe"]
+    },
+    {
+      "id": "BP_STEADY_UPWARD_WALK",
+      "texture": "steady",
+      "steps": ["root", "fifth", "root", "octave", "fifth", "root", "octave", "approach"],
+      "tags": ["variation", "section_end"]
+    },
+    {
+      "id": "BP_BROKEN_TRIAD_LIFT",
+      "texture": "broken",
+      "steps": ["root", "fifth", "root", "octave", "root", "fifth", "root", "approach"],
+      "tags": ["default"]
+    },
+    {
+      "id": "BP_BROKEN_PICKUP_DROP",
+      "texture": "broken",
+      "steps": ["root", "octave", "fifth", "octaveHigh", "root", "fifth", "octave", "approach"],
+      "tags": ["variation", "pickup", "section_end"]
+    },
+    {
+      "id": "BP_BREAK_OFFBEAT_DRIVE",
+      "texture": "broken",
+      "steps": ["root", "rest", "octave", "rest", "fifth", "approach", "lowFifth", "approach"],
+      "tags": ["loop_safe", "syncopated", "breakbeat", "variation", "default"]
+    },
+    {
+      "id": "BP_BREAK_GHOST_RIDE",
+      "texture": "broken",
+      "steps": ["root", "octave", "rest", "fifth", "rest", "octave", "lowFifth", "approach"],
+      "tags": ["loop_safe", "breakbeat", "syncopated", "drive", "default"]
+    },
+    {
+      "id": "BP_BREAK_SLIDE_UP",
+      "texture": "broken",
+      "steps": ["root", "approach", "fifth", "rest", "root", "octave", "rest", "approach"],
+      "tags": ["loop_safe", "breakbeat", "variation"]
+    },
+    {
+      "id": "BP_LOFI_SWUNG_ROOT",
+      "texture": "steady",
+      "steps": ["root", "rest", "rest", "root", "rest", "fifth", "rest", "approach"],
+      "tags": ["loop_safe", "rest_heavy", "swing_hint", "lofi"]
+    },
+    {
+      "id": "BP_LOFI_DUSTY_STEP",
+      "texture": "steady",
+      "steps": ["root", "rest", "rest", "fifth", "rest", "rest", "root", "approach"],
+      "tags": ["loop_safe", "lofi", "rest_heavy", "swing_hint"]
+    },
+    {
+      "id": "BP_LOFI_WALKDOWN",
+      "texture": "steady",
+      "steps": ["root", "rest", "third", "rest", "second", "rest", "root", "approach"],
+      "tags": ["loop_safe", "lofi", "rest_heavy", "variation"]
+    },
+    {
+      "id": "BP_ARPEGGIO_GLIDE",
+      "texture": "arpeggio",
+      "steps": ["root", "octave", "fifth", "octaveHigh", "root", "fifth", "octave", "approach"],
+      "tags": ["default", "loop_safe"]
+    },
+    {
+      "id": "BP_ARPEGGIO_PULSE",
+      "texture": "arpeggio",
+      "steps": ["root", "fifth", "octave", "octaveHigh", "root", "fifth", "octave", "approach"],
+      "tags": ["variation", "transition", "section_end"]
+    },
+    {
+      "id": "BP_STEADY_OFFBEAT_PUSH",
+      "texture": "steady",
+      "steps": ["root", "fifth", "root", "approach", "fifth", "root", "octave", "approach"],
+      "tags": ["variation", "syncopated", "loop_safe"]
+    },
+    {
+      "id": "BP_BROKEN_LOW_SWING",
+      "texture": "broken",
+      "steps": ["root", "lowFifth", "root", "fifth", "root", "lowFifth", "root", "approach"],
+      "tags": ["variation", "loop_safe"]
+    },
+    {
+      "id": "BP_ARPEGGIO_SPREAD",
+      "texture": "arpeggio",
+      "steps": ["root", "octave", "fifth", "octaveHigh", "fifth", "octave", "octaveHigh", "approach"],
+      "tags": ["variation", "loop_safe"]
+    },
+    {
+      "id": "BP_STEADY_SUB_GRID",
+      "texture": "steady",
+      "steps": ["root", "root", "root", "root", "root", "root", "root", "root"],
+      "tags": ["loop_safe", "percussive_layer", "four_on_floor", "static"]
+    },
+    {
+      "id": "BP_STEADY_SUB_OFFSET",
+      "texture": "steady",
+      "steps": ["root", "root", "root", "fifth", "root", "root", "root", "approach"],
+      "tags": ["loop_safe", "percussive_layer", "variation"]
+    },
+    {
+      "id": "BP_FOUR_ON_FLOOR_CLASSIC",
+      "texture": "steady",
+      "steps": ["root", "root", "root", "root", "root", "fifth", "root", "root"],
+      "tags": ["loop_safe", "four_on_floor", "percussive_layer", "static", "drone"]
+    },
+    {
+      "id": "BP_FOUR_ON_FLOOR_GHOST",
+      "texture": "steady",
+      "steps": ["root", "root", "fifth", "root", "root", "root", "fifth", "root"],
+      "tags": ["loop_safe", "four_on_floor", "percussive_layer"]
+    },
+    {
+      "id": "BP_FOUR_ON_FLOOR_OFFBEAT",
+      "texture": "steady",
+      "steps": ["root", "fifth", "root", "root", "root", "fifth", "root", "root"],
+      "tags": ["loop_safe", "four_on_floor", "percussive_layer", "syncopated"]
+    },
+    {
+      "id": "BP_FOUR_ON_FLOOR_OCTAVE_HIT",
+      "texture": "steady",
+      "steps": ["root", "root", "root", "octave", "root", "root", "root", "octave"],
+      "tags": ["loop_safe", "four_on_floor", "percussive_layer"]
+    },
+    {
+      "id": "BP_FOUR_ON_FLOOR_ROLLING",
+      "texture": "steady",
+      "steps": ["root", "root", "root", "fifth", "root", "root", "root", "fifth"],
+      "tags": ["loop_safe", "four_on_floor", "percussive_layer"]
+    },
+    {
+      "id": "BP_DRONE_STATIC_ROOT",
+      "texture": "steady",
+      "steps": ["root", "root", "root", "root", "root", "fifth", "root", "approach"],
+      "tags": ["loop_safe", "static", "drone", "four_on_floor", "percussive_layer"]
+    },
+    {
+      "id": "BP_DRONE_LOW_PULSE",
+      "texture": "steady",
+      "steps": ["root", "lowFifth", "root", "lowFifth", "root", "lowFifth", "root", "lowFifth"],
+      "tags": ["loop_safe", "drone", "percussive_layer"]
+    },
+    {
+      "id": "BP_DRONE_ACCENT_SPARK",
+      "texture": "steady",
+      "steps": ["root", "rest", "octave", "root", "rest", "fifth", "root", "approach"],
+      "tags": ["loop_safe", "drone", "accent"]
+    },
+    {
+      "id": "BP_TECHNO_BOUNCE",
+      "texture": "broken",
+      "steps": ["root", "root", "octave", "root", "root", "root", "octave", "root"],
+      "tags": ["loop_safe", "four_on_floor", "percussive_layer"]
+    },
+    {
+      "id": "BP_TECHNO_SUB_EMPHASIS",
+      "texture": "steady",
+      "steps": ["root", "root", "root", "lowFifth", "root", "root", "root", "lowFifth"],
+      "tags": ["loop_safe", "four_on_floor", "percussive_layer"]
+    },
+    {
+      "id": "BP_MINIMAL_BREATH",
+      "texture": "steady",
+      "steps": ["root", "root", "root", "root", "fifth", "root", "root", "root"],
+      "tags": ["loop_safe", "four_on_floor", "percussive_layer", "static"]
+    },
+    {
+      "id": "BP_WALKING_BASS",
+      "texture": "broken",
+      "steps": ["root", "second", "third", "fifth", "root", "seventh", "octave", "approach"],
+      "tags": ["variation", "walking", "jazz_hint"]
+    },
+    {
+      "id": "BP_OCTAVE_JUMP",
+      "texture": "broken",
+      "steps": ["root", "octave", "root", "octave", "fifth", "octaveHigh", "fifth", "approach"],
+      "tags": ["variation", "energetic", "jump"]
+    },
+    {
+      "id": "BP_CHROMATIC_WALK",
+      "texture": "broken",
+      "steps": ["root", "flatSecond", "second", "third", "fifth", "sixth", "seventh", "approach"],
+      "tags": ["variation", "chromatic", "tense"]
+    },
+    {
+      "id": "BP_SYNCOPATED_GROOVE",
+      "texture": "broken",
+      "steps": ["root", "fifth", "octave", "root", "fifth", "octave", "fifth", "approach"],
+      "tags": ["variation", "syncopation", "groove"]
+    },
+    {
+      "id": "BP_PEDAL_FIFTH",
+      "texture": "steady",
+      "steps": ["root", "fifth", "root", "fifth", "root", "fifth", "root", "fifth"],
+      "tags": ["loop_safe", "simple", "rock"]
+    },
+    {
+      "id": "BP_ARPEGGIO_CASCADE",
+      "texture": "arpeggio",
+      "steps": ["root", "third", "fifth", "octave", "fifth", "third", "root", "approach"],
+      "tags": ["variation", "cascade", "bright"]
+    },
+    {
+      "id": "BP_BOUNCY_RHYTHM",
+      "texture": "broken",
+      "steps": ["root", "root", "fifth", "fifth", "octave", "octave", "fifth", "approach"],
+      "tags": ["variation", "playful", "bounce"]
+    },
+    {
+      "id": "BP_BROKEN_SYNCO_JUMP",
+      "texture": "broken",
+      "steps": ["root", "rest", "octave", "root", "fifth", "rest", "octave", "root"],
+      "tags": ["loop_safe", "four_on_floor", "percussive_layer", "syncopated", "default"]
+    },
+    {
+      "id": "BP_BROKEN_GRID_PULSE",
+      "texture": "broken",
+      "steps": ["root", "root", "rest", "root", "octave", "root", "rest", "root"],
+      "tags": ["loop_safe", "four_on_floor", "percussive_layer", "grid16"]
+    },
+    {
+      "id": "BP_BROKEN_TEXTURE_WAVE",
+      "texture": "broken",
+      "steps": ["root", "octave", "fifth", "root", "root", "octave", "fifth", "approach"],
+      "tags": ["loop_safe", "four_on_floor", "percussive_layer", "texture_loop"]
+    },
+    {
+      "id": "BP_BROKEN_DOUBLE_HIT",
+      "texture": "broken",
+      "steps": ["root", "root", "octave", "octave", "fifth", "fifth", "octave", "root"],
+      "tags": ["loop_safe", "four_on_floor", "percussive_layer"]
+    },
+    {
+      "id": "BP_BROKEN_OFFBEAT_DRIVE",
+      "texture": "broken",
+      "steps": ["rest", "root", "rest", "octave", "rest", "fifth", "rest", "root"],
+      "tags": ["loop_safe", "four_on_floor", "percussive_layer"]
+    },
+    {
+      "id": "BP_BROKEN_SUB_BOUNCE",
+      "texture": "broken",
+      "steps": ["root", "lowFifth", "octave", "root", "root", "lowFifth", "octave", "root"],
+      "tags": ["loop_safe", "four_on_floor", "percussive_layer", "static"]
+    },
+    {
+      "id": "BP_BROKEN_LIFT_DROP",
+      "texture": "broken",
+      "steps": ["root", "fifth", "octave", "octaveHigh", "fifth", "root", "octave", "approach"],
+      "tags": ["loop_safe", "four_on_floor", "percussive_layer", "variation"]
+    },
+    {
+      "id": "BP_BROKEN_STEADY_GRID",
+      "texture": "broken",
+      "steps": ["root", "root", "root", "octave", "root", "root", "root", "octave"],
+      "tags": ["loop_safe", "four_on_floor", "percussive_layer", "default"]
+    }
+  ]
+}

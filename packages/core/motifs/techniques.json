@@ -1,0 +1,82 @@
+{
+  "initialParams": [
+    { "channel": "square1", "param": "duty", "value": 0.25 },
+    { "channel": "square2", "param": "duty", "value": 0.5 }
+  ],
+  "dutySweeps": [
+    {
+      "id": "DS_MEASURE_BOUNDARY_SWEEP",
+      "param": "duty",
+      "channels": ["square1", "square2"],
+      "minDurationBeats": 1.5,
+      "requireMeasureBoundary": true,
+      "steps": [0.5, 0.75, 0.25]
+    },
+    {
+      "id": "DS_MINIMAL_LOW_PASS_THUMP",
+      "param": "duty",
+      "channels": ["square1", "square2"],
+      "minDurationBeats": 2,
+      "requireMeasureBoundary": true,
+      "steps": [0.18, 0.38, 0.24]
+    },
+    {
+      "id": "DS_PROGRESSIVE_FILTER_RISE",
+      "param": "duty",
+      "channels": ["square2"],
+      "minDurationBeats": 4,
+      "steps": [0.28, 0.46, 0.62, 0.76]
+    },
+    {
+      "id": "DS_PROGRESSIVE_PULSE_SQ1",
+      "param": "duty",
+      "channels": ["square1"],
+      "minDurationBeats": 3,
+      "steps": [0.22, 0.4, 0.56]
+    }
+  ],
+  "gainProfiles": [
+    {
+      "id": "GP_TRIANGLE_MEASURE_ACCENT",
+      "channel": "triangle",
+      "param": "gain",
+      "measureBoundaryValue": 0.9,
+      "defaultValue": 0.7
+    },
+    {
+      "id": "GP_NOISE_BREAK_SPILL",
+      "channel": "noise",
+      "param": "gain",
+      "measureBoundaryValue": 0.82,
+      "defaultValue": 0.7
+    },
+    {
+      "id": "GP_MINIMAL_BASS_SIDECHAIN",
+      "channel": "square2",
+      "param": "gain",
+      "measureBoundaryValue": 0.68,
+      "defaultValue": 0.56
+    },
+    {
+      "id": "GP_MINIMAL_PERC_FADE",
+      "channel": "noise",
+      "param": "gain",
+      "measureBoundaryValue": 0.7,
+      "defaultValue": 0.58
+    },
+    {
+      "id": "GP_PROGRESSIVE_PAD_SWELL",
+      "channel": "triangle",
+      "param": "gain",
+      "measureBoundaryValue": 0.88,
+      "defaultValue": 0.74
+    },
+    {
+      "id": "GP_PROGRESSIVE_SQUARE_GLIDE",
+      "channel": "square1",
+      "param": "gain",
+      "measureBoundaryValue": 0.8,
+      "defaultValue": 0.66
+    }
+  ]
+}

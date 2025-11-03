@@ -1,0 +1,53 @@
+{
+  "transitions": [
+    {
+      "id": "TR_SECTION_NOISE_SWELL",
+      "pattern": "N---N---N---NNS-",
+      "length_beats": 4,
+      "tags": ["transition", "section_end", "noise_fx"],
+      "channel": "noise"
+    },
+    {
+      "id": "TR_SECTION_SNARE_RUSH",
+      "pattern": "--S-S-S-S-S-S-S-",
+      "length_beats": 4,
+      "tags": ["transition", "section_end", "drum_fill"],
+      "channel": "noise"
+    },
+    {
+      "id": "TR_LOOP_TIGHTENER",
+      "pattern": "K-HS-HK-HS-HK-H-",
+      "length_beats": 4,
+      "tags": ["transition", "loop_out", "drum_fill"],
+      "channel": "noise"
+    },
+    {
+      "id": "TR_SECTION_GHOST_ECHO",
+      "pattern": "N---S---N---S---",
+      "length_beats": 4,
+      "tags": ["transition", "section_end", "loop_out", "noise_fx"],
+      "channel": "noise"
+    },
+    {
+      "id": "TR_BUILD_STUTTER_FILL",
+      "pattern": "K-SK-SK-SK-SK-S-",
+      "length_beats": 4,
+      "tags": ["transition", "build", "drum_fill"],
+      "channel": "noise"
+    },
+    {
+      "id": "TR_BREAKBEAT_SNARE_CHOP",
+      "pattern": "S--S-HS-S-HS-S--",
+      "length_beats": 4,
+      "tags": ["transition", "section_end", "break", "breakbeat", "drum_fill"],
+      "channel": "noise"
+    },
+    {
+      "id": "TR_LOFI_TAPE_SWELL",
+      "pattern": "N---H---S---H---",
+      "length_beats": 4,
+      "tags": ["transition", "section_end", "lofi", "noise_fx", "rest_heavy"],
+      "channel": "noise"
+    }
+  ]
+}

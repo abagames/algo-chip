@@ -1,0 +1,2764 @@
+[
+  {
+    "id": "MF001",
+    "pattern": [
+      1,
+      3,
+      5
+    ],
+    "tags": [
+      "ascending",
+      "scalar",
+      "bright",
+      "heroic",
+      "start",
+      "loop_safe",
+      "short",
+      "slide"
+    ]
+  },
+  {
+    "id": "MF002",
+    "pattern": [
+      1,
+      4,
+      5,
+      7
+    ],
+    "tags": [
+      "ascending",
+      "scalar",
+      "bright",
+      "heroic",
+      "start",
+      "loop_safe",
+      "short",
+      "bend"
+    ]
+  },
+  {
+    "id": "MF003",
+    "pattern": [
+      2,
+      3,
+      6,
+      6,
+      9
+    ],
+    "tags": [
+      "ascending",
+      "scalar",
+      "bright",
+      "heroic",
+      "start",
+      "loop_safe",
+      "short"
+    ]
+  },
+  {
+    "id": "MF004",
+    "pattern": [
+      1,
+      3,
+      6,
+      6,
+      7
+    ],
+    "tags": [
+      "ascending",
+      "scalar",
+      "bright",
+      "heroic",
+      "start",
+      "loop_safe",
+      "short"
+    ]
+  },
+  {
+    "id": "MF005",
+    "pattern": [
+      1,
+      3,
+      5,
+      7,
+      8
+    ],
+    "tags": [
+      "ascending",
+      "scalar",
+      "bright",
+      "heroic",
+      "start",
+      "loop_safe",
+      "short"
+    ]
+  },
+  {
+    "id": "MF006",
+    "pattern": [
+      1,
+      3,
+      4
+    ],
+    "tags": [
+      "ascending",
+      "scalar",
+      "bright",
+      "heroic",
+      "start",
+      "loop_safe",
+      "short"
+    ]
+  },
+  {
+    "id": "MF007",
+    "pattern": [
+      2,
+      4,
+      5,
+      6
+    ],
+    "tags": [
+      "ascending",
+      "scalar",
+      "bright",
+      "heroic",
+      "start",
+      "loop_safe",
+      "short"
+    ]
+  },
+  {
+    "id": "MF008",
+    "pattern": [
+      1,
+      2,
+      5,
+      5,
+      8
+    ],
+    "tags": [
+      "ascending",
+      "scalar",
+      "bright",
+      "heroic",
+      "start",
+      "loop_safe",
+      "short"
+    ]
+  },
+  {
+    "id": "MF009",
+    "pattern": [
+      1,
+      3,
+      6,
+      6,
+      8
+    ],
+    "tags": [
+      "ascending",
+      "scalar",
+      "bright",
+      "heroic",
+      "start",
+      "loop_safe",
+      "short"
+    ]
+  },
+  {
+    "id": "MF010",
+    "pattern": [
+      1,
+      3,
+      5,
+      6,
+      8
+    ],
+    "tags": [
+      "ascending",
+      "scalar",
+      "bright",
+      "heroic",
+      "start",
+      "loop_safe",
+      "short"
+    ]
+  },
+  {
+    "id": "MF011",
+    "pattern": [
+      5,
+      4,
+      3
+    ],
+    "tags": [
+      "descending",
+      "scalar",
+      "dark",
+      "melancholic",
+      "cadence",
+      "short"
+    ]
+  },
+  {
+    "id": "MF012",
+    "pattern": [
+      5,
+      5,
+      3,
+      3
+    ],
+    "tags": [
+      "descending",
+      "scalar",
+      "dark",
+      "melancholic",
+      "cadence",
+      "short"
+    ]
+  },
+  {
+    "id": "MF013",
+    "pattern": [
+      6,
+      4,
+      4,
+      2,
+      2
+    ],
+    "tags": [
+      "descending",
+      "scalar",
+      "dark",
+      "melancholic",
+      "cadence",
+      "short"
+    ]
+  },
+  {
+    "id": "MF014",
+    "pattern": [
+      4,
+      4,
+      4,
+      2,
+      1
+    ],
+    "tags": [
+      "descending",
+      "scalar",
+      "dark",
+      "melancholic",
+      "cadence",
+      "short"
+    ]
+  },
+  {
+    "id": "MF015",
+    "pattern": [
+      5,
+      4,
+      3,
+      3,
+      1
+    ],
+    "tags": [
+      "descending",
+      "scalar",
+      "dark",
+      "melancholic",
+      "cadence",
+      "short"
+    ]
+  },
+  {
+    "id": "MF016",
+    "pattern": [
+      5,
+      4,
+      2
+    ],
+    "tags": [
+      "descending",
+      "scalar",
+      "dark",
+      "melancholic",
+      "cadence",
+      "short"
+    ]
+  },
+  {
+    "id": "MF017",
+    "pattern": [
+      6,
+      5,
+      3,
+      2
+    ],
+    "tags": [
+      "descending",
+      "scalar",
+      "dark",
+      "melancholic",
+      "cadence",
+      "short"
+    ]
+  },
+  {
+    "id": "MF018",
+    "pattern": [
+      5,
+      3,
+      3,
+      1,
+      1
+    ],
+    "tags": [
+      "descending",
+      "scalar",
+      "dark",
+      "melancholic",
+      "cadence",
+      "short"
+    ]
+  },
+  {
+    "id": "MF019",
+    "pattern": [
+      5,
+      4,
+      4,
+      2,
+      1
+    ],
+    "tags": [
+      "descending",
+      "scalar",
+      "dark",
+      "melancholic",
+      "cadence",
+      "short"
+    ]
+  },
+  {
+    "id": "MF020",
+    "pattern": [
+      5,
+      4,
+      3,
+      2,
+      1
+    ],
+    "tags": [
+      "descending",
+      "scalar",
+      "dark",
+      "melancholic",
+      "cadence",
+      "short"
+    ]
+  },
+  {
+    "id": "MF021",
+    "pattern": [
+      1,
+      4,
+      6
+    ],
+    "tags": [
+      "arch",
+      "leaping",
+      "bright",
+      "complex",
+      "middle",
+      "short"
+    ]
+  },
+  {
+    "id": "MF022",
+    "pattern": [
+      1,
+      5,
+      6,
+      6
+    ],
+    "tags": [
+      "arch",
+      "leaping",
+      "bright",
+      "complex",
+      "middle",
+      "short"
+    ]
+  },
+  {
+    "id": "MF023",
+    "pattern": [
+      2,
+      4,
+      7,
+      5,
+      4
+    ],
+    "tags": [
+      "arch",
+      "leaping",
+      "bright",
+      "complex",
+      "middle",
+      "short"
+    ]
+  },
+  {
+    "id": "MF024",
+    "pattern": [
+      1,
+      4,
+      7,
+      5,
+      2
+    ],
+    "tags": [
+      "arch",
+      "leaping",
+      "bright",
+      "complex",
+      "middle",
+      "short"
+    ]
+  },
+  {
+    "id": "MF025",
+    "pattern": [
+      1,
+      4,
+      6,
+      6,
+      3
+    ],
+    "tags": [
+      "arch",
+      "leaping",
+      "bright",
+      "complex",
+      "middle",
+      "short"
+    ]
+  },
+  {
+    "id": "MF026",
+    "pattern": [
+      1,
+      4,
+      5
+    ],
+    "tags": [
+      "arch",
+      "leaping",
+      "bright",
+      "complex",
+      "middle",
+      "short"
+    ]
+  },
+  {
+    "id": "MF027",
+    "pattern": [
+      2,
+      5,
+      6,
+      5
+    ],
+    "tags": [
+      "arch",
+      "leaping",
+      "bright",
+      "complex",
+      "middle",
+      "short"
+    ]
+  },
+  {
+    "id": "MF028",
+    "pattern": [
+      1,
+      3,
+      6,
+      4,
+      3
+    ],
+    "tags": [
+      "arch",
+      "leaping",
+      "bright",
+      "complex",
+      "middle",
+      "short"
+    ]
+  },
+  {
+    "id": "MF029",
+    "pattern": [
+      1,
+      4,
+      7,
+      5,
+      3
+    ],
+    "tags": [
+      "arch",
+      "leaping",
+      "bright",
+      "complex",
+      "middle",
+      "short"
+    ]
+  },
+  {
+    "id": "MF030",
+    "pattern": [
+      1,
+      4,
+      6,
+      5,
+      3
+    ],
+    "tags": [
+      "arch",
+      "leaping",
+      "bright",
+      "complex",
+      "middle",
+      "short"
+    ]
+  },
+  {
+    "id": "MF031",
+    "pattern": [
+      6,
+      4,
+      2
+    ],
+    "tags": [
+      "valley",
+      "neighbor",
+      "dark",
+      "complex",
+      "middle",
+      "short"
+    ]
+  },
+  {
+    "id": "MF032",
+    "pattern": [
+      6,
+      5,
+      2,
+      4
+    ],
+    "tags": [
+      "valley",
+      "neighbor",
+      "dark",
+      "complex",
+      "middle",
+      "short"
+    ]
+  },
+  {
+    "id": "MF033",
+    "pattern": [
+      7,
+      4,
+      3,
+      3,
+      2
+    ],
+    "tags": [
+      "valley",
+      "neighbor",
+      "dark",
+      "complex",
+      "middle",
+      "short"
+    ]
+  },
+  {
+    "id": "MF034",
+    "pattern": [
+      5,
+      4,
+      3,
+      3,
+      1
+    ],
+    "tags": [
+      "valley",
+      "neighbor",
+      "dark",
+      "complex",
+      "middle",
+      "short"
+    ]
+  },
+  {
+    "id": "MF035",
+    "pattern": [
+      6,
+      4,
+      2,
+      4,
+      1
+    ],
+    "tags": [
+      "valley",
+      "neighbor",
+      "dark",
+      "complex",
+      "middle",
+      "short"
+    ]
+  },
+  {
+    "id": "MF036",
+    "pattern": [
+      6,
+      4,
+      1
+    ],
+    "tags": [
+      "valley",
+      "neighbor",
+      "dark",
+      "complex",
+      "middle",
+      "short"
+    ]
+  },
+  {
+    "id": "MF037",
+    "pattern": [
+      7,
+      5,
+      2,
+      3
+    ],
+    "tags": [
+      "valley",
+      "neighbor",
+      "dark",
+      "complex",
+      "middle",
+      "short"
+    ]
+  },
+  {
+    "id": "MF038",
+    "pattern": [
+      6,
+      3,
+      2,
+      2,
+      1
+    ],
+    "tags": [
+      "valley",
+      "neighbor",
+      "dark",
+      "complex",
+      "middle",
+      "short"
+    ]
+  },
+  {
+    "id": "MF039",
+    "pattern": [
+      6,
+      4,
+      3,
+      3,
+      1
+    ],
+    "tags": [
+      "valley",
+      "neighbor",
+      "dark",
+      "complex",
+      "middle",
+      "short"
+    ]
+  },
+  {
+    "id": "MF040",
+    "pattern": [
+      6,
+      4,
+      2,
+      3,
+      1
+    ],
+    "tags": [
+      "valley",
+      "neighbor",
+      "dark",
+      "complex",
+      "middle",
+      "short"
+    ]
+  },
+  {
+    "id": "MF041",
+    "pattern": [
+      1,
+      2,
+      3
+    ],
+    "tags": [
+      "ascending",
+      "arpeggio",
+      "bright",
+      "simple",
+      "start",
+      "short"
+    ]
+  },
+  {
+    "id": "MF042",
+    "pattern": [
+      1,
+      3,
+      3,
+      6
+    ],
+    "tags": [
+      "ascending",
+      "arpeggio",
+      "bright",
+      "simple",
+      "start",
+      "short"
+    ]
+  },
+  {
+    "id": "MF043",
+    "pattern": [
+      2,
+      2,
+      4,
+      5,
+      8
+    ],
+    "tags": [
+      "ascending",
+      "arpeggio",
+      "bright",
+      "simple",
+      "start",
+      "short"
+    ]
+  },
+  {
+    "id": "MF044",
+    "pattern": [
+      1,
+      2,
+      4,
+      5,
+      6,
+      6
+    ],
+    "tags": [
+      "ascending",
+      "arpeggio",
+      "bright",
+      "simple",
+      "start",
+      "extended"
+    ]
+  },
+  {
+    "id": "MF045",
+    "pattern": [
+      1,
+      2,
+      3,
+      6,
+      7,
+      7
+    ],
+    "tags": [
+      "ascending",
+      "arpeggio",
+      "bright",
+      "simple",
+      "start",
+      "extended"
+    ]
+  },
+  {
+    "id": "MF046",
+    "pattern": [
+      1,
+      2,
+      2
+    ],
+    "tags": [
+      "ascending",
+      "arpeggio",
+      "bright",
+      "simple",
+      "start",
+      "short"
+    ]
+  },
+  {
+    "id": "MF047",
+    "pattern": [
+      2,
+      3,
+      3,
+      5
+    ],
+    "tags": [
+      "ascending",
+      "arpeggio",
+      "bright",
+      "simple",
+      "start",
+      "short"
+    ]
+  },
+  {
+    "id": "MF048",
+    "pattern": [
+      1,
+      1,
+      3,
+      4,
+      7
+    ],
+    "tags": [
+      "ascending",
+      "arpeggio",
+      "bright",
+      "simple",
+      "start",
+      "short"
+    ]
+  },
+  {
+    "id": "MF049",
+    "pattern": [
+      1,
+      2,
+      4,
+      5,
+      7,
+      7
+    ],
+    "tags": [
+      "ascending",
+      "arpeggio",
+      "bright",
+      "simple",
+      "start",
+      "extended"
+    ]
+  },
+  {
+    "id": "MF050",
+    "pattern": [
+      1,
+      2,
+      3,
+      5,
+      7,
+      6
+    ],
+    "tags": [
+      "ascending",
+      "arpeggio",
+      "bright",
+      "simple",
+      "start",
+      "extended"
+    ]
+  },
+  {
+    "id": "MF051",
+    "pattern": [
+      5,
+      7,
+      6
+    ],
+    "tags": [
+      "descending",
+      "arpeggio",
+      "dark",
+      "heroic",
+      "bridge",
+      "short"
+    ]
+  },
+  {
+    "id": "MF052",
+    "pattern": [
+      5,
+      8,
+      6,
+      5
+    ],
+    "tags": [
+      "descending",
+      "arpeggio",
+      "dark",
+      "heroic",
+      "bridge",
+      "short"
+    ]
+  },
+  {
+    "id": "MF053",
+    "pattern": [
+      6,
+      7,
+      7,
+      4,
+      3
+    ],
+    "tags": [
+      "descending",
+      "arpeggio",
+      "dark",
+      "heroic",
+      "bridge",
+      "short"
+    ]
+  },
+  {
+    "id": "MF054",
+    "pattern": [
+      4,
+      7,
+      7,
+      4,
+      1
+    ],
+    "tags": [
+      "descending",
+      "arpeggio",
+      "dark",
+      "heroic",
+      "bridge",
+      "short"
+    ]
+  },
+  {
+    "id": "MF055",
+    "pattern": [
+      5,
+      7,
+      6,
+      5,
+      2
+    ],
+    "tags": [
+      "descending",
+      "arpeggio",
+      "dark",
+      "heroic",
+      "bridge",
+      "short"
+    ]
+  },
+  {
+    "id": "MF056",
+    "pattern": [
+      5,
+      7,
+      5
+    ],
+    "tags": [
+      "descending",
+      "arpeggio",
+      "dark",
+      "heroic",
+      "bridge",
+      "short"
+    ]
+  },
+  {
+    "id": "MF057",
+    "pattern": [
+      6,
+      8,
+      6,
+      4
+    ],
+    "tags": [
+      "descending",
+      "arpeggio",
+      "dark",
+      "heroic",
+      "bridge",
+      "short"
+    ]
+  },
+  {
+    "id": "MF058",
+    "pattern": [
+      5,
+      6,
+      6,
+      3,
+      2
+    ],
+    "tags": [
+      "descending",
+      "arpeggio",
+      "dark",
+      "heroic",
+      "bridge",
+      "short"
+    ]
+  },
+  {
+    "id": "MF059",
+    "pattern": [
+      5,
+      7,
+      7,
+      4,
+      2
+    ],
+    "tags": [
+      "descending",
+      "arpeggio",
+      "dark",
+      "heroic",
+      "bridge",
+      "short"
+    ]
+  },
+  {
+    "id": "MF060",
+    "pattern": [
+      5,
+      7,
+      6,
+      4,
+      2
+    ],
+    "tags": [
+      "descending",
+      "arpeggio",
+      "dark",
+      "heroic",
+      "bridge",
+      "short"
+    ]
+  },
+  {
+    "id": "MF061",
+    "pattern": [
+      3,
+      5,
+      4
+    ],
+    "tags": [
+      "wave",
+      "scalar",
+      "peaceful",
+      "simple",
+      "loop_safe",
+      "short"
+    ]
+  },
+  {
+    "id": "MF062",
+    "pattern": [
+      3,
+      6,
+      4,
+      7
+    ],
+    "tags": [
+      "wave",
+      "scalar",
+      "peaceful",
+      "simple",
+      "loop_safe",
+      "short"
+    ]
+  },
+  {
+    "id": "MF063",
+    "pattern": [
+      4,
+      5,
+      5,
+      6,
+      6
+    ],
+    "tags": [
+      "wave",
+      "scalar",
+      "peaceful",
+      "simple",
+      "loop_safe",
+      "short"
+    ]
+  },
+  {
+    "id": "MF064",
+    "pattern": [
+      2,
+      5,
+      5,
+      6,
+      4,
+      3
+    ],
+    "tags": [
+      "wave",
+      "scalar",
+      "peaceful",
+      "simple",
+      "loop_safe",
+      "extended"
+    ]
+  },
+  {
+    "id": "MF065",
+    "pattern": [
+      3,
+      5,
+      4,
+      7,
+      5,
+      4
+    ],
+    "tags": [
+      "wave",
+      "scalar",
+      "peaceful",
+      "simple",
+      "loop_safe",
+      "extended"
+    ]
+  },
+  {
+    "id": "MF066",
+    "pattern": [
+      3,
+      5,
+      3
+    ],
+    "tags": [
+      "wave",
+      "scalar",
+      "peaceful",
+      "simple",
+      "loop_safe",
+      "short"
+    ]
+  },
+  {
+    "id": "MF067",
+    "pattern": [
+      4,
+      6,
+      4,
+      6
+    ],
+    "tags": [
+      "wave",
+      "scalar",
+      "peaceful",
+      "simple",
+      "loop_safe",
+      "short"
+    ]
+  },
+  {
+    "id": "MF068",
+    "pattern": [
+      3,
+      4,
+      4,
+      5,
+      5
+    ],
+    "tags": [
+      "wave",
+      "scalar",
+      "peaceful",
+      "simple",
+      "loop_safe",
+      "short"
+    ]
+  },
+  {
+    "id": "MF069",
+    "pattern": [
+      3,
+      5,
+      5,
+      6,
+      5,
+      4
+    ],
+    "tags": [
+      "wave",
+      "scalar",
+      "peaceful",
+      "simple",
+      "loop_safe",
+      "extended"
+    ]
+  },
+  {
+    "id": "MF070",
+    "pattern": [
+      3,
+      5,
+      4,
+      6,
+      5,
+      3
+    ],
+    "tags": [
+      "wave",
+      "scalar",
+      "peaceful",
+      "simple",
+      "loop_safe",
+      "extended"
+    ]
+  },
+  {
+    "id": "MF071",
+    "pattern": [
+      2,
+      4,
+      6
+    ],
+    "tags": [
+      "ascending",
+      "sequence",
+      "tense",
+      "complex",
+      "build",
+      "short"
+    ]
+  },
+  {
+    "id": "MF072",
+    "pattern": [
+      2,
+      5,
+      6,
+      6
+    ],
+    "tags": [
+      "ascending",
+      "sequence",
+      "tense",
+      "complex",
+      "build",
+      "short"
+    ]
+  },
+  {
+    "id": "MF073",
+    "pattern": [
+      3,
+      4,
+      7,
+      5,
+      4
+    ],
+    "tags": [
+      "ascending",
+      "sequence",
+      "tense",
+      "complex",
+      "build",
+      "short"
+    ]
+  },
+  {
+    "id": "MF074",
+    "pattern": [
+      1,
+      4,
+      7,
+      5,
+      2,
+      1
+    ],
+    "tags": [
+      "ascending",
+      "sequence",
+      "tense",
+      "complex",
+      "build",
+      "extended"
+    ]
+  },
+  {
+    "id": "MF075",
+    "pattern": [
+      2,
+      4,
+      6,
+      6,
+      3,
+      2
+    ],
+    "tags": [
+      "ascending",
+      "sequence",
+      "tense",
+      "complex",
+      "build",
+      "extended"
+    ]
+  },
+  {
+    "id": "MF076",
+    "pattern": [
+      2,
+      4,
+      5
+    ],
+    "tags": [
+      "ascending",
+      "sequence",
+      "tense",
+      "complex",
+      "build",
+      "short"
+    ]
+  },
+  {
+    "id": "MF077",
+    "pattern": [
+      3,
+      5,
+      6,
+      5
+    ],
+    "tags": [
+      "ascending",
+      "sequence",
+      "tense",
+      "complex",
+      "build",
+      "short"
+    ]
+  },
+  {
+    "id": "MF078",
+    "pattern": [
+      2,
+      3,
+      6,
+      4,
+      3
+    ],
+    "tags": [
+      "ascending",
+      "sequence",
+      "tense",
+      "complex",
+      "build",
+      "short"
+    ]
+  },
+  {
+    "id": "MF079",
+    "pattern": [
+      2,
+      4,
+      7,
+      5,
+      3,
+      2
+    ],
+    "tags": [
+      "ascending",
+      "sequence",
+      "tense",
+      "complex",
+      "build",
+      "extended"
+    ]
+  },
+  {
+    "id": "MF080",
+    "pattern": [
+      2,
+      4,
+      6,
+      5,
+      3,
+      1
+    ],
+    "tags": [
+      "ascending",
+      "sequence",
+      "tense",
+      "complex",
+      "build",
+      "extended"
+    ]
+  },
+  {
+    "id": "MF081",
+    "pattern": [
+      1,
+      5,
+      3
+    ],
+    "tags": [
+      "arch",
+      "leaping",
+      "upbeat",
+      "bright",
+      "start",
+      "short"
+    ]
+  },
+  {
+    "id": "MF082",
+    "pattern": [
+      1,
+      6,
+      3,
+      7
+    ],
+    "tags": [
+      "arch",
+      "leaping",
+      "upbeat",
+      "bright",
+      "start",
+      "short"
+    ]
+  },
+  {
+    "id": "MF083",
+    "pattern": [
+      2,
+      5,
+      4,
+      6,
+      5
+    ],
+    "tags": [
+      "arch",
+      "leaping",
+      "upbeat",
+      "bright",
+      "start",
+      "short"
+    ]
+  },
+  {
+    "id": "MF084",
+    "pattern": [
+      1,
+      5,
+      4,
+      6,
+      3,
+      7
+    ],
+    "tags": [
+      "arch",
+      "leaping",
+      "upbeat",
+      "bright",
+      "start",
+      "extended"
+    ]
+  },
+  {
+    "id": "MF085",
+    "pattern": [
+      1,
+      5,
+      3,
+      7,
+      4,
+      8
+    ],
+    "tags": [
+      "arch",
+      "leaping",
+      "upbeat",
+      "bright",
+      "start",
+      "extended"
+    ]
+  },
+  {
+    "id": "MF086",
+    "pattern": [
+      1,
+      5,
+      2
+    ],
+    "tags": [
+      "arch",
+      "leaping",
+      "upbeat",
+      "bright",
+      "start",
+      "short"
+    ]
+  },
+  {
+    "id": "MF087",
+    "pattern": [
+      2,
+      6,
+      3,
+      6
+    ],
+    "tags": [
+      "arch",
+      "leaping",
+      "upbeat",
+      "bright",
+      "start",
+      "short"
+    ]
+  },
+  {
+    "id": "MF088",
+    "pattern": [
+      1,
+      4,
+      3,
+      5,
+      4
+    ],
+    "tags": [
+      "arch",
+      "leaping",
+      "upbeat",
+      "bright",
+      "start",
+      "short"
+    ]
+  },
+  {
+    "id": "MF089",
+    "pattern": [
+      1,
+      5,
+      4,
+      6,
+      4,
+      8
+    ],
+    "tags": [
+      "arch",
+      "leaping",
+      "upbeat",
+      "bright",
+      "start",
+      "extended"
+    ]
+  },
+  {
+    "id": "MF090",
+    "pattern": [
+      1,
+      5,
+      3,
+      6,
+      4,
+      7
+    ],
+    "tags": [
+      "arch",
+      "leaping",
+      "upbeat",
+      "bright",
+      "start",
+      "extended"
+    ]
+  },
+  {
+    "id": "MF091",
+    "pattern": [
+      6,
+      3,
+      5
+    ],
+    "tags": [
+      "valley",
+      "leaping",
+      "tense",
+      "dark",
+      "cadence",
+      "loop_safe",
+      "short"
+    ]
+  },
+  {
+    "id": "MF092",
+    "pattern": [
+      6,
+      4,
+      5,
+      3
+    ],
+    "tags": [
+      "valley",
+      "leaping",
+      "tense",
+      "dark",
+      "cadence",
+      "loop_safe",
+      "short"
+    ]
+  },
+  {
+    "id": "MF093",
+    "pattern": [
+      7,
+      3,
+      6,
+      2,
+      5
+    ],
+    "tags": [
+      "valley",
+      "leaping",
+      "tense",
+      "dark",
+      "cadence",
+      "loop_safe",
+      "short"
+    ]
+  },
+  {
+    "id": "MF094",
+    "pattern": [
+      5,
+      3,
+      6,
+      2,
+      3,
+      1
+    ],
+    "tags": [
+      "valley",
+      "leaping",
+      "tense",
+      "dark",
+      "cadence",
+      "loop_safe",
+      "extended"
+    ]
+  },
+  {
+    "id": "MF095",
+    "pattern": [
+      6,
+      3,
+      5,
+      3,
+      4,
+      2
+    ],
+    "tags": [
+      "valley",
+      "leaping",
+      "tense",
+      "dark",
+      "cadence",
+      "loop_safe",
+      "extended"
+    ]
+  },
+  {
+    "id": "MF096",
+    "pattern": [
+      6,
+      3,
+      4
+    ],
+    "tags": [
+      "valley",
+      "leaping",
+      "tense",
+      "dark",
+      "cadence",
+      "loop_safe",
+      "short"
+    ]
+  },
+  {
+    "id": "MF097",
+    "pattern": [
+      7,
+      4,
+      5,
+      2
+    ],
+    "tags": [
+      "valley",
+      "leaping",
+      "tense",
+      "dark",
+      "cadence",
+      "loop_safe",
+      "short"
+    ]
+  },
+  {
+    "id": "MF098",
+    "pattern": [
+      6,
+      2,
+      5,
+      1,
+      4
+    ],
+    "tags": [
+      "valley",
+      "leaping",
+      "tense",
+      "dark",
+      "cadence",
+      "loop_safe",
+      "short"
+    ]
+  },
+  {
+    "id": "MF099",
+    "pattern": [
+      6,
+      3,
+      6,
+      2,
+      4,
+      2
+    ],
+    "tags": [
+      "valley",
+      "leaping",
+      "tense",
+      "dark",
+      "cadence",
+      "loop_safe",
+      "extended"
+    ]
+  },
+  {
+    "id": "MF100",
+    "pattern": [
+      6,
+      3,
+      5,
+      2,
+      4,
+      1
+    ],
+    "tags": [
+      "valley",
+      "leaping",
+      "tense",
+      "dark",
+      "cadence",
+      "loop_safe",
+      "extended"
+    ]
+  },
+  {
+    "id": "MF101",
+    "pattern": [
+      1,
+      1,
+      1,
+      1
+    ],
+    "tags": [
+      "flat",
+      "static",
+      "texture_loop",
+      "loop_safe",
+      "simple",
+      "ostinato"
+    ]
+  },
+  {
+    "id": "MF102",
+    "pattern": [
+      1,
+      5,
+      1,
+      5
+    ],
+    "tags": [
+      "flat",
+      "texture_loop",
+      "loop_safe",
+      "ostinato",
+      "percussive_layer"
+    ]
+  },
+  {
+    "id": "MF103",
+    "pattern": [
+      1,
+      1,
+      1,
+      1
+    ],
+    "tags": [
+      "flat",
+      "static",
+      "drone",
+      "loop_safe",
+      "simple"
+    ]
+  },
+  {
+    "id": "MF104",
+    "pattern": [
+      1,
+      1,
+      1,
+      2,
+      1
+    ],
+    "tags": [
+      "flat",
+      "static",
+      "drone",
+      "loop_safe",
+      "simple"
+    ]
+  },
+  {
+    "id": "MF105",
+    "pattern": [
+      5,
+      5,
+      5,
+      5
+    ],
+    "tags": [
+      "flat",
+      "static",
+      "drone",
+      "loop_safe",
+      "simple"
+    ]
+  },
+  {
+    "id": "MF106",
+    "pattern": [
+      1,
+      2,
+      1,
+      2
+    ],
+    "tags": [
+      "flat",
+      "static",
+      "drone",
+      "loop_safe",
+      "ostinato",
+      "simple"
+    ]
+  },
+  {
+    "id": "MF107",
+    "pattern": [
+      3,
+      3,
+      3,
+      3
+    ],
+    "tags": [
+      "flat",
+      "static",
+      "drone",
+      "loop_safe",
+      "simple"
+    ]
+  },
+  {
+    "id": "MF108",
+    "pattern": [
+      1,
+      3,
+      1,
+      3
+    ],
+    "tags": [
+      "flat",
+      "static",
+      "drone",
+      "loop_safe",
+      "ostinato"
+    ]
+  },
+  {
+    "id": "MF109",
+    "pattern": [
+      1,
+      1,
+      5,
+      1,
+      1,
+      5
+    ],
+    "tags": [
+      "flat",
+      "static",
+      "loop_safe",
+      "ostinato",
+      "percussive_layer"
+    ]
+  },
+  {
+    "id": "MF110",
+    "pattern": [
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+    ],
+    "tags": [
+      "flat",
+      "static",
+      "drone",
+      "loop_safe",
+      "simple",
+      "texture_loop"
+    ]
+  },
+  {
+    "id": "MF111",
+    "pattern": [
+      5,
+      6,
+      7,
+      1
+    ],
+    "tags": [
+      "mysterious",
+      "ascending",
+      "dark",
+      "start",
+      "loop_safe",
+      "short"
+    ]
+  },
+  {
+    "id": "MF112",
+    "pattern": [
+      1,
+      7,
+      6,
+      5
+    ],
+    "tags": [
+      "mysterious",
+      "descending",
+      "dark",
+      "middle",
+      "loop_safe",
+      "short"
+    ]
+  },
+  {
+    "id": "MF113",
+    "pattern": [
+      3,
+      1,
+      6,
+      5
+    ],
+    "tags": [
+      "mysterious",
+      "complex",
+      "dark",
+      "tense",
+      "loop_safe",
+      "short"
+    ]
+  },
+  {
+    "id": "MF114",
+    "pattern": [
+      1,
+      2,
+      3,
+      2,
+      1
+    ],
+    "tags": [
+      "playful",
+      "neighbor",
+      "bright",
+      "simple",
+      "loop_safe",
+      "short"
+    ]
+  },
+  {
+    "id": "MF115",
+    "pattern": [
+      5,
+      4,
+      3,
+      4,
+      5
+    ],
+    "tags": [
+      "playful",
+      "wave",
+      "bright",
+      "upbeat",
+      "loop_safe",
+      "short"
+    ]
+  },
+  {
+    "id": "MF116",
+    "pattern": [
+      1,
+      3,
+      5,
+      3,
+      1
+    ],
+    "tags": [
+      "playful",
+      "arch",
+      "bright",
+      "simple",
+      "loop_safe",
+      "short"
+    ]
+  },
+  {
+    "id": "MF117",
+    "pattern": [
+      1,
+      5,
+      1,
+      5
+    ],
+    "tags": [
+      "epic",
+      "leaping",
+      "bright",
+      "heroic",
+      "loop_safe",
+      "short"
+    ]
+  },
+  {
+    "id": "MF118",
+    "pattern": [
+      5,
+      6,
+      7,
+      1,
+      2
+    ],
+    "tags": [
+      "epic",
+      "ascending",
+      "bright",
+      "heroic",
+      "build",
+      "short"
+    ]
+  },
+  {
+    "id": "MF119",
+    "pattern": [
+      1,
+      3,
+      5,
+      7,
+      1
+    ],
+    "tags": [
+      "epic",
+      "ascending",
+      "arpeggio",
+      "heroic",
+      "bright",
+      "short"
+    ]
+  },
+  {
+    "id": "MF120",
+    "pattern": [
+      6,
+      5,
+      4,
+      3
+    ],
+    "tags": [
+      "mysterious",
+      "descending",
+      "scalar",
+      "dark",
+      "loop_safe",
+      "short"
+    ]
+  },
+  {
+    "id": "MF121",
+    "pattern": [
+      3,
+      5,
+      3,
+      1
+    ],
+    "tags": [
+      "playful",
+      "wave",
+      "bright",
+      "simple",
+      "loop_safe",
+      "short"
+    ]
+  },
+  {
+    "id": "MF122",
+    "pattern": [
+      5,
+      3,
+      1,
+      5
+    ],
+    "tags": [
+      "epic",
+      "leaping",
+      "arpeggio",
+      "heroic",
+      "loop_safe",
+      "short"
+    ]
+  },
+  {
+    "id": "MF123",
+    "pattern": [
+      1,
+      6,
+      5,
+      1
+    ],
+    "tags": [
+      "mysterious",
+      "complex",
+      "dark",
+      "cadence",
+      "loop_safe",
+      "short"
+    ]
+  },
+  {
+    "id": "MF124",
+    "pattern": [
+      2,
+      3,
+      4,
+      5
+    ],
+    "tags": [
+      "playful",
+      "ascending",
+      "scalar",
+      "bright",
+      "loop_safe",
+      "short"
+    ]
+  },
+  {
+    "id": "MF125",
+    "pattern": [
+      1,
+      4,
+      7,
+      4,
+      1
+    ],
+    "tags": [
+      "epic",
+      "arch",
+      "leaping",
+      "heroic",
+      "bright",
+      "extended"
+    ]
+  },
+  {
+    "id": "MF126",
+    "pattern": [
+      5,
+      7,
+      6,
+      5,
+      3
+    ],
+    "tags": [
+      "mysterious",
+      "complex",
+      "dark",
+      "descending",
+      "loop_safe",
+      "extended"
+    ]
+  },
+  {
+    "id": "MF127",
+    "pattern": [
+      1,
+      1,
+      3,
+      3,
+      5,
+      5
+    ],
+    "tags": [
+      "playful",
+      "sequence",
+      "ascending",
+      "bright",
+      "loop_safe",
+      "extended"
+    ]
+  },
+  {
+    "id": "MF128",
+    "pattern": [
+      1,
+      7,
+      1,
+      5
+    ],
+    "tags": [
+      "epic",
+      "leaping",
+      "heroic",
+      "bright",
+      "loop_safe",
+      "short"
+    ]
+  },
+  {
+    "id": "MF129",
+    "pattern": [
+      3,
+      2,
+      1,
+      6
+    ],
+    "tags": [
+      "mysterious",
+      "descending",
+      "dark",
+      "tense",
+      "loop_safe",
+      "short"
+    ]
+  },
+  {
+    "id": "MF130",
+    "pattern": [
+      5,
+      5,
+      6,
+      6,
+      7,
+      7,
+      1
+    ],
+    "tags": [
+      "epic",
+      "sequence",
+      "ascending",
+      "heroic",
+      "build",
+      "extended"
+    ]
+  },
+  {
+    "id": "MF131",
+    "pattern": [
+      5,
+      4,
+      3,
+      1
+    ],
+    "tags": [
+      "mysterious",
+      "descending",
+      "dark",
+      "start",
+      "loop_safe",
+      "short"
+    ]
+  },
+  {
+    "id": "MF132",
+    "pattern": [
+      6,
+      5,
+      4,
+      2
+    ],
+    "tags": [
+      "mysterious",
+      "descending",
+      "dark",
+      "start",
+      "loop_safe",
+      "short"
+    ]
+  },
+  {
+    "id": "MF133",
+    "pattern": [
+      7,
+      5,
+      3,
+      1
+    ],
+    "tags": [
+      "mysterious",
+      "descending",
+      "dark",
+      "start",
+      "loop_safe",
+      "short"
+    ]
+  },
+  {
+    "id": "MF134",
+    "pattern": [
+      5,
+      3,
+      2,
+      1
+    ],
+    "tags": [
+      "mysterious",
+      "descending",
+      "dark",
+      "start",
+      "loop_safe",
+      "short"
+    ]
+  },
+  {
+    "id": "MF135",
+    "pattern": [
+      6,
+      4,
+      3,
+      1
+    ],
+    "tags": [
+      "mysterious",
+      "descending",
+      "dark",
+      "start",
+      "loop_safe",
+      "short"
+    ]
+  },
+  {
+    "id": "MF136",
+    "pattern": [
+      1,
+      2,
+      3,
+      5
+    ],
+    "tags": [
+      "mysterious",
+      "ascending",
+      "dark",
+      "middle",
+      "stepwise",
+      "short"
+    ]
+  },
+  {
+    "id": "MF137",
+    "pattern": [
+      1,
+      3,
+      5,
+      6
+    ],
+    "tags": [
+      "mysterious",
+      "ascending",
+      "dark",
+      "middle",
+      "stepwise",
+      "short"
+    ]
+  },
+  {
+    "id": "MF138",
+    "pattern": [
+      2,
+      3,
+      4,
+      6
+    ],
+    "tags": [
+      "mysterious",
+      "ascending",
+      "dark",
+      "middle",
+      "stepwise",
+      "short"
+    ]
+  },
+  {
+    "id": "MF139",
+    "pattern": [
+      1,
+      2,
+      4,
+      5
+    ],
+    "tags": [
+      "mysterious",
+      "ascending",
+      "dark",
+      "middle",
+      "stepwise",
+      "short"
+    ]
+  },
+  {
+    "id": "MF140",
+    "pattern": [
+      3,
+      4,
+      5,
+      7
+    ],
+    "tags": [
+      "mysterious",
+      "ascending",
+      "dark",
+      "middle",
+      "stepwise",
+      "short"
+    ]
+  },
+  {
+    "id": "MF141",
+    "pattern": [
+      7,
+      6,
+      5,
+      4,
+      3
+    ],
+    "tags": [
+      "mysterious",
+      "descending",
+      "dark",
+      "end",
+      "static",
+      "short"
+    ]
+  },
+  {
+    "id": "MF142",
+    "pattern": [
+      5,
+      4,
+      3,
+      2,
+      1
+    ],
+    "tags": [
+      "mysterious",
+      "descending",
+      "dark",
+      "end",
+      "static",
+      "short"
+    ]
+  },
+  {
+    "id": "MF143",
+    "pattern": [
+      6,
+      5,
+      4,
+      3,
+      1
+    ],
+    "tags": [
+      "mysterious",
+      "descending",
+      "dark",
+      "end",
+      "static",
+      "short"
+    ]
+  },
+  {
+    "id": "MF144",
+    "pattern": [
+      7,
+      5,
+      4,
+      2,
+      1
+    ],
+    "tags": [
+      "mysterious",
+      "descending",
+      "dark",
+      "end",
+      "static",
+      "short"
+    ]
+  },
+  {
+    "id": "MF145",
+    "pattern": [
+      5,
+      4,
+      3,
+      1
+    ],
+    "tags": [
+      "mysterious",
+      "descending",
+      "dark",
+      "end",
+      "static",
+      "short"
+    ]
+  },
+  {
+    "id": "MF146",
+    "pattern": [
+      1,
+      2,
+      1,
+      3,
+      1
+    ],
+    "tags": [
+      "mysterious",
+      "texture_loop",
+      "ostinato",
+      "loop_safe",
+      "short",
+      "dark"
+    ]
+  },
+  {
+    "id": "MF147",
+    "pattern": [
+      5,
+      6,
+      5,
+      7,
+      5
+    ],
+    "tags": [
+      "mysterious",
+      "texture_loop",
+      "ostinato",
+      "loop_safe",
+      "short",
+      "dark"
+    ]
+  },
+  {
+    "id": "MF148",
+    "pattern": [
+      1,
+      3,
+      1,
+      2,
+      1
+    ],
+    "tags": [
+      "mysterious",
+      "texture_loop",
+      "ostinato",
+      "loop_safe",
+      "short",
+      "dark"
+    ]
+  },
+  {
+    "id": "MF149",
+    "pattern": [
+      5,
+      7,
+      5,
+      6,
+      5
+    ],
+    "tags": [
+      "mysterious",
+      "texture_loop",
+      "ostinato",
+      "loop_safe",
+      "short",
+      "dark"
+    ]
+  },
+  {
+    "id": "MF150",
+    "pattern": [
+      1,
+      4,
+      1,
+      3,
+      1
+    ],
+    "tags": [
+      "mysterious",
+      "texture_loop",
+      "ostinato",
+      "loop_safe",
+      "short",
+      "dark"
+    ]
+  },
+  {
+    "id": "MF151",
+    "pattern": [
+      1,
+      4,
+      6,
+      5,
+      7,
+      6,
+      4
+    ],
+    "tags": [
+      "breakbeat",
+      "tense",
+      "leaping",
+      "loop_safe",
+      "short"
+    ]
+  },
+  {
+    "id": "MF152",
+    "pattern": [
+      5,
+      3,
+      6,
+      4,
+      7,
+      5
+    ],
+    "tags": [
+      "breakbeat",
+      "tense",
+      "sequence",
+      "loop_safe",
+      "short",
+      "variation"
+    ]
+  },
+  {
+    "id": "MF153",
+    "pattern": [
+      1,
+      5,
+      4,
+      6,
+      3,
+      7,
+      5
+    ],
+    "tags": [
+      "breakbeat",
+      "upbeat",
+      "leaping",
+      "loop_safe",
+      "extended"
+    ]
+  },
+  {
+    "id": "MF154",
+    "pattern": [
+      1,
+      1,
+      3,
+      2,
+      1
+    ],
+    "tags": [
+      "lofi",
+      "peaceful",
+      "stepwise",
+      "loop_safe",
+      "short"
+    ]
+  },
+  {
+    "id": "MF155",
+    "pattern": [
+      5,
+      4,
+      4,
+      3,
+      2,
+      2
+    ],
+    "tags": [
+      "lofi",
+      "peaceful",
+      "descending",
+      "loop_safe",
+      "long"
+    ]
+  },
+  {
+    "id": "MF156",
+    "pattern": [
+      1,
+      3,
+      2,
+      5,
+      4,
+      3,
+      1
+    ],
+    "tags": [
+      "lofi",
+      "melancholic",
+      "stepwise",
+      "loop_safe",
+      "extended"
+    ]
+  }
+]

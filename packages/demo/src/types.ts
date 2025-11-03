@@ -1,0 +1,86 @@
+/**
+ * Type definitions for the demo application.
+ *
+ * Re-exports core types from @algo-chip/core and defines demo-specific
+ * types for sound effect playback, quantization, and timeline management.
+ */
+
+// ============================================================================
+// Re-exported Core Types
+// ============================================================================
+
+export type {
+  Channel,
+  Command,
+  Event as PlaybackEvent,
+  CompositionOptions,
+  PipelineResult,
+  SEGenerationOptions,
+  SEGenerationResult,
+  SEType
+} from "@algo-chip/core";
+
+// ============================================================================
+// Demo-Specific Types
+// ============================================================================
+
+/**
+ * Active BGM timeline metadata.
+ *
+ * Tracks the currently playing background music timeline for SE quantization
+ * and synchronization purposes.
+ */
+export interface ActiveTimeline {
+  startTime: number;
+  loop: boolean;
+  meta: any; // Use PipelineResult['meta'] if needed
+}
+
+/**
+ * SE playback quantization options.
+ *
+ * Configures how sound effects are aligned to the musical grid (beats/measures).
+ * Supports loop-aware quantization for seamless looping compositions.
+ */
+export interface QuantizedSEOptions {
+  /** Quantization grid: beat (quarter note), half (eighth note), measure, or custom subdivision */
+  quantizeTo: "beat" | "half" | "measure" | { subdivision: number };
+  /** Phase alignment: "next" = next grid point, "current" = current grid point, or absolute position */
+  phase?: "next" | "current" | { measure: number; beat?: number };
+  /** Additional beat offset after quantization */
+  offsetBeats?: number;
+  /** Whether to respect loop boundaries when quantizing */
+  loopAware?: boolean;
+}
+
+/**
+ * Policy for handling concurrent SE requests.
+ *
+ * - "ignore": Ignore new SE if one is already playing
+ * - "cut": Stop current SE and play new one immediately
+ * - "queue": Queue new SE to play after current one finishes
+ */
+export type OverrideExistingPolicy = "ignore" | "cut" | "queue";
+
+/**
+ * SE playback options.
+ *
+ * Controls BGM ducking, timing, quantization, and concurrency policies
+ * for sound effect playback.
+ */
+export interface PlaySEOptions {
+  /** BGM volume reduction in dB during SE playback (default: -6) */
+  duckingDb?: number;
+  /** Time offset from current time in seconds (default: 0.05) */
+  mixOffset?: number;
+  /** Musical quantization settings */
+  quantize?: QuantizedSEOptions;
+  /** Minimum interval between SE triggers in milliseconds (default: 40) */
+  minIntervalMs?: number;
+  /** Maximum concurrent SE instances (not yet implemented) */
+  maxConcurrent?: number;
+  /** Policy for handling concurrent SE requests (default: "ignore") */
+  overrideExisting?: OverrideExistingPolicy;
+  /** SE playback volume multiplier (default: 1.0, range: 0.0+) */
+  volume?: number;
+}
