@@ -202,6 +202,6 @@ algo-chip/
 
 ## 🔗 リンク
 
-- [ライブデモ](https://yourusername.github.io/algo-chip/) _（GitHubユーザー名で更新してください）_
-- [UMDバンドル](https://yourusername.github.io/algo-chip/lib/algo-chip.umd.js)
+- [ライブデモ](https://abagames.github.io/algo-chip/)
+- [UMDバンドル](https://abagames.github.io/algo-chip/lib/algo-chip.umd.js)
 - [npmパッケージ](https://www.npmjs.com/package/@algo-chip/core) _（公開後）_

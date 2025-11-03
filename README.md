@@ -202,6 +202,6 @@ The composition engine follows a **five-phase pipeline**:
 
 ## 🔗 Links
 
-- [Live Demo](https://yourusername.github.io/algo-chip/) _(Update with your GitHub username)_
-- [UMD Bundle](https://yourusername.github.io/algo-chip/lib/algo-chip.umd.js)
+- [Live Demo](https://abagames.github.io/algo-chip/)
+- [UMD Bundle](https://abagames.github.io/algo-chip/lib/algo-chip.umd.js)
 - [npm Package](https://www.npmjs.com/package/@algo-chip/core) _(After publishing)_
