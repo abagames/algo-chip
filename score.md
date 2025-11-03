@@ -11,6 +11,8 @@ This document defines the core logic for automatically generating high-quality B
 
 The final output is a time-series **`eventList`** (array of playback events) that provides complete control over the target sound source.
 
+> **API reference**: For concrete type signatures and function-level options, see the generated TypeDoc output under `docs/api/` (`npm run docs:api`). That reference covers public exports such as `generateComposition`, `runPipeline`, and SE/BGM integration helpers. Maintain architectural intent and rationale in this specification.
+
 #### **2. Input and Output**
 
 - **Input**: `CompositionOptions` object

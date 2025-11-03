@@ -1,0 +1,23 @@
+{
+  "$schema": "https://typedoc.org/schema.json",
+  "tsconfig": "tsconfig.typedoc.json",
+  "out": "docs/api",
+  "readme": "docs/api-reference.md",
+  "entryPoints": [
+    "packages/core/src/index.ts",
+    "packages/demo/src/types.ts",
+    "packages/demo/src/playback.ts"
+  ],
+  "entryPointStrategy": "resolve",
+  "excludePrivate": true,
+  "excludeInternal": true,
+  "categorizeByGroup": false,
+  "sort": [
+    "kind",
+    "alphabetical"
+  ],
+  "navigationLinks": {
+    "BGM Specification": "../score.md",
+    "SE Specification": "../se.md"
+  }
+}

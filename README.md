@@ -134,7 +134,9 @@ await synth.play(jump.events, {
 - Range: `0.0+` (e.g., `0.5` = 50%, `1.5` = 150%)
 - Applied at playback time, not generation time
 
-**Note**: `AlgoChipSynthesizer` requires a browser environment (Web Audio API). For advanced SE playback with BGM ducking and quantization, see the demo package (`packages/demo/src/playback.ts`).
+**Note**: `AlgoChipSynthesizer` requires a browser environment (Web Audio API).
+Advanced SE playback patterns (ducking, quantization, controller wiring) are
+documented in [USAGE.md](./USAGE.md) alongside pointers into the demo helpers.
 
 ## 🛠️ Development
 

@@ -1,0 +1,15 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "lib": ["DOM", "ES2020"],
+    "baseUrl": ".",
+    "paths": {
+      "@algo-chip/core": ["packages/core/src/index.ts"],
+      "@algo-chip/core/*": ["packages/core/src/*"]
+    }
+  },
+  "include": [
+    "packages/core/src/**/*.ts",
+    "packages/demo/src/**/*.ts"
+  ]
+}

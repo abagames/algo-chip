@@ -39,6 +39,8 @@ The SE generator is **completely independent** from the BGM Phase1-5 pipeline:
 
 This design allows BGM and SE to be generated/played in parallel, with SE dynamically insertable at arbitrary timing.
 
+> **API reference**: Detailed option lists (e.g., SE quantization hooks, template fields) live in the generated TypeDoc output (`docs/api/`). Use `npm run docs:api` to refresh it after code changes, and keep conceptual rationale here in `se.md`.
+
 ---
 
 ### **3. TypeScript Type Definitions and API**

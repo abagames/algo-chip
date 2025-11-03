@@ -134,7 +134,7 @@ await synth.play(jump.events, {
 - 範囲: `0.0+`（例: `0.5` = 50%、`1.5` = 150%）
 - 生成時ではなく再生時に適用
 
-**注意**: `AlgoChipSynthesizer`はブラウザ環境（Web Audio API）が必要です。BGMダッキングやクオンタイゼーションを含む高度なSE再生については、demoパッケージ（`packages/demo/src/playback.ts`）を参照してください。
+**注意**: `AlgoChipSynthesizer`はブラウザ環境（Web Audio API）が必要です。BGMダッキングやクオンタイゼーションを含む高度なSE再生パターンは、[USAGE.md](./USAGE.md)（英語）および demo パッケージ（`packages/demo/src/playback.ts`）を参照してください。
 
 ## 🛠️ 開発
 

@@ -35,10 +35,12 @@
     "test": "node --loader ts-node/esm --test \"packages/core/src/test/**/*.spec.ts\"",
     "dev": "npm run dev -w packages/demo",
     "preview": "npm run preview -w packages/demo",
+    "docs:api": "typedoc --options typedoc.json",
     "prepare": "npm run build:core"
   },
   "devDependencies": {
     "@types/node": "^20.14.8",
+    "typedoc": "^0.25.10",
     "ts-node": "^10.9.2",
     "typescript": "^5.4.5",
     "vite": "^5.3.4"

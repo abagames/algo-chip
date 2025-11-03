@@ -121,7 +121,7 @@ interface NoiseData {
 }
 
 /** Options for synthesizer playback */
-interface SynthPlayOptions {
+export interface SynthPlayOptions {
   startTime?: number;
   loop?: boolean;
   lookahead?: number;
