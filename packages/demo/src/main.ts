@@ -11,8 +11,15 @@
  */
 
 import { ChipSynthesizer } from "./synth.js";
-import { generateTimeline } from "./lib/core.js";
-import type { PlaybackEvent, CompositionOptions, PipelineResult } from "./types.js";
+import { generateTimeline, generateSoundEffect } from "./lib/core.js";
+import { SoundEffectController } from "./playback.js";
+import type {
+  ActiveTimeline,
+  PlaybackEvent,
+  CompositionOptions,
+  PipelineResult,
+  SEType
+} from "./types.js";
 
 // ============================================================================
 // DOM Elements
@@ -30,6 +37,15 @@ const indicators = {
   square2: document.querySelector('[data-channel="square2"] .indicator-light') as HTMLDivElement,
   triangle: document.querySelector('[data-channel="triangle"] .indicator-light') as HTMLDivElement,
   noise: document.querySelector('[data-channel="noise"] .indicator-light') as HTMLDivElement,
+};
+
+type IndicatorChannel = keyof typeof indicators;
+
+const indicatorSEMap: Record<IndicatorChannel, SEType> = {
+  square1: "jump",
+  square2: "select",
+  triangle: "laser",
+  noise: "explosion",
 };
 
 // ============================================================================
@@ -72,6 +88,9 @@ const state: DemoState = {
 // Web Audio and synthesis state
 let audioContext: AudioContext | null = null;
 let synthesizer: ChipSynthesizer | null = null;
+let seSynthesizer: ChipSynthesizer | null = null;
+let soundEffectController: SoundEffectController | null = null;
+let activeTimeline: ActiveTimeline | null = null;
 let animationFrameId: number | null = null;
 /** Map of active notes for tracking which notes are currently playing (channel-midi -> note data) */
 let activeNotes = new Map<string, { channel: string; velocity: number; endTime: number }>();
@@ -295,6 +314,20 @@ async function ensureAudioContext(): Promise<void> {
     synthesizer = new ChipSynthesizer(audioContext);
     await synthesizer.init();
   }
+
+  if (!seSynthesizer) {
+    seSynthesizer = new ChipSynthesizer(audioContext);
+    await seSynthesizer.init();
+  }
+
+  if (!soundEffectController && seSynthesizer && synthesizer) {
+    soundEffectController = new SoundEffectController(
+      audioContext,
+      seSynthesizer,
+      () => activeTimeline,
+      synthesizer.masterGain
+    );
+  }
 }
 
 /**
@@ -320,6 +353,14 @@ async function startPlayback(events: PlaybackEvent[]): Promise<void> {
 
   // Clear active notes
   activeNotes.clear();
+
+  if (state.composition) {
+    activeTimeline = {
+      startTime,
+      loop: true,
+      meta: state.composition.meta,
+    };
+  }
 
   // Start playback with event callback
   synthesizer.play(events, {
@@ -354,6 +395,8 @@ function stopPlayback(): void {
 
   state.isPlaying = false;
   activeNotes.clear();
+  activeTimeline = null;
+  soundEffectController?.resetDucking();
 
   // Reset all indicators
   Object.values(indicators).forEach((indicator) => {
@@ -363,6 +406,53 @@ function stopPlayback(): void {
   });
 
   updateUI();
+}
+
+async function triggerIndicatorSoundEffect(channel: IndicatorChannel): Promise<void> {
+  try {
+    await ensureAudioContext();
+
+    if (!soundEffectController || !state.composition) {
+      return;
+    }
+
+    const seType = indicatorSEMap[channel];
+    const result = await generateSoundEffect({ type: seType });
+
+    const playPromise = soundEffectController.play(result, {
+      duckingDb: -4,
+      quantize: {
+        quantizeTo: "beat",
+        phase: "next",
+        loopAware: true,
+      },
+    });
+
+    updateStatus(`Scheduled ${seType} sound effect`);
+
+    void playPromise.catch((playError) => {
+      console.error("Indicator sound effect playback failed:", playError);
+      updateStatus("Sound effect playback failed");
+    });
+  } catch (error) {
+    console.error("Indicator sound effect trigger failed:", error);
+    updateStatus("Sound effect trigger failed");
+  }
+}
+
+function initIndicatorEasterEgg(): void {
+  (Object.keys(indicatorSEMap) as IndicatorChannel[]).forEach((channel) => {
+    const indicator = indicators[channel];
+    if (!indicator) {
+      return;
+    }
+    indicator.style.cursor = "pointer";
+    indicator.title = "Hidden SE trigger";
+    indicator.addEventListener("click", (event) => {
+      event.stopPropagation();
+      void triggerIndicatorSoundEffect(channel);
+    });
+  });
 }
 
 /**
@@ -562,4 +652,5 @@ function initIndicators(): void {
 // Run initialization on page load
 initCanvas();
 initIndicators();
+initIndicatorEasterEgg();
 updateUI();

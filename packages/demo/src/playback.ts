@@ -5,8 +5,7 @@
  * with background music (BGM) playback:
  * - BGM ducking: Automatically reduces BGM volume when SE plays
  * - Quantization: Aligns SE playback to musical beats/measures
- * - Queue management: Handles concurrent SE requests with ignore/cut/queue policies
- * - Cooldown intervals: Prevents rapid-fire SE spam
+ * - Per-type gating: Prevents duplicate SEs of the same type within a quantized window
  *
  * The controller works in tandem with ChipSynthesizer to provide seamless
  * audio mixing between BGM and SE tracks.
@@ -17,7 +16,8 @@ import type {
   ActiveTimeline,
   PlaySEOptions,
   QuantizedSEOptions,
-  SEGenerationResult
+  SEGenerationResult,
+  SEType
 } from "./types.js";
 
 // ============================================================================
@@ -25,14 +25,15 @@ import type {
 // ============================================================================
 
 /** Normalized SE options with required defaults */
-interface NormalizedSEOptions extends Required<Pick<PlaySEOptions, "duckingDb" | "mixOffset" | "minIntervalMs" | "overrideExisting" | "volume">> {
+interface NormalizedSEOptions extends Required<Pick<PlaySEOptions, "duckingDb" | "volume">> {
   quantize?: QuantizedSEOptions;
 }
 
-/** Queued SE playback job with promise callbacks */
-interface QueueItem {
+/** Pending SE job grouped by type */
+interface ScheduledJob {
   result: SEGenerationResult;
   options: NormalizedSEOptions;
+  targetTime: number;
   resolve: () => void;
   reject: (error: unknown) => void;
 }
@@ -43,10 +44,12 @@ interface QueueItem {
 
 /** Default BGM volume reduction in dB during SE playback */
 const DEFAULT_DUCKING_DB = -6;
-/** Default SE start offset from current time in seconds */
-const DEFAULT_MIX_OFFSET = 0.05;
-/** Default minimum interval between SE triggers in milliseconds */
-const DEFAULT_MIN_INTERVAL_MS = 40;
+/** Default SE playback volume multiplier */
+const DEFAULT_VOLUME = 1.0;
+/** Lead time (seconds) to schedule SE playback before quantized boundary */
+const SCHEDULE_LEAD_SECONDS = 0.03;
+/** Floating point tolerance for comparing quantized times */
+const TIME_EPSILON = 1e-3;
 
 // ============================================================================
 // Sound Effect Controller
@@ -58,8 +61,7 @@ const DEFAULT_MIN_INTERVAL_MS = 40;
  * Features:
  * - Automatic BGM ducking with configurable dB reduction
  * - Musical quantization (beat/measure/subdivision alignment)
- * - Queue/override/ignore policies for concurrent SE requests
- * - Cooldown intervals to prevent SE spam
+ * - Per-type gating to prevent duplicate SE triggers within a window
  * - Loop-aware quantization for seamless looping BGM
  *
  * Usage:
@@ -77,10 +79,9 @@ const DEFAULT_MIN_INTERVAL_MS = 40;
  * ```
  */
 export class SoundEffectController {
-  private readonly queue: QueueItem[] = [];
-  private processing = false;
-  private currentPlay: Promise<void> | null = null;
-  private lastStartTime = 0;
+  private scheduledByType: Partial<Record<SEType, ScheduledJob>> = {};
+  private nextTriggerTime: number | null = null;
+  private flushHandle: number | null = null;
   private readonly nominalGain: number;
 
   constructor(
@@ -93,36 +94,33 @@ export class SoundEffectController {
   }
 
   /**
-   * Plays a sound effect with optional ducking, quantization, and queuing.
+   * Plays a sound effect with optional ducking and quantization.
+   *
+   * The request is stored until the next quantized boundary, at which
+   * point all distinct SE types are triggered simultaneously.
    *
    * @param result SE generation result from SEGenerator
-   * @param options Playback options (ducking, quantization, override policy)
+   * @param options Playback options (ducking, quantization)
    * @returns Promise that resolves when SE playback completes
    */
   async play(result: SEGenerationResult, options: PlaySEOptions = {}): Promise<void> {
     const normalized: NormalizedSEOptions = {
       duckingDb: options.duckingDb ?? DEFAULT_DUCKING_DB,
-      mixOffset: options.mixOffset ?? DEFAULT_MIX_OFFSET,
-      minIntervalMs: options.minIntervalMs ?? DEFAULT_MIN_INTERVAL_MS,
-      overrideExisting: options.overrideExisting ?? "ignore",
-      volume: options.volume ?? 1.0,
+      volume: options.volume ?? DEFAULT_VOLUME,
       quantize: options.quantize
     };
 
-    if (this.currentPlay || this.processing || this.queue.length > 0) {
-      if (normalized.overrideExisting === "ignore") {
-        return;
-      }
-      if (normalized.overrideExisting === "cut") {
-        await this.stopCurrent();
-        this.queue.length = 0;
-      }
-      // queue option falls through
+    const seType = result.meta.type;
+    if (this.scheduledByType[seType]) {
+      // Skip scheduling when the same SE type is already pending
+      return Promise.resolve();
     }
 
     return new Promise<void>((resolve, reject) => {
-      this.queue.push({ result, options: normalized, resolve, reject });
-      void this.processQueue();
+      const targetTime = this.determineTargetTime(normalized);
+      const job: ScheduledJob = { result, options: normalized, targetTime, resolve, reject };
+      this.scheduledByType[seType] = job;
+      this.registerJob(job);
     });
   }
 
@@ -138,105 +136,103 @@ export class SoundEffectController {
     gainParam.setValueAtTime(this.nominalGain, now);
   }
 
-  /** Processes the SE queue, respecting override policies and timing constraints */
-  private async processQueue(): Promise<void> {
-    if (this.processing) {
+  /** Registers job for the next quantized trigger. */
+  private registerJob(job: ScheduledJob): void {
+    if (this.nextTriggerTime === null || job.targetTime < this.nextTriggerTime - TIME_EPSILON) {
+      this.nextTriggerTime = job.targetTime;
+      this.alignJobsTo(this.nextTriggerTime);
+      this.scheduleFlush();
       return;
     }
-    this.processing = true;
-    try {
-      while (this.queue.length > 0) {
-        const job = this.queue.shift()!;
 
-        if (this.currentPlay) {
-          if (job.options.overrideExisting === "cut") {
-            await this.stopCurrent();
-          } else if (job.options.overrideExisting === "queue") {
-            await this.currentPlay.catch(() => {});
-            this.currentPlay = null;
-          } else {
-            job.resolve();
-            continue;
-          }
-        }
-
-        const startTime = this.computeStartTime(job.result, job.options);
-        this.applyDucking(job.options.duckingDb, job.result.meta.duration, startTime);
-
-        this.currentPlay = this.seSynth.play(job.result.events, {
-          startTime,
-          loop: false,
-          volume: job.options.volume
-        });
-        this.lastStartTime = startTime;
-        try {
-          await this.currentPlay;
-          job.resolve();
-        } catch (error) {
-          job.reject(error);
-        } finally {
-          this.currentPlay = null;
-        }
-      }
-    } finally {
-      this.processing = false;
+    if (Math.abs(job.targetTime - this.nextTriggerTime) <= TIME_EPSILON) {
+      job.targetTime = this.nextTriggerTime;
+      return;
     }
+
+    // Later quantization requests reuse existing trigger to keep map cleared per cycle
+    job.targetTime = this.nextTriggerTime;
   }
 
-  /** Stops the currently playing SE and resets ducking */
-  private async stopCurrent(): Promise<void> {
-    if (this.currentPlay) {
-      this.seSynth.stop();
-      const now = this.context.currentTime;
-      try {
-        await this.currentPlay;
-      } catch {
-        // Ignored: stop may reject existing playback promise
-      } finally {
-        this.currentPlay = null;
-        if (this.lastStartTime > now) {
-          this.lastStartTime = now;
-        }
-        this.resetDucking();
+  /** Aligns all pending jobs to a shared trigger time. */
+  private alignJobsTo(triggerTime: number): void {
+    for (const job of Object.values(this.scheduledByType)) {
+      if (job) {
+        job.targetTime = triggerTime;
       }
     }
   }
 
-  /**
-   * Computes the final start time for SE playback.
-   *
-   * Applies cooldown interval, quantization, and mix offset to determine
-   * when the SE should actually start playing.
-   *
-   * @param result SE generation result
-   * @param options Normalized playback options
-   * @returns Absolute start time in seconds
-   */
-  private computeStartTime(result: SEGenerationResult, options: NormalizedSEOptions): number {
+  /** Determines the next quantized start time for a job. */
+  private determineTargetTime(options: NormalizedSEOptions): number {
     const ctx = this.context;
-    const minIntervalSec = options.minIntervalMs / 1000;
-    const earliestByInterval = this.lastStartTime + minIntervalSec;
-    let earliest = Math.max(ctx.currentTime + options.mixOffset, earliestByInterval);
-
+    const earliest = ctx.currentTime;
+    let target = earliest;
     if (options.quantize) {
       const quantized = this.quantizeStart(options.quantize, earliest);
       if (quantized !== null) {
-        earliest = Math.max(earliest, quantized);
+        target = quantized;
       }
     }
+    if (target < ctx.currentTime + TIME_EPSILON) {
+      target = ctx.currentTime + TIME_EPSILON;
+    }
+    return target;
+  }
 
-    // If quantization produced a time still within the cooldown, bump by multiples
-    if (earliest < earliestByInterval) {
-      const diff = earliestByInterval - earliest;
-      earliest += diff;
+  /** Schedules flush to occur slightly before the quantized trigger. */
+  private scheduleFlush(): void {
+    if (this.nextTriggerTime === null) {
+      return;
     }
 
-    // Account for the SE's intrinsic duration to keep ducking tail meaningful
-    if (!Number.isFinite(earliest) || earliest < ctx.currentTime) {
-      earliest = ctx.currentTime + options.mixOffset;
+    if (this.flushHandle !== null) {
+      clearTimeout(this.flushHandle);
     }
 
-    return earliest;
+    const now = this.context.currentTime;
+    const callTime = this.nextTriggerTime - SCHEDULE_LEAD_SECONDS;
+    const delayMs = Math.max(0, (callTime - now) * 1000);
+    this.flushHandle = window.setTimeout(() => {
+      this.flushHandle = null;
+      this.flushScheduled();
+    }, delayMs);
+  }
+
+  /** Plays all pending SEs at the quantized boundary and clears the cache. */
+  private flushScheduled(): void {
+    const triggerTime = this.nextTriggerTime;
+    if (triggerTime === null) {
+      return;
+    }
+
+    const jobs = Object.values(this.scheduledByType).filter((job): job is ScheduledJob => job != null);
+    if (jobs.length === 0) {
+      this.nextTriggerTime = null;
+      return;
+    }
+
+    const ctx = this.context;
+    const startTime = Math.max(triggerTime, ctx.currentTime + 0.005);
+    const maxDuration = jobs.reduce((acc, job) => Math.max(acc, job.result.meta.duration), 0);
+    const minDucking = jobs.reduce((acc, job) => Math.min(acc, job.options.duckingDb), DEFAULT_DUCKING_DB);
+
+    this.applyDucking(minDucking, maxDuration, startTime);
+
+    this.nextTriggerTime = null;
+    this.scheduledByType = {};
+
+    for (const job of jobs) {
+      try {
+        void this.seSynth.play(job.result.events, {
+          startTime,
+          loop: false,
+          volume: job.options.volume
+        }).then(job.resolve, job.reject);
+      } catch (error) {
+        job.reject(error);
+      }
+    }
   }
 
   /**

@@ -54,33 +54,15 @@ export interface QuantizedSEOptions {
 }
 
 /**
- * Policy for handling concurrent SE requests.
- *
- * - "ignore": Ignore new SE if one is already playing
- * - "cut": Stop current SE and play new one immediately
- * - "queue": Queue new SE to play after current one finishes
- */
-export type OverrideExistingPolicy = "ignore" | "cut" | "queue";
-
-/**
  * SE playback options.
  *
- * Controls BGM ducking, timing, quantization, and concurrency policies
- * for sound effect playback.
+ * Controls BGM ducking, timing, and quantization for demo sound effects.
  */
 export interface PlaySEOptions {
   /** BGM volume reduction in dB during SE playback (default: -6) */
   duckingDb?: number;
-  /** Time offset from current time in seconds (default: 0.05) */
-  mixOffset?: number;
   /** Musical quantization settings */
   quantize?: QuantizedSEOptions;
-  /** Minimum interval between SE triggers in milliseconds (default: 40) */
-  minIntervalMs?: number;
-  /** Maximum concurrent SE instances (not yet implemented) */
-  maxConcurrent?: number;
-  /** Policy for handling concurrent SE requests (default: "ignore") */
-  overrideExisting?: OverrideExistingPolicy;
   /** SE playback volume multiplier (default: 1.0, range: 0.0+) */
   volume?: number;
 }
