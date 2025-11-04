@@ -94,6 +94,8 @@ let activeTimeline: ActiveTimeline | null = null;
 let animationFrameId: number | null = null;
 /** Map of active notes for tracking which notes are currently playing (channel-midi -> note data) */
 let activeNotes = new Map<string, { channel: string; velocity: number; endTime: number }>();
+let resumeOnVisibility = false;
+let resumeOffsetSeconds = 0;
 
 // ============================================================================
 // Canvas Management
@@ -339,7 +341,7 @@ async function ensureAudioContext(): Promise<void> {
  *
  * @param events List of playback events to schedule
  */
-async function startPlayback(events: PlaybackEvent[]): Promise<void> {
+async function startPlayback(events: PlaybackEvent[], offsetSeconds = 0): Promise<void> {
   if (!audioContext || !synthesizer) {
     return;
   }
@@ -350,13 +352,14 @@ async function startPlayback(events: PlaybackEvent[]): Promise<void> {
 
   const ctx = audioContext;
   const startTime = ctx.currentTime + 0.2;
+  const offset = Math.max(0, offsetSeconds);
 
   // Clear active notes
   activeNotes.clear();
 
   if (state.composition) {
     activeTimeline = {
-      startTime,
+      startTime: startTime - offset,
       loop: true,
       meta: state.composition.meta,
     };
@@ -365,6 +368,7 @@ async function startPlayback(events: PlaybackEvent[]): Promise<void> {
   // Start playback with event callback
   synthesizer.play(events, {
     startTime,
+    offset,
     loop: true,
     onEvent: handleSynthEvent
   }).catch((error) => {
@@ -375,6 +379,7 @@ async function startPlayback(events: PlaybackEvent[]): Promise<void> {
 
   // Start animation loop for indicators
   startIndicatorAnimation();
+  resumeOffsetSeconds = 0;
 }
 
 /**
@@ -387,6 +392,12 @@ function stopPlayback(): void {
   if (synthesizer) {
     synthesizer.stop();
   }
+
+  if (seSynthesizer) {
+    seSynthesizer.stop();
+  }
+
+  soundEffectController?.cancelPendingJobs();
 
   if (animationFrameId !== null) {
     cancelAnimationFrame(animationFrameId);
@@ -406,6 +417,64 @@ function stopPlayback(): void {
   });
 
   updateUI();
+}
+
+/** Suspends the shared AudioContext if it is currently running. */
+function suspendAudioContext(): void {
+  if (audioContext && audioContext.state === "running") {
+    void audioContext.suspend().catch((error) => {
+      console.warn("AudioContext suspend failed:", error);
+    });
+  }
+}
+
+/**
+ * Handles page visibility changes to pause playback when the tab is hidden
+ * and resume smoothly when the tab returns to the foreground.
+ */
+function handleVisibilityChange(): void {
+  if (document.hidden) {
+    resumeOnVisibility = state.isPlaying;
+    if (state.isPlaying && audioContext && activeTimeline) {
+      const elapsed = Math.max(0, audioContext.currentTime - activeTimeline.startTime);
+      const totalDuration = activeTimeline.meta?.loopInfo?.totalDuration ?? 0;
+      resumeOffsetSeconds = totalDuration > 0 ? elapsed % totalDuration : elapsed;
+    } else {
+      resumeOffsetSeconds = 0;
+    }
+    if (state.isPlaying) {
+      stopPlayback();
+      updateStatus("Playback paused (tab inactive)");
+    }
+    suspendAudioContext();
+    return;
+  }
+
+  const shouldResume = resumeOnVisibility;
+  resumeOnVisibility = false;
+
+  const resumePlayback = async (offset: number): Promise<void> => {
+    try {
+      await ensureAudioContext();
+      if (state.composition) {
+        await startPlayback(state.composition.events, offset);
+        updateStatus("Playback resumed");
+      }
+    } catch (error) {
+      console.error("Resuming playback failed:", error);
+      updateStatus("Playback resume failed");
+    }
+  };
+
+  if (shouldResume) {
+    const offset = resumeOffsetSeconds;
+    resumeOffsetSeconds = 0;
+    void resumePlayback(offset);
+  } else if (audioContext && audioContext.state === "suspended") {
+    void audioContext.resume().catch((error) => {
+      console.warn("AudioContext resume failed:", error);
+    });
+  }
 }
 
 async function triggerIndicatorSoundEffect(channel: IndicatorChannel): Promise<void> {
@@ -630,6 +699,8 @@ panel.addEventListener("keydown", (e) => {
 window.addEventListener("resize", () => {
   initCanvas();
 });
+
+document.addEventListener("visibilitychange", handleVisibilityChange);
 
 // ============================================================================
 // Initialization

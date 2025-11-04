@@ -126,6 +126,7 @@ export interface SynthPlayOptions {
   loop?: boolean;
   lookahead?: number;
   leadTime?: number;
+  offset?: number;
   onEvent?: (event: PlaybackEvent, when: number) => void;
   volume?: number;  // Playback volume multiplier (default: 1.0, range: 0.0+)
 }
@@ -451,7 +452,6 @@ export class AlgoChipSynthesizer {
   play(events: PlaybackEvent[], options: SynthPlayOptions = {}): Promise<void> {
     this.stop();
     this.events = events ?? [];
-    this.eventIndex = 0;
     this.lookahead = options.lookahead ?? LOOKAHEAD_SECONDS;
     this.leadTime = options.leadTime ?? LEAD_TIME;
     this.loopEnabled = options.loop ?? false;
@@ -461,9 +461,21 @@ export class AlgoChipSynthesizer {
     const volume = options.volume ?? 1.0;
     this.masterGainNode.gain.value = AlgoChipSynthesizer.BASE_GAIN * volume;
 
+    const totalDuration = this.events.length ? this.events[this.events.length - 1]!.time : 0;
+    let offset = Math.max(0, options.offset ?? 0);
+    if (offset > 0) {
+      if (this.loopEnabled && totalDuration > 0) {
+        offset = offset % totalDuration;
+      } else {
+        offset = Math.min(offset, totalDuration);
+      }
+    }
+
     const contextStart = this.context.currentTime;
-    this.startTime = options.startTime ?? contextStart + this.leadTime;
-    this.lastEventTime = this.events.length ? this.events[this.events.length - 1]!.time : 0;
+    const baseStart = options.startTime ?? contextStart + this.leadTime;
+    this.startTime = baseStart - offset;
+    this.lastEventTime = totalDuration;
+    this.eventIndex = this.resolveEventIndex(offset);
 
     const promise = new Promise<void>((resolve) => {
       this.completionResolver = resolve;
@@ -473,6 +485,21 @@ export class AlgoChipSynthesizer {
     this.intervalHandle = window.setInterval(scheduleStep, SCHEDULE_INTERVAL_MS);
     scheduleStep();
     return promise;
+  }
+
+  /** Determines the event index that should be scheduled after applying an offset */
+  private resolveEventIndex(offset: number): number {
+    if (offset <= 0) {
+      return 0;
+    }
+    const tolerance = 1e-3;
+    for (let i = 0; i < this.events.length; i += 1) {
+      const event = this.events[i]!;
+      if (event.time + tolerance >= offset) {
+        return i;
+      }
+    }
+    return this.events.length;
   }
 
   /**

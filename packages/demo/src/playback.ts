@@ -136,6 +136,29 @@ export class SoundEffectController {
     gainParam.setValueAtTime(this.nominalGain, now);
   }
 
+  /**
+   * Cancels any pending quantized SE jobs and clears scheduled flush timers.
+   *
+   * Ensures no background SE playback occurs when the transport is stopped
+   * or the page becomes inactive. Pending promises resolve immediately.
+   */
+  cancelPendingJobs(): void {
+    if (this.flushHandle !== null) {
+      clearTimeout(this.flushHandle);
+      this.flushHandle = null;
+    }
+
+    const jobs = Object.values(this.scheduledByType).filter(
+      (job): job is ScheduledJob => job != null
+    );
+    for (const job of jobs) {
+      job.resolve();
+    }
+
+    this.scheduledByType = {};
+    this.nextTriggerTime = null;
+  }
+
   /** Registers job for the next quantized trigger. */
   private registerJob(job: ScheduledJob): void {
     if (this.nextTriggerTime === null || job.targetTime < this.nextTriggerTime - TIME_EPSILON) {
