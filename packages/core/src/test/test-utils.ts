@@ -1,4 +1,4 @@
-import type { CompositionOptions, StyleIntent, StyleOverrides, TwoAxisStyle } from "../types.js";
+import type { CompositionOptions, Event, StyleIntent, StyleOverrides, TwoAxisStyle } from "../types.js";
 import { presetToTwoAxis } from "../style/preset-to-axis.js";
 
 type IntentKey = keyof StyleIntent;
@@ -31,4 +31,12 @@ export function buildTwoAxisOptions(params: {
     twoAxisStyle: axis,
     overrides
   };
+}
+
+export function isNoteOnEvent(event: Event): event is Event<"noteOn"> {
+  return event.command === "noteOn";
+}
+
+export function isSetParamEvent(event: Event): event is Event<"setParam"> {
+  return event.command === "setParam";
 }

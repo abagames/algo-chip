@@ -2,6 +2,8 @@ import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
 import { SEGenerator } from "../se/seGenerator.js";
 import type { SEGenerationResult } from "../se/seTypes.js";
+import type { Event } from "../types.js";
+import { isNoteOnEvent } from "./test-utils.js";
 import { midiToFrequency } from "../musicUtils.js";
 
 function hashEvents(result: SEGenerationResult): string {
@@ -77,10 +79,11 @@ async function run() {
   );
 
   // Extract MIDI values from noteOn events
-  const getNotePitches = (result: SEGenerationResult) => {
+  const getNotePitches = (result: SEGenerationResult): number[] => {
     return result.events
-      .filter((e) => e.command === "noteOn" && e.data.midi !== undefined)
-      .map((e) => e.data.midi);
+      .filter(isNoteOnEvent)
+      .map((event: Event<"noteOn">) => event.data.midi)
+      .filter((midi): midi is number => typeof midi === "number");
   };
 
   const basePitches = getNotePitches(baseResult);
@@ -104,8 +107,11 @@ async function run() {
 
   if (pitches440.length > 0 && pitches880.length > 0) {
     // 880 Hz is one octave above 440 Hz, so pitches should differ by ~12 semitones
-    const avgDiff =
-      pitches880.reduce((sum, p, i) => sum + (p - pitches440[i]), 0) / pitches880.length;
+    let diffSum = 0;
+    for (let i = 0; i < pitches880.length; i++) {
+      diffSum += pitches880[i] - pitches440[i]!;
+    }
+    const avgDiff = diffSum / pitches880.length;
     assert(
       Math.abs(avgDiff - 12) < 2,
       `Octave shift should be ~12 semitones, got ${avgDiff}`

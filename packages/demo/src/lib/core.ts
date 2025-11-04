@@ -19,7 +19,8 @@ import type {
   PlayBgmOptions,
   SePlaybackDefaults,
   TriggerSeOptions,
-  PipelineResult
+  PipelineResult,
+  SynthPlayOptions
 } from "../types.js";
 
 import { SoundEffectController } from "../playback.js";
@@ -95,7 +96,7 @@ class AudioSessionImpl implements AudioSession {
     };
     this.lastBgm = result;
 
-    const synthOptions = {
+    const synthOptions: SynthPlayOptions = {
       ...options,
       startTime,
       loop,
@@ -103,7 +104,7 @@ class AudioSessionImpl implements AudioSession {
       leadTime,
       lookahead,
       volume,
-      onEvent: options.onEvent ?? null
+      onEvent: options.onEvent ?? undefined
     };
 
     // Launch playback without awaiting the long-running promise (looping = never resolves).

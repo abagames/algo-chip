@@ -2,7 +2,7 @@ import { describe, it } from "node:test";
 import assert from "node:assert";
 import { runPipeline } from "../pipeline.js";
 import type { Event } from "../types.js";
-import { buildTwoAxisOptions } from "./test-utils.js";
+import { buildTwoAxisOptions, isNoteOnEvent, isSetParamEvent } from "./test-utils.js";
 import rhythmMotifsJson from "../../motifs/rhythm.json" with { type: "json" };
 import drumMotifsJson from "../../motifs/drums.json" with { type: "json" };
 
@@ -32,11 +32,17 @@ describe("Electronica Style Validation", () => {
       const result = runPipeline(options);
 
       // Check that bass patterns with four_on_floor tags are used
-      const bassEvents = result.events.filter((e: Event) => e.channel === "triangle" && e.command === "noteOn");
+      const bassEvents = result.events
+        .filter(isNoteOnEvent)
+        .filter((e: Event<"noteOn">) => e.channel === "triangle");
       assert.ok(bassEvents.length > 0, "Should have bass events");
 
       // Minimal techno should have consistent, repetitive bass
-      const uniqueBassNotes = new Set(bassEvents.map((e: Event) => e.data.midi));
+      const uniqueBassNotes = new Set(
+        bassEvents
+          .map((e: Event<"noteOn">) => e.data.midi)
+          .filter((midi): midi is number => typeof midi === "number")
+      );
       assert.ok(uniqueBassNotes.size <= 12, "Minimal techno should use limited bass note variety");
     });
 
@@ -50,16 +56,21 @@ describe("Electronica Style Validation", () => {
       const result = runPipeline(options);
 
       // Drone/static bass should dominate even if harmonicStatic flag is not set
-      const bassEvents = result.events.filter((e: Event) => e.channel === "triangle" && e.command === "noteOn");
-      const bassNotes = bassEvents.map((e: Event) => e.data.midi);
+      const bassEvents = result.events
+        .filter(isNoteOnEvent)
+        .filter((e: Event<"noteOn">) => e.channel === "triangle");
+      const bassNotes = bassEvents
+        .map((e: Event<"noteOn">) => e.data.midi)
+        .filter((midi): midi is number => typeof midi === "number");
 
       // Check for drone characteristics: high repetition of root note
-      const noteFreq = bassNotes.reduce((acc: Record<number, number>, note: number) => {
+      const noteFreq = bassNotes.reduce<Record<number, number>>((acc, note) => {
         acc[note] = (acc[note] || 0) + 1;
         return acc;
-      }, {} as Record<number, number>);
+      }, {});
 
-      const maxFreq = Math.max(...(Object.values(noteFreq) as number[]));
+      const freqValues = Object.values(noteFreq);
+      const maxFreq = freqValues.length ? Math.max(...freqValues) : 0;
       const totalNotes = bassNotes.length;
       assert.ok(maxFreq / totalNotes >= 0.4, "Should have high repetition (drone characteristic)");
     });
@@ -102,25 +113,19 @@ describe("Electronica Style Validation", () => {
         `Expected minimal techno drum motifs to include four-on-floor or percussive-layer patterns, got ${drumMotifs.join(",")}`
       );
 
-      const square1Gain = result.events.filter(
-        (e: Event) =>
-          e.channel === "square1" &&
-          e.command === "setParam" &&
-          e.data?.param === "gain"
-      );
+      const square1Gain: Array<Event<"setParam">> = result.events
+        .filter(isSetParamEvent)
+        .filter((e): e is Event<"setParam"> => e.channel === "square1" && e.data.param === "gain");
       assert.ok(
-        square1Gain.some((e: Event) => Math.abs((e.data?.value ?? 0) - 0.62) < 0.001),
+        square1Gain.some((e) => Math.abs((e.data.value ?? 0) - 0.62) < 0.001),
         "Minimal techno should apply sidechain-like gain reduction on square1"
       );
 
-      const square2Gain = result.events.filter(
-        (e: Event) =>
-          e.channel === "square2" &&
-          e.command === "setParam" &&
-          e.data?.param === "gain"
-      );
+      const square2Gain: Array<Event<"setParam">> = result.events
+        .filter(isSetParamEvent)
+        .filter((e): e is Event<"setParam"> => e.channel === "square2" && e.data.param === "gain");
       assert.ok(
-        square2Gain.some((e: Event) => Math.abs((e.data?.value ?? 0) - 0.6) < 0.001),
+        square2Gain.some((e) => Math.abs((e.data.value ?? 0) - 0.6) < 0.001),
         "Minimal techno should apply sidechain-like gain reduction on square2"
       );
     });
@@ -144,15 +149,19 @@ describe("Electronica Style Validation", () => {
       const melodyChannelSet = new Set(melodyChannels.length ? melodyChannels : ["square1"]);
 
       const melodyEvents = result.events
-        .filter((e: Event) => melodyChannelSet.has(e.channel) && e.command === "noteOn")
-        .sort((a: Event, b: Event) => a.time - b.time);
+        .filter(isNoteOnEvent)
+        .filter((e: Event<"noteOn">) => melodyChannelSet.has(e.channel))
+        .sort((a: Event<"noteOn">, b: Event<"noteOn">) => a.time - b.time);
 
       if (melodyEvents.length >= 4) {
-        const firstQuarterVel = melodyEvents.slice(0, Math.floor(melodyEvents.length / 4))
-          .reduce((sum: number, e: Event) => sum + e.data.velocity, 0) / Math.floor(melodyEvents.length / 4);
+        const quarterSize = Math.floor(melodyEvents.length / 4);
+        const firstQuarterVel = melodyEvents
+          .slice(0, quarterSize)
+          .reduce((sum, e) => sum + (e.data.velocity ?? 0), 0) / quarterSize;
 
-        const lastQuarterVel = melodyEvents.slice(-Math.floor(melodyEvents.length / 4))
-          .reduce((sum: number, e: Event) => sum + e.data.velocity, 0) / Math.floor(melodyEvents.length / 4);
+        const lastQuarterVel = melodyEvents
+          .slice(-quarterSize)
+          .reduce((sum, e) => sum + (e.data.velocity ?? 0), 0) / quarterSize;
 
         assert.ok(lastQuarterVel > firstQuarterVel,
           `Velocity should increase from start to end (${firstQuarterVel.toFixed(1)} -> ${lastQuarterVel.toFixed(1)})`);
@@ -172,7 +181,9 @@ describe("Electronica Style Validation", () => {
       assert.strictEqual(result.meta.styleIntent.breakInsertion, true);
 
       // Check for noise channel breaks (silence or reduced activity)
-      const noiseEvents = result.events.filter((e: Event) => e.channel === "noise" && e.command === "noteOn");
+      const noiseEvents = result.events
+        .filter(isNoteOnEvent)
+        .filter((e: Event<"noteOn">) => e.channel === "noise");
       assert.ok(noiseEvents.length > 0, "Should have drum events");
     });
 
@@ -198,28 +209,22 @@ describe("Electronica Style Validation", () => {
 
       const result = runPipeline(options);
 
-      const dutyEvents = result.events.filter(
-        (e: Event) =>
-          e.channel === "square2" &&
-          e.command === "setParam" &&
-          e.data?.param === "duty"
-      );
+      const dutyEvents: Array<Event<"setParam">> = result.events
+        .filter(isSetParamEvent)
+        .filter((e): e is Event<"setParam"> => e.channel === "square2" && e.data.param === "duty");
       const progressiveDutyTargets = [0.32, 0.48, 0.58, 0.68];
       assert.ok(
-        dutyEvents.some((e: Event) =>
-          progressiveDutyTargets.some((target) => Math.abs((e.data?.value ?? 0) - target) < 0.001)
+        dutyEvents.some((e: Event<"setParam">) =>
+          progressiveDutyTargets.some((target) => Math.abs((e.data.value ?? 0) - target) < 0.001)
         ),
         "Progressive house should apply duty sweep automation on square2"
       );
 
-      const triangleGain = result.events.filter(
-        (e: Event) =>
-          e.channel === "triangle" &&
-          e.command === "setParam" &&
-          e.data?.param === "gain"
-      );
+      const triangleGain: Array<Event<"setParam">> = result.events
+        .filter(isSetParamEvent)
+        .filter((e): e is Event<"setParam"> => e.channel === "triangle" && e.data.param === "gain");
       assert.ok(
-        triangleGain.some((e: Event) => (e.data?.value ?? 0) >= 0.6),
+        triangleGain.some((e) => (e.data.value ?? 0) >= 0.6),
         "Progressive house should boost pad gain via progressive automation"
       );
     });
@@ -245,12 +250,13 @@ describe("Electronica Style Validation", () => {
       const primaryBassChannel = bassChannels[0] ?? "triangle";
 
       const bassEvents = result.events
-        .filter((e: Event) => e.channel === primaryBassChannel && e.command === "noteOn")
-        .sort((a: Event, b: Event) => a.time - b.time);
+        .filter(isNoteOnEvent)
+        .filter((e: Event<"noteOn">) => e.channel === primaryBassChannel)
+        .sort((a: Event<"noteOn">, b: Event<"noteOn">) => a.time - b.time);
 
       if (bassEvents.length >= 4) {
         // Check for regular pulse (every beat or every other beat)
-        const intervals = [];
+        const intervals: number[] = [];
         for (let i = 1; i < Math.min(bassEvents.length, 10); i++) {
           intervals.push(bassEvents[i].time - bassEvents[i-1].time);
         }

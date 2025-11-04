@@ -5,6 +5,18 @@
  * types for sound effect playback, quantization, and timeline management.
  */
 
+import type {
+  Channel,
+  Command,
+  Event as PlaybackEvent,
+  CompositionOptions,
+  PipelineResult,
+  SEGenerationOptions,
+  SEGenerationResult,
+  SEType,
+  SynthPlayOptions
+} from "../../core/src/index.js";
+
 // ============================================================================
 // Re-exported Core Types
 // ============================================================================
@@ -19,7 +31,7 @@ export type {
   SEGenerationResult,
   SEType,
   SynthPlayOptions
-} from "@algo-chip/core";
+} from "../../core/src/index.js";
 
 // ============================================================================
 // Demo-Specific Types

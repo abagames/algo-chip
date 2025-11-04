@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
+import type { Event } from "../types.js";
 import { generateComposition } from "../pipeline.js";
-import { buildTwoAxisOptions } from "./test-utils.js";
+import { buildTwoAxisOptions, isNoteOnEvent } from "./test-utils.js";
 
 async function run() {
   const result = await generateComposition(
@@ -86,11 +87,13 @@ async function run() {
   );
 
   if (triangleRangeResult.meta.voiceArrangement.id === "bassLed") {
-    const triangleNotes = triangleRangeResult.events.filter(
-      (e) => e.channel === "triangle" && e.command === "noteOn" && e.data?.midi
-    );
+    const triangleMidis = triangleRangeResult.events
+      .filter(isNoteOnEvent)
+      .filter((e: Event<"noteOn">) => e.channel === "triangle")
+      .map((e: Event<"noteOn">) => e.data.midi)
+      .filter((midi): midi is number => typeof midi === "number");
 
-    const highPitchNotes = triangleNotes.filter((e) => e.data.midi > 60);
+    const highPitchNotes = triangleMidis.filter((midi) => midi > 60);
 
     assert.strictEqual(
       highPitchNotes.length,
@@ -98,7 +101,7 @@ async function run() {
       `Triangle channel should not exceed C4 (MIDI 60) in bassLed arrangement. Found ${highPitchNotes.length} high notes.`
     );
 
-    console.log(`Triangle range check passed for bassLed (${triangleNotes.length} notes, all <= C4)`);
+    console.log(`Triangle range check passed for bassLed (${triangleMidis.length} notes, all <= C4)`);
   } else {
     console.log(`Triangle range check skipped (arrangement: ${triangleRangeResult.meta.voiceArrangement.id})`);
   }
