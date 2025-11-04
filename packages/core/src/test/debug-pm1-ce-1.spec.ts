@@ -24,7 +24,7 @@ describe("Debug: PM=1, CE=-1", () => {
       console.log(`\nSeed ${seed}:`);
       console.log(`  tempo: ${result.meta.tempo}`);
       console.log(`  bpm: ${result.meta.bpm}`);
-      console.log(`  bpmBias: ${result.meta.profile.bpmBias}`);
+      console.log(`  energyTag: ${result.meta.profile.tags.energy}`);
       console.log(`  harmonicStatic: ${result.meta.styleIntent.harmonicStatic}`);
 
       // Check if tempo is wrong

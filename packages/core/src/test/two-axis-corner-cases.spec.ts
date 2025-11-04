@@ -49,11 +49,9 @@ describe("Two-Axis Corner Cases", () => {
       // Energy flags should be false
       assert.strictEqual(intent.gradualBuild, false, "gradualBuild should be false");
 
-      // Tempo/BPM
+      // Tempo & energy tags
       assert.strictEqual(result.meta.tempo, "slow", "tempo should be slow");
-      // BPM bias should be close to -20
-      const bpmBias = result.meta.profile.bpmBias || 0;
-      assert.ok(bpmBias <= -19, `BPM bias should be near -20, got ${bpmBias}`);
+      assert.strictEqual(result.meta.profile.tags.energy, "low", "energy tag should be low");
     });
   });
 
@@ -88,10 +86,9 @@ describe("Two-Axis Corner Cases", () => {
       assert.strictEqual(intent.filterMotion, true, "filterMotion should reflect energetic motion");
       assert.strictEqual(intent.harmonicStatic, false, "harmonicStatic should be false");
 
-      // Tempo/BPM
+      // Tempo & energy tags
       assert.strictEqual(result.meta.tempo, "fast", "tempo should be fast");
-      const bpmBias = result.meta.profile.bpmBias || 0;
-      assert.ok(bpmBias >= 19, `BPM bias should be near +20, got ${bpmBias}`);
+      assert.strictEqual(result.meta.profile.tags.energy, "high", "energy tag should be high");
     });
   });
 
@@ -128,10 +125,9 @@ describe("Two-Axis Corner Cases", () => {
       assert.strictEqual(intent.gradualBuild, false, "gradualBuild should be false");
       assert.strictEqual(intent.breakInsertion, false, "breakInsertion should be false");
 
-      // Tempo/BPM
+      // Tempo & energy tags
       assert.strictEqual(result.meta.tempo, "slow", "tempo should be slow");
-      const bpmBias = result.meta.profile.bpmBias || 0;
-      assert.ok(bpmBias <= -19, `BPM bias should be near -20, got ${bpmBias}`);
+      assert.strictEqual(result.meta.profile.tags.energy, "low", "energy tag should be low");
     });
   });
 
@@ -170,10 +166,9 @@ describe("Two-Axis Corner Cases", () => {
       assert.strictEqual(intent.syncopationBias, false, "syncopationBias should be false");
       assert.strictEqual(intent.breakInsertion, false, "breakInsertion should be false (needs percussive)");
 
-      // Tempo/BPM
+      // Tempo & energy tags
       assert.strictEqual(result.meta.tempo, "fast", "tempo should be fast");
-      const bpmBias = result.meta.profile.bpmBias || 0;
-      assert.ok(bpmBias >= 19, `BPM bias should be near +20, got ${bpmBias}`);
+      assert.strictEqual(result.meta.profile.tags.energy, "high", "energy tag should be high");
     });
   });
 
@@ -204,10 +199,9 @@ describe("Two-Axis Corner Cases", () => {
       assert.strictEqual(intent.textureFocus, false, "textureFocus should be false");
       assert.strictEqual(intent.gradualBuild, false, "gradualBuild should be false");
 
-      // Tempo/BPM should be medium/neutral
+      // Tempo & energy tags should be neutral
       assert.strictEqual(result.meta.tempo, "medium", "tempo should be medium");
-      const bpmBias = result.meta.profile.bpmBias || 0;
-      assert.strictEqual(bpmBias, 0, `BPM bias should be 0, got ${bpmBias}`);
+      assert.strictEqual(result.meta.profile.tags.energy, "medium", "energy tag should be medium");
     });
   });
 });

@@ -39,14 +39,7 @@ The final output is a time-series **`eventList`** (array of playback events) tha
   // Style Profile Overrides
   type StyleOverrides = Partial<{
     tempo: "slow" | "medium" | "fast";
-    bpmBias: number;
-    motifTags: { include: string[]; exclude?: string[] };
     intent: Partial<StyleIntent>;
-    expression: {
-      melodyContour?: "ascending" | "stepwise" | "mixed";
-      drumDensity?: "low" | "medium" | "high";
-      velocityCurve?: "soft" | "balanced" | "aggressive";
-    };
     randomizeUnsetIntent: boolean;
   }>;
 

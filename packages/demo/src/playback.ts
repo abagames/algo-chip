@@ -326,7 +326,7 @@ export class SoundEffectController {
     if (quantizeTo === "beat") {
       return 1;
     }
-    if (quantizeTo === "half") {
+    if (quantizeTo === "half_beat") {
       return 0.5;
     }
     if (quantizeTo === "measure") {

@@ -2,7 +2,7 @@
  * Rhythm motif selection
  */
 
-import type { LegacyCompositionOptions, StyleIntent, RhythmMotif } from "../../types.js";
+import type { PipelineCompositionOptions, StyleIntent, RhythmMotif } from "../../types.js";
 import {
   rhythmList,
   rhythmById,
@@ -17,7 +17,7 @@ import {
 } from "./utilities.js";
 
 export function selectRhythmMotif(
-  options: LegacyCompositionOptions,
+  options: PipelineCompositionOptions,
   styleIntent: StyleIntent,
   functionTag: string,
   last: RhythmMotif | undefined,

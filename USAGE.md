@@ -69,97 +69,58 @@ await synth.play(jumpEffect.events, {
 you control `startTime`, `loop`, `lookahead`, `leadTime`, `onEvent`, and
 `volume`.
 
-## 4. Advanced SE Playback with SoundEffectController
+## 4. Session-Oriented Playback (Demo helpers)
 
-For BGM-synchronised sound effects, the demo package provides
-`SoundEffectController` (`packages/demo/src/playback.ts`). It wraps
-`AlgoChipSynthesizer` with ducking, queueing, and beat-quantisation logic.
-
-### 4.1 Complete Setup
+The demo package now exposes a higher-level `AudioSession`
+(`packages/demo/src/lib/core.ts`) that bundles BGM generation, looping playback,
+and SE quantisation/ducking into a single object. This is what the web demo UI
+uses internally.
 
 ```typescript
-import {
-  AlgoChipSynthesizer,
-  SEGenerator,
-  generateComposition
-} from "@algo-chip/core";
-import type { PipelineResult } from "@algo-chip/core";
-import { SoundEffectController } from "./packages/demo/src/playback.js";
-import type { ActiveTimeline } from "./packages/demo/src/types.js";
+import { createAudioSession } from "./packages/demo/src/lib/core.js";
 
-// --- Initialize core components -------------------------------------------
-
-const audioContext = new AudioContext();
-const synth = new AlgoChipSynthesizer(audioContext, {
+const session = createAudioSession({
   workletBasePath: "./worklets/"
 });
-await synth.init();
 
-const generator = new SEGenerator();
+// Must be invoked from a user-initiated event handler (click/touch) due to browser autoplay policy.
+await session.resumeAudioContext();
 
-// --- Track active BGM timeline for quantisation ---------------------------
-
-let activeTimeline: ActiveTimeline | null = null;
-
-function setActiveTimeline(bgm: PipelineResult, startTime: number) {
-  activeTimeline = {
-    startTime,
-    loop: true,
-    meta: {
-      bpm: bgm.meta.bpm,
-      loopInfo: bgm.meta.loopInfo
-    }
-  };
-}
-
-const seController = new SoundEffectController(
-  audioContext,
-  synth,
-  () => activeTimeline,
-  synth.masterGain
-);
-
-// --- Generate and start looping BGM --------------------------------------
-
-const bgm = await generateComposition({ seed: 9001, lengthInMeasures: 16 });
-const bgmStartTime = audioContext.currentTime + 0.3; // matches synth lead time
-
-await synth.play(bgm.events, {
-  loop: true,
-  startTime: bgmStartTime
+// Generate and start looping BGM (stores active timeline for SE quantisation)
+const bgm = await session.generateBgm({
+  lengthInMeasures: 16,
+  seed: 9001,
+  twoAxisStyle: { percussiveMelodic: -0.3, calmEnergetic: 0.7 }
 });
 
-setActiveTimeline(bgm, bgmStartTime);
-```
+await session.playBgm(bgm, {
+  loop: true,
+  onEvent: (event, when) => {
+    // Optional: hook for visualisation
+  }
+});
 
-### 4.2 Quantise SE to BGM Ticks
-
-```typescript
-const coin = generator.generateSE({ type: "coin" });
-
-await seController.play(coin, {
+// Trigger a beat-quantised, ducked SE using the shared SE generator/synth
+await session.triggerSe({
+  type: "coin",
   duckingDb: -4,
   quantize: {
-    quantizeTo: { subdivision: 8 }, // 1/8-note grid (ticks)
+    quantizeTo: "beat",
     phase: "next",
-    offsetBeats: 0,
     loopAware: true
-  },
-  minIntervalMs: 80,
-  volume: 0.9
+  }
 });
 ```
 
-- `quantizeTo` accepts `"beat"`, `"half"`, `"measure"`, or a custom
-  `{ subdivision }` for finer tick alignment.
-- `phase: "next"` snaps to the next tick; set to `"current"` for immediate
-  alignment or provide `{ measure, beat }` for absolute positioning.
-- When `loopAware` is `true`, quantisation respects the BGM loop window defined
-  by `PipelineResult.meta.loopInfo`.
+- `configureSeDefaults({ duckingDb, volume, quantize })` adjusts the defaults
+  used by subsequent `triggerSe` calls.
+- `setBgmVolume(value)` rescales the looped BGM without rebuilding the synth.
+- `cancelScheduledSe()` clears any queued-but-not-yet-fired SEs (useful when
+  pausing or stopping playback).
 
-**Note**: `SoundEffectController` lives in the demo package to keep the core
-library lightweight. You can copy or adapt the controller if your runtime needs
-the same behaviour outside the demo environment.
+Under the hood the session wraps `AlgoChipSynthesizer` and the existing
+`SoundEffectController`; if you need deeper customisation you can still import
+and wire those pieces manually.
 
 ## 5. Regenerating API Reference
 

@@ -5,7 +5,7 @@
 import type {
   SectionDefinition,
   StyleIntent,
-  Phase1Result,
+  StructurePlanResult,
   AbstractNote,
   DrumHit,
   SectionMotifPlan,
@@ -64,7 +64,7 @@ export interface MotifContext {
   compositionBaseRegister: number;
   sectionById: Map<string, SectionDefinition>;
   styleIntent: StyleIntent;
-  voiceArrangement: Phase1Result["voiceArrangement"];
+  voiceArrangement: StructurePlanResult["voiceArrangement"];
   totalMeasures: number;
 
   // Used motif tracking

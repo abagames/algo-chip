@@ -2,7 +2,7 @@
  * Section template definitions
  */
 
-import type { LegacyCompositionOptions } from "../../types.js";
+import type { PipelineCompositionOptions } from "../../types.js";
 
 export const SECTION_TEMPLATE_POOL: Array<Array<{ id: string; measures: number }>> = [
   [
@@ -31,7 +31,7 @@ export const SECTION_TEMPLATE_POOL: Array<Array<{ id: string; measures: number }
 ];
 
 export const TEMPLATE_INDEX_BY_MOOD: Partial<
-  Record<LegacyCompositionOptions["mood"], number[]>
+  Record<PipelineCompositionOptions["mood"], number[]>
 > = {
   tense: [0, 3],
   upbeat: [1, 2],
@@ -45,7 +45,7 @@ export const TEMPLATE_INDEX_BY_MOOD: Partial<
  */
 export const SECTION_TEMPLATES_BY_LENGTH: Record<
   number,
-  Record<LegacyCompositionOptions["mood"], Array<{ id: string; measures: number }>>
+  Record<PipelineCompositionOptions["mood"], Array<{ id: string; measures: number }>>
 > = {
   // 16 measures: Simple AB structure
   16: {

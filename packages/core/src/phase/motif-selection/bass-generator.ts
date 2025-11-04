@@ -46,7 +46,7 @@
  * - Compatible with 4-on-the-floor drums (kick on every beat = 1.0 beat spacing)
  */
 
-import type { BassPatternMotif, AbstractNote, Phase1Result, SectionDefinition, StyleIntent } from "../../types.js";
+import type { BassPatternMotif, AbstractNote, StructurePlanResult, SectionDefinition, StyleIntent } from "../../types.js";
 import { chordRootToMidi, quantizeMidiToChord } from "../../musicUtils.js";
 import { DEFAULT_BASS_STEPS, FALLBACK_BASS_PATTERN } from "./motif-loader.js";
 import { selectBassPattern } from "./bass-selector.js";
@@ -121,7 +121,7 @@ export function bassStepToMidi(
  * Build bass pattern with default MIDI calculation
  */
 export function buildBassPattern(
-  section: Phase1Result["sections"][number],
+  section: StructurePlanResult["sections"][number],
   measureStartBeat: number,
   chord: string,
   nextChord: string,
@@ -159,7 +159,7 @@ export function buildBassPattern(
  * Build bass pattern with explicit baseMidi
  */
 export function buildBassPatternWithBaseMidi(
-  section: Phase1Result["sections"][number],
+  section: StructurePlanResult["sections"][number],
   measureStartBeat: number,
   chord: string,
   nextChord: string,

@@ -1,4 +1,4 @@
-import { CompositionOptions, LegacyCompositionOptions, PipelineResult, ResolvedStyleProfile } from "./types.js";
+import { CompositionOptions, PipelineCompositionOptions, PipelineResult, ResolvedStyleProfile } from "./types.js";
 import { planStructure } from "./phase/structure-planning.js";
 import { selectMotifs } from "./phase/motif-selection.js";
 import { realizeEvents } from "./phase/event-realization.js";
@@ -25,23 +25,22 @@ import { resolveGenerationContext } from "./style/profile-resolver.js";
  * @returns Complete composition result with events, diagnostics, and metadata
  */
 export function runPipeline(options: CompositionOptions): PipelineResult {
-  // Convert modern TwoAxisStyle API to legacy format for backward compatibility.
-  // This allows the pipeline to use simpler mood/tempo/seed parameters internally
-  // while exposing the more intuitive two-axis coordinate system externally.
-  const { legacy, profile, replayOptions } = resolveOptions(options);
+  // Convert modern TwoAxisStyle API to pipeline-friendly options while preserving
+  // the simplified mood/tempo/seed parameters used internally.
+  const { pipeline, profile, replayOptions } = resolveOptions(options);
 
   // Phase execution is strictly sequential because each phase depends on the previous.
   // Phase 1 must determine BPM before Phase 2 can select tempo-appropriate motifs.
-  const structurePlan = planStructure(legacy);
+  const structurePlan = planStructure(pipeline);
 
   // Motif selection happens after structure planning so tag-based filtering
   // can use the resolved mood, tempo, and section templates.
-  const motifSelection = selectMotifs(legacy, structurePlan);
+  const motifSelection = selectMotifs(pipeline, structurePlan);
 
   // Event realization maps abstract musical roles to physical channels.
   // This separation allows the same melody to be rendered on different channels
   // based on the Voice Arrangement preset (standard, swapped, dualBass, etc.).
-  const eventRealization = realizeEvents(legacy, structurePlan, motifSelection);
+  const eventRealization = realizeEvents(pipeline, structurePlan, motifSelection);
 
   // Techniques are applied after basic notes are generated so they can
   // scan the complete note timeline and make context-aware decisions
@@ -61,7 +60,7 @@ export function runPipeline(options: CompositionOptions): PipelineResult {
   // Loop info is calculated here (not in Phase 5) because it's metadata about
   // the composition as a whole, not part of the event timeline itself.
   const BEATS_PER_MEASURE = 4;
-  const totalBeats = legacy.lengthInMeasures * BEATS_PER_MEASURE;
+  const totalBeats = pipeline.lengthInMeasures * BEATS_PER_MEASURE;
   const totalDuration = (totalBeats / structurePlan.bpm) * 60;
 
   return {
@@ -70,10 +69,10 @@ export function runPipeline(options: CompositionOptions): PipelineResult {
     meta: {
       bpm: structurePlan.bpm,
       key: structurePlan.key,
-      seed: legacy.seed,
-      mood: legacy.mood,
-      tempo: legacy.tempo,
-      lengthInMeasures: legacy.lengthInMeasures,
+      seed: pipeline.seed,
+      mood: pipeline.mood,
+      tempo: pipeline.tempo,
+      lengthInMeasures: pipeline.lengthInMeasures,
       styleIntent: structurePlan.styleIntent,
       voiceArrangement: structurePlan.voiceArrangement,
       profile,
@@ -106,19 +105,18 @@ export async function generateComposition(options: CompositionOptions): Promise<
 }
 
 /**
- * Resolves modern CompositionOptions to legacy format.
+ * Resolves modern CompositionOptions to the simplified pipeline format.
  *
  * The system evolved from a simple mood/tempo/seed API to a two-axis coordinate system.
- * Rather than rewrite the entire pipeline, we convert the modern API to the legacy format
+ * Rather than rewrite the entire pipeline, we map the modern API to the internal format
  * at the entry point. This provides a clean external API (two-axis coordinates are more
- * intuitive than mood strings), stable internal implementation (pipeline code doesn't need
- * to change), and a gradual migration path (both APIs can coexist during refactoring).
+ * intuitive than mood strings) while keeping the existing pipeline stable.
  *
  * @param options Modern composition options
- * @returns Legacy options, resolved profile, and replay options for result metadata
+ * @returns Pipeline options, resolved profile, and replay options for result metadata
  */
 function resolveOptions(options: CompositionOptions): {
-  legacy: LegacyCompositionOptions;
+  pipeline: PipelineCompositionOptions;
   profile: ResolvedStyleProfile;
   replayOptions: CompositionOptions;
 } {

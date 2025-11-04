@@ -2,7 +2,7 @@
  * Style intent resolution and merging
  */
 
-import type { StyleIntent, LegacyCompositionOptions, SectionDefinition } from "../../types.js";
+import type { StyleIntent, PipelineCompositionOptions, SectionDefinition } from "../../types.js";
 import { STYLE_INTENT_BASE, STYLE_PRESET_MAP } from "./constants.js";
 
 /**
@@ -34,7 +34,7 @@ export function mergeStyleIntent(
 /**
  * Precompute style intent from options (preset + overrides)
  */
-export function precomputeStyleIntent(options: LegacyCompositionOptions): Partial<StyleIntent> {
+export function precomputeStyleIntent(options: PipelineCompositionOptions): Partial<StyleIntent> {
   let intent: Partial<StyleIntent> = {};
 
   // Apply preset first
@@ -57,7 +57,7 @@ export function precomputeStyleIntent(options: LegacyCompositionOptions): Partia
  * Resolve final style intent based on composition structure
  */
 export function resolveStyleIntent(
-  options: LegacyCompositionOptions,
+  options: PipelineCompositionOptions,
   sections: SectionDefinition[]
 ): StyleIntent {
   let intent = createStyleIntent();

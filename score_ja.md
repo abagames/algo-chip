@@ -38,14 +38,7 @@
   // スタイルプロファイル上書き
   type StyleOverrides = Partial<{
     tempo: "slow" | "medium" | "fast";
-    bpmBias: number;
-    motifTags: { include: string[]; exclude?: string[] };
     intent: Partial<StyleIntent>;
-    expression: {
-      melodyContour?: "ascending" | "stepwise" | "mixed";
-      drumDensity?: "low" | "medium" | "high";
-      velocityCurve?: "soft" | "balanced" | "aggressive";
-    };
     randomizeUnsetIntent: boolean;
   }>;
 

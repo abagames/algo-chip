@@ -1,4 +1,4 @@
-import { Phase3Result, StyleIntent, TimedEvent, TechniqueLibrary } from "../types.js";
+import { EventRealizationResult, StyleIntent, TimedEvent, TechniqueLibrary } from "../types.js";
 import { BEATS_PER_MEASURE } from "../musicUtils.js";
 import techniqueLibraryJson from "../../motifs/techniques.json" with { type: "json" };
 
@@ -15,7 +15,7 @@ const GRADUAL_BUILD_GAIN_RAMP: Record<TimedEvent["channel"], { base: number; pea
   noise: { base: 0.74, peak: 0.82 }
 };
 
-export function applyTechniques(phase3: Phase3Result, styleIntent: StyleIntent): TechniquesPostprocessResult {
+export function applyTechniques(phase3: EventRealizationResult, styleIntent: StyleIntent): TechniquesPostprocessResult {
   const additionalEvents: TimedEvent[] = [];
   const totalTrackBeats = phase3.events.reduce((max, event) => Math.max(max, event.beatTime), 0);
   const totalMeasures = Math.max(1, Math.ceil(totalTrackBeats / BEATS_PER_MEASURE));

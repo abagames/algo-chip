@@ -2,7 +2,7 @@
  * Melody fragment selection
  */
 
-import type { LegacyCompositionOptions, StyleIntent, MelodyFragment } from "../../types.js";
+import type { PipelineCompositionOptions, StyleIntent, MelodyFragment } from "../../types.js";
 import { melodyList, MELODY_MOOD_TAGS } from "./motif-loader.js";
 import {
   preferTagPresence,
@@ -13,7 +13,7 @@ import {
 } from "./utilities.js";
 
 export function selectMelodyFragment(
-  options: LegacyCompositionOptions,
+  options: PipelineCompositionOptions,
   styleIntent: StyleIntent,
   requiredTags: string[],
   rng: () => number,

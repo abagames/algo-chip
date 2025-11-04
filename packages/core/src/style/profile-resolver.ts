@@ -2,9 +2,8 @@
  * Style Profile Resolution System
  *
  * This module converts modern CompositionOptions (two-axis style coordinates) into
- * LegacyCompositionOptions (mood/tempo strings) for backward compatibility with the
- * existing pipeline. It serves as a bridge between the new user-facing API and the
- * legacy internal implementation.
+ * PipelineCompositionOptions (mood/tempo strings) used by the internal pipeline.
+ * It serves as a bridge between the user-facing API and the simplified pipeline inputs.
  *
  * ## Why Two APIs?
  *
@@ -25,14 +24,14 @@
  * ```
  * - **Pros**: Continuous space (infinite combinations), intuitive axes (percussive↔melodic,
  *   calm↔energetic), matches music theory concepts
- * - **Cons**: Requires coordinate → category mapping for legacy pipeline
+ * - **Cons**: Requires coordinate → category mapping for the existing pipeline
  *
  * ## Resolution Strategy
  *
  * Rather than rewrite the entire pipeline to use two-axis coordinates directly, we:
  * 1. Accept modern two-axis API externally (CompositionOptions)
  * 2. Map coordinates to discrete mood/tempo internally (two-axis-mapper.ts)
- * 3. Pass LegacyCompositionOptions through existing pipeline
+ * 3. Pass PipelineCompositionOptions through existing pipeline
  * 4. Store resolved profile in metadata for debugging/replay
  *
  * This provides:
@@ -66,30 +65,28 @@
 
 import {
   type CompositionOptions,
-  type LegacyCompositionOptions,
+  type PipelineCompositionOptions,
   type MoodSetting,
   type ResolvedStyleProfile,
   type StyleIntent,
   type StyleProfile,
   type StylePreset,
   type StyleOverrides,
-  type TwoAxisStyle,
-  validateTwoAxisStyle
+  type TwoAxisStyle
 } from "../types.js";
 import {
+  validateTwoAxisStyle,
   mapTwoAxisToStyleIntent,
-  deriveTwoAxisExpression,
-  deriveTwoAxisBpmBias,
   deriveTwoAxisTempo,
   inferTagsFromAxis
 } from "./two-axis-mapper.js";
 import { PRESET_TO_TWO_AXIS } from "./preset-to-axis.js";
 
 /**
- * Resolution result containing legacy format, resolved profile, and replay options.
+ * Resolution result containing pipeline format, resolved profile, and replay options.
  */
 interface ResolveResult {
-  legacy: LegacyCompositionOptions;      // For pipeline consumption
+  pipeline: PipelineCompositionOptions;  // For pipeline consumption
   profile: ResolvedStyleProfile;         // For metadata/diagnostics
   replayOptions: CompositionOptions;     // For exact replay
 }
@@ -122,10 +119,7 @@ const DEFAULT_INTENT: StyleIntent = {
 
 const DEFAULT_PROFILE: StyleProfile = {
   tempo: "medium",
-  bpmBias: 0,
-  motifTags: { include: [], exclude: [] },
   intent: { ...DEFAULT_INTENT },
-  expression: {},
   randomizeUnsetIntent: false
 };
 
@@ -168,47 +162,22 @@ function ensureIntent(partial: Partial<StyleIntent>, rng: (() => number) | null,
   return intent;
 }
 
-function mergeExpression(
-  base: NonNullable<StyleProfile["expression"]> | undefined,
-  patch: Partial<NonNullable<StyleProfile["expression"]>>
-): NonNullable<StyleProfile["expression"]> {
-  return {
-    melodyContour: patch.melodyContour ?? base?.melodyContour,
-    drumDensity: patch.drumDensity ?? base?.drumDensity,
-    velocityCurve: patch.velocityCurve ?? base?.velocityCurve
-  };
-}
-
 function mergeProfile(base: StyleProfile, patch: StyleOverrides): StyleProfile {
-  const result: StyleProfile = {
-    tempo: patch.tempo ?? base.tempo,
-    bpmBias: patch.bpmBias ?? base.bpmBias,
-    motifTags: {
-      include: patch.motifTags?.include ?? base.motifTags.include ?? [],
-      exclude: patch.motifTags?.exclude ?? base.motifTags.exclude ?? []
-    },
-    intent: { ...base.intent },
-    expression: mergeExpression(base.expression, patch.expression ?? {}),
-    randomizeUnsetIntent: patch.randomizeUnsetIntent ?? base.randomizeUnsetIntent
-  };
-
-  if (patch.motifTags?.include) {
-    result.motifTags.include = patch.motifTags.include.slice();
-  }
-  if (patch.motifTags?.exclude) {
-    result.motifTags.exclude = patch.motifTags.exclude.slice();
-  }
-
+  const intent: StyleIntent = { ...base.intent };
   if (patch.intent) {
     for (const key of INTENT_KEYS) {
       const value = patch.intent[key];
       if (typeof value === "boolean") {
-        result.intent[key] = value;
+        intent[key] = value;
       }
     }
   }
 
-  return result;
+  return {
+    tempo: patch.tempo ?? base.tempo,
+    intent,
+    randomizeUnsetIntent: patch.randomizeUnsetIntent ?? base.randomizeUnsetIntent
+  };
 }
 
 function inferPresetFromAxis(axis: TwoAxisStyle): StylePreset | undefined {
@@ -234,14 +203,14 @@ function inferPresetFromAxis(axis: TwoAxisStyle): StylePreset | undefined {
 }
 
 /**
- * Resolves CompositionOptions into legacy format + resolved profile + replay options.
+ * Resolves CompositionOptions into pipeline format + resolved profile + replay options.
  *
  * This is the main entry point for style resolution. It:
  * 1. Validates and defaults user input (length, seed, two-axis coordinates)
  * 2. Maps two-axis coordinates to StyleIntent flags
  * 3. Applies user overrides (if provided)
- * 4. Derives expression parameters (melody contour, drum density, velocity curve)
- * 5. Infers mood/tempo for legacy pipeline
+ * 4. Infers energy/mood tags for metadata
+ * 5. Infers mood/tempo for the pipeline
  * 6. Optionally randomizes unset intent flags (if randomizeUnsetIntent=true)
  * 7. Packages results for pipeline consumption and metadata storage
  *
@@ -264,7 +233,7 @@ function inferPresetFromAxis(axis: TwoAxisStyle): StylePreset | undefined {
  * - Enable randomization for experimental variety
  *
  * @param options - Modern composition options with two-axis style
- * @returns Resolved context with legacy format, profile, and replay options
+ * @returns Resolved context with pipeline format, profile, and replay options
  */
 export function resolveGenerationContext(options: CompositionOptions): ResolveResult {
   const resolvedLength =
@@ -291,18 +260,13 @@ export function resolveGenerationContext(options: CompositionOptions): ResolveRe
     }
   }
 
-  const expression = deriveTwoAxisExpression(axis);
-  const bpmBias = deriveTwoAxisBpmBias(axis);
   const tempo = deriveTwoAxisTempo(axis);
   const inferredTags = inferTagsFromAxis(axis);
   const mood: MoodSetting = inferredTags.mood;
 
   let profile: StyleProfile = {
     tempo,
-    bpmBias,
-    motifTags: { include: [], exclude: [] },
     intent,
-    expression,
     randomizeUnsetIntent: false
   };
 
@@ -320,7 +284,7 @@ export function resolveGenerationContext(options: CompositionOptions): ResolveRe
     randomizeUnsetIntent: shouldRandomizeIntent
   };
 
-  const legacy: LegacyCompositionOptions = {
+  const pipelineOptions: PipelineCompositionOptions = {
     mood,
     tempo: profile.tempo ?? "medium",
     lengthInMeasures: resolvedLength,
@@ -349,7 +313,7 @@ export function resolveGenerationContext(options: CompositionOptions): ResolveRe
   }
 
   return {
-    legacy,
+    pipeline: pipelineOptions,
     profile: resolvedProfile,
     replayOptions
   };

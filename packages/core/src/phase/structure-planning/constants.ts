@@ -2,25 +2,25 @@
  * Base constants for structure planning
  */
 
-import type { LegacyCompositionOptions, TextureProfile, StyleIntent, StylePreset } from "../../types.js";
+import type { PipelineCompositionOptions, TextureProfile, StyleIntent, StylePreset } from "../../types.js";
 import chordsJson from "../../../motifs/chords.json" with { type: "json" };
 
 export const chords = chordsJson as Record<string, Record<string, string[][]>>;
 
-export const TEMPO_BASE: Record<LegacyCompositionOptions["tempo"], number> = {
+export const TEMPO_BASE: Record<PipelineCompositionOptions["tempo"], number> = {
   slow: 90,
   medium: 120,
   fast: 150
 };
 
-export const MOOD_TAG_MAP: Record<LegacyCompositionOptions["mood"], string[]> = {
+export const MOOD_TAG_MAP: Record<PipelineCompositionOptions["mood"], string[]> = {
   upbeat: ["overworld_bright", "heroic"],
   sad: ["ending_sorrowful", "dark"],
   tense: ["final_battle_tense", "castle_majestic"],
   peaceful: ["town_peaceful", "simple"]
 };
 
-export const DEFAULT_KEY_PER_MOOD: Record<LegacyCompositionOptions["mood"], string> = {
+export const DEFAULT_KEY_PER_MOOD: Record<PipelineCompositionOptions["mood"], string> = {
   upbeat: "G_Major",
   sad: "E_Minor",
   tense: "E_Minor",

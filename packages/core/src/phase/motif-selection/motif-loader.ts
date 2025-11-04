@@ -9,7 +9,7 @@ import type {
   DrumPattern,
   BassPatternMotif,
   TransitionMotif,
-  LegacyCompositionOptions,
+  PipelineCompositionOptions,
   VoiceArrangementPreset
 } from "../../types.js";
 
@@ -82,21 +82,21 @@ export const FALLBACK_BASS_PATTERN: BassPatternMotif = {
 // Mood-based Tag Mappings
 // ========================================
 
-export const RHYTHM_PROPERTY_TAGS: Record<LegacyCompositionOptions["mood"], string[]> = {
+export const RHYTHM_PROPERTY_TAGS: Record<PipelineCompositionOptions["mood"], string[]> = {
   upbeat: ["straight", "syncopation"],
   sad: ["straight", "simple"],
   tense: ["syncopation", "accented"],
   peaceful: ["straight", "open"]
 };
 
-export const MELODY_MOOD_TAGS: Record<LegacyCompositionOptions["mood"], string[]> = {
+export const MELODY_MOOD_TAGS: Record<PipelineCompositionOptions["mood"], string[]> = {
   upbeat: ["bright", "ascending"],
   sad: ["dark", "descending"],
   tense: ["dark", "complex", "leaping"],
   peaceful: ["simple", "arch", "bright"]
 };
 
-export const MELODY_RHYTHM_TAGS: Record<LegacyCompositionOptions["mood"], string[]> = {
+export const MELODY_RHYTHM_TAGS: Record<PipelineCompositionOptions["mood"], string[]> = {
   upbeat: ["syncopated", "drive"],
   sad: ["legato", "rest_heavy"],
   tense: ["syncopated", "staccato"],

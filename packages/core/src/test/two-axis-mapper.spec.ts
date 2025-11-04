@@ -2,8 +2,6 @@ import { describe, it } from "node:test";
 import assert from "node:assert";
 import {
   mapTwoAxisToStyleIntent,
-  deriveTwoAxisExpression,
-  deriveTwoAxisBpmBias,
   deriveTwoAxisTempo,
   inferTagsFromAxis,
   validateTwoAxisStyle
@@ -130,52 +128,6 @@ describe("mapTwoAxisToStyleIntent", () => {
   });
 });
 
-describe("deriveTwoAxisExpression", () => {
-  it("should return ascending contour for melodic + energetic", () => {
-    const expr = deriveTwoAxisExpression({ percussiveMelodic: 0.6, calmEnergetic: 0.4 });
-    assert.strictEqual(expr.melodyContour, "ascending");
-  });
-
-  it("should return stepwise contour for melodic without energy", () => {
-    const expr = deriveTwoAxisExpression({ percussiveMelodic: 0.5, calmEnergetic: 0 });
-    assert.strictEqual(expr.melodyContour, "stepwise");
-  });
-
-  it("should return mixed contour for balanced", () => {
-    const expr = deriveTwoAxisExpression({ percussiveMelodic: 0, calmEnergetic: 0 });
-    assert.strictEqual(expr.melodyContour, "mixed");
-  });
-
-  it("should return high drum density for percussive + energetic", () => {
-    const expr = deriveTwoAxisExpression({ percussiveMelodic: -0.8, calmEnergetic: 0.5 });
-    assert.strictEqual(expr.drumDensity, "high");
-  });
-
-  it("should return low drum density for melodic + calm", () => {
-    const expr = deriveTwoAxisExpression({ percussiveMelodic: 0.6, calmEnergetic: -0.4 });
-    assert.strictEqual(expr.drumDensity, "low");
-  });
-
-  it("should return medium drum density for balanced", () => {
-    const expr = deriveTwoAxisExpression({ percussiveMelodic: 0, calmEnergetic: 0 });
-    assert.strictEqual(expr.drumDensity, "medium");
-  });
-
-  it("should return soft velocity for very calm", () => {
-    const expr = deriveTwoAxisExpression({ percussiveMelodic: 0, calmEnergetic: -0.7 });
-    assert.strictEqual(expr.velocityCurve, "soft");
-  });
-
-  it("should return aggressive velocity for high energy", () => {
-    const expr = deriveTwoAxisExpression({ percussiveMelodic: 0, calmEnergetic: 0.6 });
-    assert.strictEqual(expr.velocityCurve, "aggressive");
-  });
-
-  it("should return balanced velocity for moderate energy", () => {
-    const expr = deriveTwoAxisExpression({ percussiveMelodic: 0, calmEnergetic: 0 });
-    assert.strictEqual(expr.velocityCurve, "balanced");
-  });
-});
 
 describe("validateTwoAxisStyle", () => {
   it("should clamp values outside the expected range", () => {
@@ -214,27 +166,6 @@ describe("presetToTwoAxis", () => {
   });
 });
 
-describe("deriveTwoAxisBpmBias", () => {
-  it("should return -20 for ultra calm (-1.0)", () => {
-    const bias = deriveTwoAxisBpmBias({ percussiveMelodic: 0, calmEnergetic: -1.0 });
-    assert.strictEqual(bias, -20);
-  });
-
-  it("should return 0 for balanced (0.0)", () => {
-    const bias = deriveTwoAxisBpmBias({ percussiveMelodic: 0, calmEnergetic: 0.0 });
-    assert.strictEqual(bias, 0);
-  });
-
-  it("should return +20 for ultra energetic (+1.0)", () => {
-    const bias = deriveTwoAxisBpmBias({ percussiveMelodic: 0, calmEnergetic: 1.0 });
-    assert.strictEqual(bias, 20);
-  });
-
-  it("should return +14 for high energy (+0.7)", () => {
-    const bias = deriveTwoAxisBpmBias({ percussiveMelodic: 0, calmEnergetic: 0.7 });
-    assert.strictEqual(bias, 14);
-  });
-});
 
 describe("deriveTwoAxisTempo", () => {
   it("should return slow for calm < -0.4", () => {

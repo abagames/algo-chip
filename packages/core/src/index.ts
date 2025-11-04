@@ -7,7 +7,12 @@ export type {
   PipelineResult,
   Event,
   Channel,
-  Command
+  Command,
+  TwoAxisStyle,
+  StyleOverrides,
+  NoteOnEventData,
+  NoteOffEventData,
+  SetParamEventData
 } from "./types.js";
 export type {
   SEGenerationOptions,

@@ -41,7 +41,7 @@
  * Each stage has fallback logic to prevent getting stuck with zero candidates.
  */
 
-import type { LegacyCompositionOptions, StyleIntent, MelodyRhythmMotif } from "../../types.js";
+import type { PipelineCompositionOptions, StyleIntent, MelodyRhythmMotif } from "../../types.js";
 import { melodyRhythmList, MELODY_RHYTHM_TAGS } from "./motif-loader.js";
 import { convertToBeats } from "./pattern-expander.js";
 import { preferTagPresence, pickWithAvoid, hasAllTags, preferUnused } from "./utilities.js";
@@ -150,7 +150,7 @@ function filterHumanizedMelodyRhythms(
  * @throws Error if no motifs match the required length (library gap)
  */
 export function selectMelodyRhythmMotif(
-  options: LegacyCompositionOptions,
+  options: PipelineCompositionOptions,
   styleIntent: StyleIntent,
   functionTag: string,
   totalBeats: number,

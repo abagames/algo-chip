@@ -10,11 +10,9 @@
  * - Web Audio synthesis with looping support
  */
 
-import { ChipSynthesizer } from "./synth.js";
-import { generateTimeline, generateSoundEffect } from "./lib/core.js";
-import { SoundEffectController } from "./playback.js";
+import { createAudioSession } from "./lib/core.js";
 import type {
-  ActiveTimeline,
+  AudioSession,
   PlaybackEvent,
   CompositionOptions,
   PipelineResult,
@@ -85,15 +83,11 @@ const state: DemoState = {
   },
 };
 
-// Web Audio and synthesis state
-let audioContext: AudioContext | null = null;
-let synthesizer: ChipSynthesizer | null = null;
-let seSynthesizer: ChipSynthesizer | null = null;
-let soundEffectController: SoundEffectController | null = null;
-let activeTimeline: ActiveTimeline | null = null;
+// Web Audio session state
+let session: AudioSession | null = null;
 let animationFrameId: number | null = null;
 /** Map of active notes for tracking which notes are currently playing (channel-midi -> note data) */
-let activeNotes = new Map<string, { channel: string; velocity: number; endTime: number }>();
+const activeNotes = new Map<string, { channel: string; velocity: number; endTime: number }>();
 let resumeOnVisibility = false;
 let resumeOffsetSeconds = 0;
 
@@ -254,6 +248,14 @@ async function handlePanelClick(event: MouseEvent | TouchEvent): Promise<void> {
 // Composition Generation and Playback
 // ============================================================================
 
+async function ensureSession(): Promise<AudioSession> {
+  if (!session) {
+    session = createAudioSession();
+  }
+  await session.resumeAudioContext();
+  return session;
+}
+
 /**
  * Generates a new composition at the specified two-axis coordinates and starts playback.
  *
@@ -277,16 +279,14 @@ async function generateAndPlay(position: { percussiveMelodic: number; calmEnerge
       lengthInMeasures: 16,
     };
 
-    const result = await generateTimeline(options);
+    const demoSession = await ensureSession();
+    const result = await demoSession.generateBgm(options);
     state.composition = result;
 
     updateStatus(`Generated: ${result.meta.mood} at ${result.meta.bpm} BPM in ${result.meta.key}`);
 
-    // Initialize audio if needed
-    await ensureAudioContext();
-
     // Start playback
-    await startPlayback(result.events);
+    await startPlayback();
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
     updateStatus(`Error: ${message}`);
@@ -294,41 +294,6 @@ async function generateAndPlay(position: { percussiveMelodic: number; calmEnerge
   } finally {
     state.isGenerating = false;
     updateUI();
-  }
-}
-
-/**
- * Ensures the AudioContext and ChipSynthesizer are initialized and ready.
- *
- * Creates the AudioContext and synthesizer on first use, resumes suspended
- * contexts (required by browser autoplay policies), and loads AudioWorklet processors.
- */
-async function ensureAudioContext(): Promise<void> {
-  if (!audioContext) {
-    audioContext = new AudioContext({ sampleRate: 44100, latencyHint: "interactive" });
-  }
-
-  if (audioContext.state === "suspended") {
-    await audioContext.resume();
-  }
-
-  if (!synthesizer) {
-    synthesizer = new ChipSynthesizer(audioContext);
-    await synthesizer.init();
-  }
-
-  if (!seSynthesizer) {
-    seSynthesizer = new ChipSynthesizer(audioContext);
-    await seSynthesizer.init();
-  }
-
-  if (!soundEffectController && seSynthesizer && synthesizer) {
-    soundEffectController = new SoundEffectController(
-      audioContext,
-      seSynthesizer,
-      () => activeTimeline,
-      synthesizer.masterGain
-    );
   }
 }
 
@@ -341,41 +306,34 @@ async function ensureAudioContext(): Promise<void> {
  *
  * @param events List of playback events to schedule
  */
-async function startPlayback(events: PlaybackEvent[], offsetSeconds = 0): Promise<void> {
-  if (!audioContext || !synthesizer) {
+async function startPlayback(offsetSeconds = 0): Promise<void> {
+  if (!state.composition) {
     return;
   }
 
+  const demoSession = await ensureSession();
   state.isPlaying = true;
   playPauseButton.disabled = false;
   updateUI();
 
-  const ctx = audioContext;
-  const startTime = ctx.currentTime + 0.2;
   const offset = Math.max(0, offsetSeconds);
 
   // Clear active notes
   activeNotes.clear();
 
-  if (state.composition) {
-    activeTimeline = {
-      startTime: startTime - offset,
-      loop: true,
-      meta: state.composition.meta,
-    };
-  }
-
   // Start playback with event callback
-  synthesizer.play(events, {
-    startTime,
-    offset,
-    loop: true,
-    onEvent: handleSynthEvent
-  }).catch((error) => {
+  try {
+    await demoSession.playBgm(state.composition, {
+      offset,
+      loop: true,
+      onEvent: handleSynthEvent
+    });
+  } catch (error) {
     console.error("Playback error:", error);
     state.isPlaying = false;
     updateUI();
-  });
+    throw error;
+  }
 
   // Start animation loop for indicators
   startIndicatorAnimation();
@@ -389,15 +347,8 @@ async function startPlayback(events: PlaybackEvent[], offsetSeconds = 0): Promis
  * indicators to their inactive state.
  */
 function stopPlayback(): void {
-  if (synthesizer) {
-    synthesizer.stop();
-  }
-
-  if (seSynthesizer) {
-    seSynthesizer.stop();
-  }
-
-  soundEffectController?.cancelPendingJobs();
+  session?.stopBgm();
+  session?.cancelScheduledSe();
 
   if (animationFrameId !== null) {
     cancelAnimationFrame(animationFrameId);
@@ -406,8 +357,6 @@ function stopPlayback(): void {
 
   state.isPlaying = false;
   activeNotes.clear();
-  activeTimeline = null;
-  soundEffectController?.resetDucking();
 
   // Reset all indicators
   Object.values(indicators).forEach((indicator) => {
@@ -420,11 +369,12 @@ function stopPlayback(): void {
 }
 
 /** Suspends the shared AudioContext if it is currently running. */
-function suspendAudioContext(): void {
-  if (audioContext && audioContext.state === "running") {
-    void audioContext.suspend().catch((error) => {
-      console.warn("AudioContext suspend failed:", error);
-    });
+async function suspendSessionAudio(): Promise<void> {
+  if (!session) return;
+  try {
+    await session.suspendAudioContext();
+  } catch (error) {
+    console.warn("AudioContext suspend failed:", error);
   }
 }
 
@@ -435,9 +385,11 @@ function suspendAudioContext(): void {
 function handleVisibilityChange(): void {
   if (document.hidden) {
     resumeOnVisibility = state.isPlaying;
-    if (state.isPlaying && audioContext && activeTimeline) {
-      const elapsed = Math.max(0, audioContext.currentTime - activeTimeline.startTime);
-      const totalDuration = activeTimeline.meta?.loopInfo?.totalDuration ?? 0;
+    const timeline = session?.getActiveTimeline();
+    const ctx = session?.getAudioContext();
+    if (state.isPlaying && timeline && ctx) {
+      const elapsed = Math.max(0, ctx.currentTime - timeline.startTime);
+      const totalDuration = timeline.meta?.loopInfo?.totalDuration ?? 0;
       resumeOffsetSeconds = totalDuration > 0 ? elapsed % totalDuration : elapsed;
     } else {
       resumeOffsetSeconds = 0;
@@ -446,7 +398,7 @@ function handleVisibilityChange(): void {
       stopPlayback();
       updateStatus("Playback paused (tab inactive)");
     }
-    suspendAudioContext();
+    void suspendSessionAudio();
     return;
   }
 
@@ -455,9 +407,9 @@ function handleVisibilityChange(): void {
 
   const resumePlayback = async (offset: number): Promise<void> => {
     try {
-      await ensureAudioContext();
+      await ensureSession();
       if (state.composition) {
-        await startPlayback(state.composition.events, offset);
+        await startPlayback(offset);
         updateStatus("Playback resumed");
       }
     } catch (error) {
@@ -470,8 +422,8 @@ function handleVisibilityChange(): void {
     const offset = resumeOffsetSeconds;
     resumeOffsetSeconds = 0;
     void resumePlayback(offset);
-  } else if (audioContext && audioContext.state === "suspended") {
-    void audioContext.resume().catch((error) => {
+  } else if (session) {
+    void session.resumeAudioContext().catch((error) => {
       console.warn("AudioContext resume failed:", error);
     });
   }
@@ -479,30 +431,23 @@ function handleVisibilityChange(): void {
 
 async function triggerIndicatorSoundEffect(channel: IndicatorChannel): Promise<void> {
   try {
-    await ensureAudioContext();
-
-    if (!soundEffectController || !state.composition) {
+    const demoSession = await ensureSession();
+    if (!state.composition) {
       return;
     }
 
     const seType = indicatorSEMap[channel];
-    const result = await generateSoundEffect({ type: seType });
-
-    const playPromise = soundEffectController.play(result, {
+    await demoSession.triggerSe({
+      type: seType,
       duckingDb: -4,
       quantize: {
         quantizeTo: "beat",
         phase: "next",
         loopAware: true,
-      },
+      }
     });
 
     updateStatus(`Scheduled ${seType} sound effect`);
-
-    void playPromise.catch((playError) => {
-      console.error("Indicator sound effect playback failed:", playError);
-      updateStatus("Sound effect playback failed");
-    });
   } catch (error) {
     console.error("Indicator sound effect trigger failed:", error);
     updateStatus("Sound effect trigger failed");
@@ -534,8 +479,13 @@ function togglePlayback(): void {
     stopPlayback();
     updateStatus("Playback paused");
   } else if (state.composition) {
-    startPlayback(state.composition.events);
-    updateStatus("Playback resumed");
+    void startPlayback().then(
+      () => updateStatus("Playback resumed"),
+      (error) => {
+        console.error("Playback resume failed:", error);
+        updateStatus("Playback resume failed");
+      }
+    );
   }
 }
 
@@ -577,11 +527,13 @@ function handleSynthEvent(event: PlaybackEvent, when: number): void {
  */
 function startIndicatorAnimation(): void {
   const animate = () => {
-    if (!audioContext || !state.isPlaying) {
+    const ctx = session?.getAudioContext();
+    if (!ctx || !state.isPlaying) {
+      animationFrameId = requestAnimationFrame(animate);
       return;
     }
 
-    const currentTime = audioContext.currentTime;
+    const currentTime = ctx.currentTime;
     const channelVelocities = { square1: 0, square2: 0, triangle: 0, noise: 0 };
 
     // Calculate current velocities from active notes

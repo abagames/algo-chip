@@ -1,9 +1,11 @@
 import {
-  LegacyCompositionOptions,
-  Phase1Result,
-  Phase2Result,
-  Phase3Result,
+  PipelineCompositionOptions,
+  StructurePlanResult,
+  MotifSelectionResult,
+  EventRealizationResult,
   TimedEvent,
+  NoteOnEventData,
+  NoteOffEventData,
   MidiNote,
   StyleIntent,
   TextureProfile,
@@ -230,15 +232,10 @@ function resolveNoiseRelease(
   return base;
 }
 
-interface NoteEventPayload {
+type NoteEventPayload = NoteOnEventData & {
   midi: number;
   velocity: number;
-  detuneCents?: number;
-  slide?: {
-    targetMidi?: number;
-    durationSeconds: number;
-  };
-}
+};
 
 function deriveArpeggioPattern(chordIntervals: number[]): number[] {
   const cycle = chordIntervals.length > 0 ? chordIntervals : [0, 4, 7];
@@ -348,17 +345,17 @@ interface RealizationContext {
   totalBeats: number;
   styleIntent: StyleIntent;
   tempoSetting: TempoSetting;
-  phase1: Phase1Result;
-  phase2: Phase2Result;
+  phase1: StructurePlanResult;
+  phase2: MotifSelectionResult;
 }
 
 /**
  * Creates a RealizationContext from composition options and phase results.
  */
 function createRealizationContext(
-  options: LegacyCompositionOptions,
-  phase1: Phase1Result,
-  phase2: Phase2Result
+  options: PipelineCompositionOptions,
+  phase1: StructurePlanResult,
+  phase2: MotifSelectionResult
 ): RealizationContext {
   return {
     rng: createRng(options.seed ?? RNG_SEED),
@@ -376,7 +373,7 @@ function createRealizationContext(
  * Handles melody and melodyAlt roles.
  */
 function realizeMelodyTrack(
-  track: Phase2Result["tracks"][number],
+  track: MotifSelectionResult["tracks"][number],
   voiceConfig: Voice,
   context: RealizationContext
 ): TimedEvent[] {
@@ -420,7 +417,7 @@ function realizeMelodyTrack(
  * Handles bass and bassAlt roles.
  */
 function realizeBassTrack(
-  track: Phase2Result["tracks"][number],
+  track: MotifSelectionResult["tracks"][number],
   voiceConfig: Voice,
   context: RealizationContext
 ): TimedEvent[] {
@@ -442,7 +439,7 @@ function realizeBassTrack(
  * Handles accompaniment and pad roles.
  */
 function realizeAccompanimentTrack(
-  track: Phase2Result["tracks"][number],
+  track: MotifSelectionResult["tracks"][number],
   voiceConfig: Voice,
   context: RealizationContext
 ): TimedEvent[] {
@@ -526,7 +523,7 @@ function realizeAccompanimentTrack(
  * Always outputs to the noise channel.
  */
 function realizeDrumEvents(
-  drums: Phase2Result["drums"],
+  drums: MotifSelectionResult["drums"],
   context: RealizationContext
 ): TimedEvent[] {
   const noiseEvents: TimedEvent[] = [];
@@ -612,7 +609,7 @@ function realizeDrumEvents(
  * Routes track realization based on voice role.
  */
 function realizeTrack(
-  track: Phase2Result["tracks"][number],
+  track: MotifSelectionResult["tracks"][number],
   voiceConfig: Voice,
   context: RealizationContext
 ): TimedEvent[] {
@@ -630,10 +627,10 @@ function realizeTrack(
 }
 
 export function realizeEvents(
-  options: LegacyCompositionOptions,
-  phase1: Phase1Result,
-  phase2: Phase2Result
-): Phase3Result {
+  options: PipelineCompositionOptions,
+  phase1: StructurePlanResult,
+  phase2: MotifSelectionResult
+): EventRealizationResult {
   const context = createRealizationContext(options, phase1, phase2);
   const events: TimedEvent[] = [];
 
@@ -664,8 +661,9 @@ function pushNote(
   startBeat: number,
   durationBeats: number,
   channel: TimedEvent["channel"],
-  data: NoteEventPayload | Record<string, unknown>,
-  totalBeats: number
+  data: NoteEventPayload,
+  totalBeats: number,
+  noteOffData: NoteOffEventData = {}
 ) {
   // Boundary check: skip notes that start at or beyond totalBeats
   if (startBeat >= totalBeats) {
@@ -685,13 +683,13 @@ function pushNote(
     beatTime: endBeat,
     channel,
     command: "noteOff",
-    data
+    data: noteOffData
   });
 }
 
-function computeVoiceAllocation(events: TimedEvent[]): Phase3Result["diagnostics"] {
+function computeVoiceAllocation(events: TimedEvent[]): EventRealizationResult["diagnostics"] {
   const channelCounts = new Map<TimedEvent["channel"], number>();
-  const diagnostics: Phase3Result["diagnostics"] = { voiceAllocation: [] };
+  const diagnostics: EventRealizationResult["diagnostics"] = { voiceAllocation: [] };
 
   for (const event of events) {
     if (!channelCounts.has(event.channel)) {

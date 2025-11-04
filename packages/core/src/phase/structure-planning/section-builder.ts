@@ -2,7 +2,7 @@
  * Section building logic
  */
 
-import type { LegacyCompositionOptions, StyleIntent, SectionDefinition } from "../../types.js";
+import type { PipelineCompositionOptions, StyleIntent, SectionDefinition } from "../../types.js";
 import { shuffleArray, randomFromSeed } from "./utilities.js";
 import { SECTION_TEMPLATES_BY_LENGTH, SECTION_TEMPLATE_POOL, TEMPLATE_INDEX_BY_MOOD } from "./templates.js";
 import { buildLimitedProgression } from "./chord-progression.js";
@@ -11,7 +11,7 @@ import { resolveTexture } from "./texture-resolver.js";
 /**
  * Pick template for mood from pool
  */
-function pickTemplateForMood(mood: LegacyCompositionOptions["mood"], seed: number | undefined) {
+function pickTemplateForMood(mood: PipelineCompositionOptions["mood"], seed: number | undefined) {
   const candidates = TEMPLATE_INDEX_BY_MOOD[mood] ?? SECTION_TEMPLATE_POOL.map((_, index) => index);
   const index = candidates[Math.floor(randomFromSeed(seed, 60) * candidates.length)] ?? 0;
   return SECTION_TEMPLATE_POOL[index].map((segment) => ({ ...segment }));
@@ -21,7 +21,7 @@ function pickTemplateForMood(mood: LegacyCompositionOptions["mood"], seed: numbe
  * Build section definitions from options and chord pool
  */
 export function buildSections(
-  options: LegacyCompositionOptions,
+  options: PipelineCompositionOptions,
   chordsPool: string[][],
   seed: number | undefined,
   precomputedIntent: Partial<StyleIntent>

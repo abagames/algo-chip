@@ -1,8 +1,8 @@
 import {
   Diagnostics,
   Event,
-  Phase1Result,
-  Phase3Diagnostics,
+  StructurePlanResult,
+  EventRealizationDiagnostics,
   SectionMotifPlan,
   TimedEvent
 } from "../types.js";
@@ -13,9 +13,9 @@ interface TimelineFinalizationResult {
 }
 
 export function finalizeTimeline(
-  phase1: Phase1Result,
+  phase1: StructurePlanResult,
   techniquesEvents: TimedEvent[],
-  eventDiagnostics: Phase3Diagnostics,
+  eventDiagnostics: EventRealizationDiagnostics,
   motifUsage: Diagnostics["motifUsage"],
   sectionMotifPlan: SectionMotifPlan[]
 ): TimelineFinalizationResult {

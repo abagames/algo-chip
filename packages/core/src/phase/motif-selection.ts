@@ -85,9 +85,9 @@
 
 import {
   AbstractNote,
-  LegacyCompositionOptions,
-  Phase1Result,
-  Phase2Result,
+  PipelineCompositionOptions,
+  StructurePlanResult,
+  MotifSelectionResult,
   MidiNote,
   SectionDefinition,
   SectionMotifPlan,
@@ -198,7 +198,7 @@ const FALLBACK_BASS_PATTERN: BassPatternMotif = {
  * The tag order represents priority (first = preferred). Selection algorithm
  * filters motifs by these tags first, then falls back if the pool is exhausted.
  */
-const RHYTHM_PROPERTY_TAGS: Record<LegacyCompositionOptions["mood"], string[]> = {
+const RHYTHM_PROPERTY_TAGS: Record<PipelineCompositionOptions["mood"], string[]> = {
   upbeat: ["straight", "syncopation"],
   sad: ["straight", "simple"],
   tense: ["syncopation", "accented"],
@@ -216,7 +216,7 @@ const RHYTHM_PROPERTY_TAGS: Record<LegacyCompositionOptions["mood"], string[]> =
  *
  * Tags come from the melody.json motif library and were hand-curated for each motif.
  */
-const MELODY_MOOD_TAGS: Record<LegacyCompositionOptions["mood"], string[]> = {
+const MELODY_MOOD_TAGS: Record<PipelineCompositionOptions["mood"], string[]> = {
   upbeat: ["bright", "ascending"],
   sad: ["dark", "descending"],
   tense: ["dark", "complex", "leaping"],
@@ -235,7 +235,7 @@ const MELODY_MOOD_TAGS: Record<LegacyCompositionOptions["mood"], string[]> = {
  * Melody-rhythm motifs combine pitch and duration, so these tags affect both
  * melodic contour and rhythmic feel simultaneously.
  */
-const MELODY_RHYTHM_TAGS: Record<LegacyCompositionOptions["mood"], string[]> = {
+const MELODY_RHYTHM_TAGS: Record<PipelineCompositionOptions["mood"], string[]> = {
   upbeat: ["syncopated", "drive"],
   sad: ["legato", "rest_heavy"],
   tense: ["syncopated", "staccato"],
@@ -579,7 +579,7 @@ function isRhythmMotifConsistent(motif: RhythmMotif): boolean {
 }
 
 function selectRhythmMotif(
-  options: LegacyCompositionOptions,
+  options: PipelineCompositionOptions,
   styleIntent: StyleIntent,
   functionTag: string,
   last: (typeof rhythmList)[number] | undefined,
@@ -646,7 +646,7 @@ function selectRhythmMotif(
 }
 
 function selectMelodyFragment(
-  options: LegacyCompositionOptions,
+  options: PipelineCompositionOptions,
   styleIntent: StyleIntent,
   requiredTags: string[],
   rng: () => number,
@@ -687,7 +687,7 @@ function selectMelodyFragment(
 }
 
 function selectMelodyRhythmMotif(
-  options: LegacyCompositionOptions,
+  options: PipelineCompositionOptions,
   styleIntent: StyleIntent,
   functionTag: string,
   totalBeats: number,
@@ -737,7 +737,7 @@ function selectMelodyRhythmMotif(
 }
 
 function resolveMelodyVelocity(
-  section: Phase1Result["sections"][number],
+  section: StructurePlanResult["sections"][number],
   measureInSection: number,
   globalMeasureIndex: number,
   totalMeasures: number,
@@ -967,7 +967,7 @@ function pickRhythmVariation(
 type BassStep = "root" | "fifth" | "lowFifth" | "octave" | "octaveHigh" | "approach" | "rest";
 
 function buildBassPattern(
-  section: Phase1Result["sections"][number],
+  section: StructurePlanResult["sections"][number],
   measureStartBeat: number,
   chord: string,
   nextChord: string,
@@ -1253,7 +1253,7 @@ function maybeGenerateTransition(
   return { motifId: motif.id, hits };
 }
 
-function resolveBassVelocity(section: Phase1Result["sections"][number], step: number): number {
+function resolveBassVelocity(section: StructurePlanResult["sections"][number], step: number): number {
   const base = (VELOCITY_BASS_TEXTURE as Record<string, number>)[section.texture] ?? VELOCITY_BASS_TEXTURE.default;
   if (step === 0) {
     return base + VELOCITY_BASS_ACCENT.DOWNBEAT_BOOST;
@@ -1344,7 +1344,7 @@ function resolveAccompanimentVelocity(
 }
 
 function buildAccompanimentSeeds(
-  section: Phase1Result["sections"][number],
+  section: StructurePlanResult["sections"][number],
   measureStartBeat: number,
   rhythmMotif: RhythmMotif,
   baseMelody: (typeof melodyList)[number],
@@ -1549,7 +1549,7 @@ interface MotifContext {
   compositionBaseRegister: number;
   sectionById: Map<string, SectionDefinition>;
   styleIntent: StyleIntent;
-  voiceArrangement: Phase1Result["voiceArrangement"];
+  voiceArrangement: StructurePlanResult["voiceArrangement"];
   totalMeasures: number;
 
   // Used motif tracking
@@ -1674,8 +1674,8 @@ function setHookForOccurrence(
  * Initialize context for motif selection (REFACTORING_ROADMAP.md P2-1)
  */
 function initializeMotifContext(
-  options: LegacyCompositionOptions,
-  phase1: Phase1Result
+  options: PipelineCompositionOptions,
+  phase1: StructurePlanResult
 ): MotifContext {
   const rng = createRng(options.seed);
   const compositionSeed = options.seed ?? Date.now();
@@ -1764,8 +1764,8 @@ interface MeasureContext {
  */
 function processSectionPhrases(
   section: SectionDefinition,
-  phase1: Phase1Result,
-  options: LegacyCompositionOptions,
+  phase1: StructurePlanResult,
+  options: PipelineCompositionOptions,
   context: MotifContext,
   results: MotifResults
 ): void {
@@ -1801,8 +1801,8 @@ function processSectionPhrases(
  */
 function createPhraseContext(
   section: SectionDefinition,
-  phase1: Phase1Result,
-  options: LegacyCompositionOptions,
+  phase1: StructurePlanResult,
+  options: PipelineCompositionOptions,
   phraseMeasures: number,
   isFirstPhrase: boolean,
   phraseStartMeasureIndex: number,
@@ -1956,8 +1956,8 @@ function createPhraseContext(
  */
 function processSinglePhrase(
   phraseContext: PhraseContext,
-  phase1: Phase1Result,
-  options: LegacyCompositionOptions,
+  phase1: StructurePlanResult,
+  options: PipelineCompositionOptions,
   context: MotifContext,
   results: MotifResults
 ): void {
@@ -2037,7 +2037,7 @@ function processSinglePhrase(
 function createMeasureContext(
   phraseContext: PhraseContext,
   phraseOffset: number,
-  options: LegacyCompositionOptions,
+  options: PipelineCompositionOptions,
   context: MotifContext
 ): MeasureContext {
   const { section, isFirstPhrase, baseRhythm } = phraseContext;
@@ -2169,7 +2169,7 @@ function generateMelodyForMeasure(
  */
 function generateBassForMeasure(
   measureContext: MeasureContext,
-  phase1: Phase1Result,
+  phase1: StructurePlanResult,
   section: SectionDefinition,
   context: MotifContext,
   bassOutput: AbstractNote[]
@@ -2305,7 +2305,7 @@ function generateDrumsForMeasure(
  */
 function convertMelodyToMidi(
   melody: AbstractNote[],
-  phase1: Phase1Result,
+  phase1: StructurePlanResult,
   context: MotifContext
 ): MidiNote[] {
   return melody.map((note) => {
@@ -2335,7 +2335,7 @@ function convertMelodyToMidi(
  */
 function convertAccompanimentToMidi(
   accompanimentSeeds: AbstractNote[],
-  phase1: Phase1Result,
+  phase1: StructurePlanResult,
   melodyMidi: MidiNote[]
 ): MidiNote[] {
   return accompanimentSeeds.map((note) => {
@@ -2353,7 +2353,7 @@ function convertAccompanimentToMidi(
  */
 function convertBassToMidi(
   bass: AbstractNote[],
-  phase1: Phase1Result
+  phase1: StructurePlanResult
 ): MidiNote[] {
   return bass.map((note) => {
     const midiOverride = (note as any).midiOverride as number | undefined;
@@ -2368,12 +2368,12 @@ function convertBassToMidi(
  * Legacy Phase2 implementation for standard/swapped arrangements
  * Preserves backwards compatibility
  */
-function selectMotifsLegacy(options: LegacyCompositionOptions, phase1: Phase1Result): {
+function selectMotifsLegacy(options: PipelineCompositionOptions, phase1: StructurePlanResult): {
   melody: MidiNote[];
   bass: MidiNote[];
   accompanimentSeeds: MidiNote[];
   drums: DrumHit[];
-  motifUsage: Phase2Result["motifUsage"];
+  motifUsage: MotifSelectionResult["motifUsage"];
   sectionMotifPlan: SectionMotifPlan[];
 } {
   // Initialize context (P2-1 refactoring: extracted from original implementation)
@@ -2411,7 +2411,7 @@ function selectMotifsLegacy(options: LegacyCompositionOptions, phase1: Phase1Res
 /**
  * New Phase2 implementation with voice arrangement support
  */
-export function selectMotifs(options: LegacyCompositionOptions, phase1: Phase1Result): Phase2Result {
+export function selectMotifs(options: PipelineCompositionOptions, phase1: StructurePlanResult): MotifSelectionResult {
   const { voiceArrangement } = phase1;
   const baseSeed = options.seed ?? RNG_SEED;
   const legacy = selectMotifsLegacy(options, phase1);
@@ -2431,7 +2431,7 @@ export function selectMotifs(options: LegacyCompositionOptions, phase1: Phase1Re
   }
 
   // New arrangements: generate tracks based on voice roles
-  const tracks: Phase2Result["tracks"] = [];
+  const tracks: MotifSelectionResult["tracks"] = [];
 
   // Process each voice in the arrangement
   for (const voice of voiceArrangement.voices) {
@@ -2721,7 +2721,7 @@ function shouldGenerateForVoice(
  * Modified buildBassPattern to accept custom baseMidi
  */
 function buildBassPatternWithBaseMidi(
-  section: Phase1Result["sections"][number],
+  section: StructurePlanResult["sections"][number],
   measureStartBeat: number,
   chord: string,
   nextChord: string,
@@ -2764,8 +2764,8 @@ function generateBassTrackForVoice(
   priority: number,
   octaveOffset: number,
   seedOffset: number,
-  options: LegacyCompositionOptions,
-  phase1: Phase1Result
+  options: PipelineCompositionOptions,
+  phase1: StructurePlanResult
 ): AbstractNote[] {
   const bassNotes: AbstractNote[] = [];
   const styleIntent = phase1.styleIntent;
@@ -2827,8 +2827,8 @@ function generateBassTrackForVoice(
  */
 function generatePadTrackForVoice(
   priority: number,
-  options: LegacyCompositionOptions,
-  phase1: Phase1Result,
+  options: PipelineCompositionOptions,
+  phase1: StructurePlanResult,
   baseSeed: number
 ): AbstractNote[] {
   const voiceRng = createRng(baseSeed);

@@ -2,14 +2,14 @@
  * Technique strategy derivation and application
  */
 
-import type { LegacyCompositionOptions, StyleIntent, TechniqueStrategy } from "../../types.js";
+import type { PipelineCompositionOptions, StyleIntent, TechniqueStrategy } from "../../types.js";
 import { randomFromSeed } from "./utilities.js";
 
 /**
  * Derive technique strategy from mood and style intent
  */
 export function deriveTechniqueStrategy(
-  mood: LegacyCompositionOptions["mood"],
+  mood: PipelineCompositionOptions["mood"],
   styleIntent: StyleIntent,
   seed: number | undefined
 ): TechniqueStrategy {

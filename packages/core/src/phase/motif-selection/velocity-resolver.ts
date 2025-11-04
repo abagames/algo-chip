@@ -2,14 +2,14 @@
  * Velocity resolution for different instrument roles
  */
 
-import type { SectionDefinition, StyleIntent, Phase1Result } from "../../types.js";
+import type { SectionDefinition, StyleIntent, StructurePlanResult } from "../../types.js";
 import {
   VELOCITY_BASS_TEXTURE,
   VELOCITY_BASS_ACCENT
 } from "../../constants/velocity-config.js";
 
 export function resolveMelodyVelocity(
-  section: Phase1Result["sections"][number],
+  section: StructurePlanResult["sections"][number],
   measureInSection: number,
   globalMeasureIndex: number,
   totalMeasures: number,
@@ -44,7 +44,7 @@ export function resolveMelodyVelocity(
 }
 
 export function resolveBassVelocity(
-  section: Phase1Result["sections"][number],
+  section: StructurePlanResult["sections"][number],
   step: number
 ): number {
   const base =

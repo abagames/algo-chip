@@ -21,6 +21,49 @@ export interface TwoAxisStyle {
 export type Channel = "square1" | "square2" | "triangle" | "noise";
 export type Command = "noteOn" | "noteOff" | "setParam";
 
+export interface NoteOnEventData extends Record<string, unknown> {
+  midi?: number;
+  velocity?: number;
+  detuneCents?: number;
+  slide?: {
+    targetMidi?: number;
+    targetFrequency?: number;
+    durationSeconds?: number;
+    curve?: "linear" | "exponential";
+  };
+}
+
+export interface NoteOffEventData extends Record<string, unknown> {
+  releaseSeconds?: number;
+}
+
+export interface SetParamEventData extends Record<string, unknown> {
+  param: string;
+  value?: number;
+  rampDuration?: number;
+  curve?: string;
+}
+
+export type EventCommandData<C extends Command> =
+  C extends "noteOn"
+    ? NoteOnEventData
+    : C extends "noteOff"
+      ? NoteOffEventData
+      : C extends "setParam"
+        ? SetParamEventData
+        : never;
+
+export interface TimedEvent<C extends Command = Command> {
+  beatTime: number;
+  channel: Channel;
+  command: C;
+  data: EventCommandData<C>;
+}
+
+export interface Event<C extends Command = Command> extends Omit<TimedEvent<C>, "beatTime"> {
+  time: number;
+}
+
 export type StylePreset =
   | "minimalTechno"
   | "progressiveHouse"
@@ -40,33 +83,14 @@ export interface StyleIntent {
   atmosPad: boolean;
 }
 
-export type StyleTagCategory = "genre" | "mood" | "energy" | "scene";
-
 export interface StyleTags {
-  genre?: string;
-  mood?: string;
+  mood?: MoodSetting;
   energy?: "low" | "medium" | "high";
-  scene?: string;
-  custom?: string[];
 }
-
-export type MelodyContour = "ascending" | "stepwise" | "mixed";
-export type DrumDensity = "low" | "medium" | "high";
-export type VelocityCurve = "soft" | "balanced" | "aggressive";
 
 export interface StyleProfile {
   tempo: TempoSetting;
-  bpmBias?: number;
-  motifTags: {
-    include: string[];
-    exclude?: string[];
-  };
   intent: StyleIntent;
-  expression?: {
-    melodyContour?: MelodyContour;
-    drumDensity?: DrumDensity;
-    velocityCurve?: VelocityCurve;
-  };
   randomizeUnsetIntent?: boolean;
 }
 
@@ -75,18 +99,30 @@ export interface ResolvedStyleProfile extends StyleProfile {
   twoAxisStyle: TwoAxisStyle;
 }
 
-export interface StyleOverrides extends Partial<Omit<StyleProfile, "intent">> {
+export interface StyleOverrides extends Partial<Pick<StyleProfile, "tempo" | "randomizeUnsetIntent">> {
   intent?: Partial<StyleIntent>;
 }
 
+/**
+ * Public composition options resolved by {@link generateComposition}.
+ *
+ * Defaults when omitted:
+ * - `lengthInMeasures`: 32 measures
+ * - `seed`: random 32-bit integer per invocation
+ * - `twoAxisStyle`: `{ percussiveMelodic: 0, calmEnergetic: 0 }`
+ */
 export interface CompositionOptions {
+  /** Target composition length in measures (rounded down, default 32). */
   lengthInMeasures?: number;
+  /** Deterministic RNG seed (rounded down, default random). */
   seed?: number;
+  /** Two-axis style coordinates controlling mood/energy (clamped to [-1, 1]). */
   twoAxisStyle?: TwoAxisStyle;
+  /** Optional style overrides applied after two-axis resolution. */
   overrides?: StyleOverrides;
 }
 
-export interface LegacyCompositionOptions {
+export interface PipelineCompositionOptions {
   mood: MoodSetting;
   tempo: TempoSetting;
   lengthInMeasures: number;
@@ -103,17 +139,6 @@ export interface LegacyCompositionOptions {
    * This affects whether A2 uses the same motifs as A1 or variations
    */
   sectionRepeatBias?: number;
-}
-
-export interface TimedEvent {
-  beatTime: number;
-  channel: Channel;
-  command: Command;
-  data: any;
-}
-
-export interface Event extends Omit<TimedEvent, "beatTime"> {
-  time: number;
 }
 
 /**
@@ -191,7 +216,7 @@ export interface DrumHit {
   sectionId: string;
 }
 
-export interface Phase1Result {
+export interface StructurePlanResult {
   bpm: number;
   key: string;
   scaleDegrees: number[];
@@ -277,12 +302,12 @@ export interface Diagnostics {
   sectionMotifPlan: SectionMotifPlan[];
 }
 
-export interface Phase3Result {
+export interface EventRealizationResult {
   events: TimedEvent[];
-  diagnostics: Phase3Diagnostics;
+  diagnostics: EventRealizationDiagnostics;
 }
 
-export interface Phase3Diagnostics {
+export interface EventRealizationDiagnostics {
   voiceAllocation: Array<{
     beatTime: number;
     channel: Channel;
@@ -295,7 +320,7 @@ export interface MidiNote extends AbstractNote {
   detuneCents?: number;
 }
 
-export interface Phase2Result {
+export interface MotifSelectionResult {
   tracks: {
     role: VoiceRole;
     notes: MidiNote[];
@@ -401,14 +426,4 @@ export interface TechniqueLibrary {
     measureBoundaryValue: number;
     defaultValue: number;
   }>;
-}
-
-/**
- * Validates and clamps two-axis values to valid range
- */
-export function validateTwoAxisStyle(axis: TwoAxisStyle): TwoAxisStyle {
-  return {
-    percussiveMelodic: Math.max(-1.0, Math.min(1.0, axis.percussiveMelodic)),
-    calmEnergetic: Math.max(-1.0, Math.min(1.0, axis.calmEnergetic))
-  };
 }

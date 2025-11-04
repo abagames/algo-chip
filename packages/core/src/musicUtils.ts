@@ -1,4 +1,4 @@
-import { AbstractNote, DrumHit, Phase1Result } from "./types.js";
+import { AbstractNote, DrumHit, StructurePlanResult } from "./types.js";
 
 /**
  * Drum durations are deliberately short to emulate chiptune hardware constraints.
@@ -222,7 +222,7 @@ export function generateDrumHitsFromPattern(
  * @returns Chord symbol at the given beat time
  */
 export function resolveChordAtBeat(
-  phase1: Phase1Result,
+  phase1: StructurePlanResult,
   beatTime: number,
   beatsPerMeasure = BEATS_PER_MEASURE
 ): string {

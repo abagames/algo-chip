@@ -1,6 +1,6 @@
 import {
-  LegacyCompositionOptions,
-  Phase1Result,
+  PipelineCompositionOptions,
+  StructurePlanResult,
   SectionDefinition,
   TechniqueStrategy,
   StyleIntent,
@@ -24,7 +24,7 @@ const chords = chordsJson as Record<string, Record<string, string[][]>>;
  * - fast (150): High-energy battle themes and chase sequences
  * Each base value is jittered ±15 BPM per seed for variety without straying too far from the intended feel.
  */
-const TEMPO_BASE: Record<LegacyCompositionOptions["tempo"], number> = {
+const TEMPO_BASE: Record<PipelineCompositionOptions["tempo"], number> = {
   slow: 90,
   medium: 120,
   fast: 150
@@ -37,7 +37,7 @@ const TEMPO_BASE: Record<LegacyCompositionOptions["tempo"], number> = {
  * "overworld_bright" progressions but can fall back to "heroic" if needed.
  * Tags come from the motif JSON library and were manually curated for each mood.
  */
-const MOOD_TAG_MAP: Record<LegacyCompositionOptions["mood"], string[]> = {
+const MOOD_TAG_MAP: Record<PipelineCompositionOptions["mood"], string[]> = {
   upbeat: ["overworld_bright", "heroic"],
   sad: ["ending_sorrowful", "dark"],
   tense: ["final_battle_tense", "castle_majestic"],
@@ -52,7 +52,7 @@ const MOOD_TAG_MAP: Record<LegacyCompositionOptions["mood"], string[]> = {
  * - peaceful → C Major: Neutral, calm (simplest key, no accidentals)
  * These defaults can be overridden by seed-based selection if the preferred key lacks motifs.
  */
-const DEFAULT_KEY_PER_MOOD: Record<LegacyCompositionOptions["mood"], string> = {
+const DEFAULT_KEY_PER_MOOD: Record<PipelineCompositionOptions["mood"], string> = {
   upbeat: "G_Major",
   sad: "E_Minor",
   tense: "E_Minor",
@@ -93,7 +93,7 @@ const SECTION_TEMPLATE_POOL: Array<Array<{ id: string; measures: number }>> = [
   ]
 ];
 
-const TEMPLATE_INDEX_BY_MOOD: Partial<Record<LegacyCompositionOptions["mood"], number[]>> = {
+const TEMPLATE_INDEX_BY_MOOD: Partial<Record<PipelineCompositionOptions["mood"], number[]>> = {
   tense: [0, 3],
   upbeat: [1, 2],
   sad: [2, 3],
@@ -106,7 +106,7 @@ const TEMPLATE_INDEX_BY_MOOD: Partial<Record<LegacyCompositionOptions["mood"], n
  */
 const SECTION_TEMPLATES_BY_LENGTH: Record<
   number,
-  Record<LegacyCompositionOptions["mood"], Array<{ id: string; measures: number }>>
+  Record<PipelineCompositionOptions["mood"], Array<{ id: string; measures: number }>>
 > = {
   // 16 measures: Simple AB structure
   16: {
@@ -265,7 +265,7 @@ function mergeStyleIntent(base: StyleIntent, patch: Partial<StyleIntent> | undef
  * Pre-compute styleIntent from options only (before sections are built).
  * This allows preset-driven flags like harmonicStatic to influence section building.
  */
-function precomputeStyleIntent(options: LegacyCompositionOptions): Partial<StyleIntent> {
+function precomputeStyleIntent(options: PipelineCompositionOptions): Partial<StyleIntent> {
   let intent: Partial<StyleIntent> = {};
 
   // Apply preset first
@@ -284,7 +284,7 @@ function precomputeStyleIntent(options: LegacyCompositionOptions): Partial<Style
   return intent;
 }
 
-function resolveStyleIntent(options: LegacyCompositionOptions, sections: SectionDefinition[]): StyleIntent {
+function resolveStyleIntent(options: PipelineCompositionOptions, sections: SectionDefinition[]): StyleIntent {
   let intent = createStyleIntent();
   if (options.stylePreset) {
     const presetPatch = STYLE_PRESET_MAP[options.stylePreset];
@@ -485,7 +485,7 @@ function buildLimitedProgression(
 }
 
 function buildSections(
-  options: LegacyCompositionOptions,
+  options: PipelineCompositionOptions,
   chordsPool: string[][],
   seed: number | undefined,
   precomputedIntent: Partial<StyleIntent>
@@ -684,7 +684,7 @@ export function repriseHook(section: { templateId: string; occurrenceIndex: numb
 }
 
 function deriveTechniqueStrategy(
-  mood: LegacyCompositionOptions["mood"],
+  mood: PipelineCompositionOptions["mood"],
   styleIntent: StyleIntent,
   seed: number | undefined
 ): TechniqueStrategy {
@@ -951,7 +951,7 @@ function selectVoiceArrangement(
   return VOICE_ARRANGEMENTS.standard;
 }
 
-export function planStructure(options: LegacyCompositionOptions): Phase1Result {
+export function planStructure(options: PipelineCompositionOptions): StructurePlanResult {
   const baseBpm = TEMPO_BASE[options.tempo];
   const bpmOffset = Math.round((randomFromSeed(options.seed, 1) - 0.5) * 30);
   const bpm = baseBpm + Math.max(-15, Math.min(15, bpmOffset));
@@ -984,7 +984,7 @@ export function planStructure(options: LegacyCompositionOptions): Phase1Result {
   };
 }
 
-function pickTemplateForMood(mood: LegacyCompositionOptions["mood"], seed: number | undefined) {
+function pickTemplateForMood(mood: PipelineCompositionOptions["mood"], seed: number | undefined) {
   const candidates = TEMPLATE_INDEX_BY_MOOD[mood] ?? SECTION_TEMPLATE_POOL.map((_, index) => index);
   const index = candidates[Math.floor(randomFromSeed(seed, 60) * candidates.length)] ?? 0;
   return SECTION_TEMPLATE_POOL[index].map((segment) => ({ ...segment }));
@@ -1001,7 +1001,7 @@ function shuffleArray<T>(items: T[], seed: number | undefined, salt: number): T[
   return copy;
 }
 
-function resolveKey(mood: LegacyCompositionOptions["mood"], seed: number | undefined): string {
+function resolveKey(mood: PipelineCompositionOptions["mood"], seed: number | undefined): string {
   const preferred = DEFAULT_KEY_PER_MOOD[mood];
   if (preferred && AVAILABLE_CHORD_KEYS.includes(preferred)) {
     return preferred;
