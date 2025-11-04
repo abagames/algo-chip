@@ -370,7 +370,7 @@ type ChannelInstances = {
  * ```
  */
 export class AlgoChipSynthesizer {
-  private static readonly BASE_GAIN = 0.7;  // Default master gain value
+  private static readonly BASE_GAIN = 0.16;  // Default master gain value
   private readonly masterGainNode: GainNode;
   private readonly workletBasePath: string;
   private channels!: ChannelInstances;
