@@ -624,17 +624,16 @@ function startIndicatorAnimation(): void {
  * Copies the current composition's generation options to clipboard as JSON.
  *
  * This allows users to reproduce the exact same BGM by using the copied seed
- * parameters. The JSON includes the two-axis style coordinates and composition length.
+ * parameters. The JSON includes the seed, two-axis style coordinates, composition
+ * length, and any style overrides used during generation.
  */
 async function copySeedToClipboard(): Promise<void> {
-  if (!state.currentPosition || !state.composition) {
+  if (!state.composition) {
     return;
   }
 
-  const seedData: CompositionOptions = {
-    twoAxisStyle: state.currentPosition,
-    lengthInMeasures: 16,
-  };
+  // Use replayOptions from PipelineResult which includes the actual seed used
+  const seedData = state.composition.meta.replayOptions;
 
   try {
     const jsonString = JSON.stringify(seedData, null, 2);
