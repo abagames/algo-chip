@@ -65,8 +65,8 @@ async function run() {
           loopSeconds: 15.238095
         },
         hashes: {
-          events: "98d4e3d76971e6fcae050b2326a9a8fd2c0066df8f98e299a0417adc101b0d50",
-          diagnostics: "f36a657d153c7411561ab12f22cdabb18513be2fdb71df782bd987cc17c27149"
+          events: "1401e7af61560154d67b71cfbd494382455013978ce4026d34c8201164f116c0",
+          diagnostics: "99bbdae9430211d006d79634efab4e28995e83f7508dd2a994f7474b784ae96b"
         }
       }
     },
@@ -89,8 +89,8 @@ async function run() {
           loopSeconds: 23.272727
         },
         hashes: {
-          events: "c017bf908e717182f50f069e3b6adf2fc59e481b4e6590fd501829ce6eace2ca",
-          diagnostics: "42f63692be8463391b2d62afe26f435a683917f13c17522fc4a5b2c9bd6ce869"
+          events: "ec422f55c2770216eeb3043d8dc6d89b0ab5a8484584ee8e51f7c8abedbf673b",
+          diagnostics: "c07fe4fb4c5cda8667469992665f354e3301dab4bf4e5bc1769e7d7792f75fcd"
         }
       }
     }
