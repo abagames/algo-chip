@@ -87,7 +87,7 @@ export function applyTechniques(phase3: EventRealizationResult, styleIntent: Sty
       param: "duty",
       channels: ["square2"],
       minDurationBeats: 1,
-      steps: [0.32, 0.58, 0.48, 0.68]
+      steps: [0.32, 0.48, 0.58, 0.68]
     });
   }
 
@@ -209,18 +209,28 @@ export function applyTechniques(phase3: EventRealizationResult, styleIntent: Sty
 }
 
 function findMatchingNoteOff(events: TimedEvent[], onEvent: TimedEvent): TimedEvent | undefined {
+  if (onEvent.command !== "noteOn") return undefined;
+
+  // For each noteOn, find the next noteOff on the same channel
+  // Note: noteOff events don't carry midi information, so we match by channel and timing
+  let matchingOff: TimedEvent | undefined;
+  let minTimeDiff = Infinity;
+
   for (const event of events) {
     if (
       event.channel === onEvent.channel &&
       event.command === "noteOff" &&
-      event.data === onEvent.data
+      event.beatTime > onEvent.beatTime
     ) {
-      if (event.beatTime > onEvent.beatTime) {
-        return event;
+      const timeDiff = event.beatTime - onEvent.beatTime;
+      if (timeDiff < minTimeDiff) {
+        minTimeDiff = timeDiff;
+        matchingOff = event;
       }
     }
   }
-  return undefined;
+
+  return matchingOff;
 }
 
 function isMeasureBoundary(beatTime: number): boolean {
