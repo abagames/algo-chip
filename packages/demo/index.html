@@ -360,6 +360,42 @@
         color: var(--text-secondary);
         font-style: italic;
       }
+
+      .copy-seed-container {
+        text-align: center;
+        padding: 0 0 0.75rem;
+      }
+
+      .copy-seed-link {
+        background: none;
+        border: none;
+        color: rgba(240, 244, 248, 0.4);
+        font-size: 0.75rem;
+        padding: 0.25rem 0.5rem;
+        cursor: pointer;
+        text-decoration: none;
+        transition: color 0.2s ease, text-decoration 0.2s ease;
+        font-weight: 400;
+        width: auto;
+      }
+
+      .copy-seed-link:hover:not(:disabled) {
+        color: rgba(240, 244, 248, 0.7);
+        text-decoration: underline;
+        background: none;
+        border: none;
+        transform: none;
+        box-shadow: none;
+      }
+
+      .copy-seed-link:disabled {
+        opacity: 0.3;
+        cursor: default;
+      }
+
+      .copy-seed-link.copied {
+        color: var(--accent-primary);
+      }
     </style>
   </head>
   <body>
@@ -416,6 +452,9 @@
             </div>
 
             <p class="status-message" id="status-message">Click on the panel to generate and play music</p>
+            <div class="copy-seed-container" id="copy-seed-container" style="display: none;">
+              <button class="copy-seed-link" id="copy-seed-button" type="button">copy seed to reproduce</button>
+            </div>
           </div>
         </div>
       </main>

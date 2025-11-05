@@ -32,6 +32,12 @@ const statusMessage = document.getElementById(
   "status-message"
 ) as HTMLParagraphElement;
 const srStatus = document.getElementById("sr-status") as HTMLDivElement;
+const copySeedContainer = document.getElementById(
+  "copy-seed-container"
+) as HTMLDivElement;
+const copySeedButton = document.getElementById(
+  "copy-seed-button"
+) as HTMLButtonElement;
 
 // Channel indicator elements for visual feedback
 const indicators = {
@@ -611,6 +617,46 @@ function startIndicatorAnimation(): void {
 }
 
 // ============================================================================
+// Seed Copy Functionality
+// ============================================================================
+
+/**
+ * Copies the current composition's generation options to clipboard as JSON.
+ *
+ * This allows users to reproduce the exact same BGM by using the copied seed
+ * parameters. The JSON includes the two-axis style coordinates and composition length.
+ */
+async function copySeedToClipboard(): Promise<void> {
+  if (!state.currentPosition || !state.composition) {
+    return;
+  }
+
+  const seedData: CompositionOptions = {
+    twoAxisStyle: state.currentPosition,
+    lengthInMeasures: 16,
+  };
+
+  try {
+    const jsonString = JSON.stringify(seedData, null, 2);
+    await navigator.clipboard.writeText(jsonString);
+
+    // Show feedback
+    const originalText = copySeedButton.textContent;
+    copySeedButton.textContent = "Copied!";
+    copySeedButton.classList.add("copied");
+
+    // Reset after 1.5 seconds
+    setTimeout(() => {
+      copySeedButton.textContent = originalText;
+      copySeedButton.classList.remove("copied");
+    }, 1500);
+  } catch (error) {
+    console.error("Failed to copy seed to clipboard:", error);
+    updateStatus("Failed to copy seed");
+  }
+}
+
+// ============================================================================
 // UI Updates
 // ============================================================================
 
@@ -625,20 +671,24 @@ function updateUI(): void {
     playPauseButton.disabled = true;
     playPauseButton.classList.add("loading");
     buttonText.textContent = "";
+    copySeedContainer.style.display = "none";
   } else if (state.isPlaying) {
     playPauseButton.disabled = false;
     playPauseButton.classList.remove("loading");
     buttonText.textContent = "⏸ Pause";
     playPauseButton.setAttribute("aria-label", "Pause playback");
+    copySeedContainer.style.display = state.composition ? "block" : "none";
   } else if (state.composition) {
     playPauseButton.disabled = false;
     playPauseButton.classList.remove("loading");
     buttonText.textContent = "▶ Play";
     playPauseButton.setAttribute("aria-label", "Play playback");
+    copySeedContainer.style.display = "block";
   } else {
     playPauseButton.disabled = true;
     playPauseButton.classList.remove("loading");
     buttonText.textContent = "Play";
+    copySeedContainer.style.display = "none";
   }
 }
 
@@ -662,6 +712,8 @@ panel.addEventListener("touchstart", (e) => {
 });
 
 playPauseButton.addEventListener("click", () => togglePlayback());
+
+copySeedButton.addEventListener("click", () => void copySeedToClipboard());
 
 // Keyboard navigation support
 panel.addEventListener("keydown", (e) => {
