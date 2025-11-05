@@ -15,7 +15,7 @@ import type {
   SEGenerationResult,
   SEType,
   SynthPlayOptions
-} from "../../core/src/index.js";
+} from "../../../core/src/index.js";
 
 // ============================================================================
 // Re-exported Core Types
@@ -31,7 +31,7 @@ export type {
   SEGenerationResult,
   SEType,
   SynthPlayOptions
-} from "../../core/src/index.js";
+} from "../../../core/src/index.js";
 
 // ============================================================================
 // Demo-Specific Types

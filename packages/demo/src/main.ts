@@ -17,7 +17,7 @@ import type {
   CompositionOptions,
   PipelineResult,
   SEType,
-} from "./types.js";
+} from "./lib/types.js";
 
 // ============================================================================
 // DOM Elements
