@@ -8,7 +8,7 @@
 import {
   generateComposition,
   SEGenerator,
-  AlgoChipSynthesizer
+  AlgoChipSynthesizer,
 } from "@algo-chip/core";
 
 import type {
@@ -20,7 +20,7 @@ import type {
   SePlaybackDefaults,
   TriggerSeOptions,
   PipelineResult,
-  SynthPlayOptions
+  SynthPlayOptions,
 } from "../types.js";
 
 import { SoundEffectController } from "../playback.js";
@@ -28,7 +28,7 @@ import { SoundEffectController } from "../playback.js";
 // Default configuration values
 const DEFAULT_SE_DEFAULTS: SePlaybackDefaults = {
   duckingDb: -6,
-  volume: 1.0
+  volume: 1.0,
 };
 
 const DEFAULT_WORKLET_BASE_PATH = "./worklets/";
@@ -66,7 +66,7 @@ class AudioSessionImpl implements AudioSession {
     this.workletBasePath = options.workletBasePath ?? DEFAULT_WORKLET_BASE_PATH;
     this.seDefaults = {
       ...DEFAULT_SE_DEFAULTS,
-      ...(options.seDefaults ?? {})
+      ...(options.seDefaults ?? {}),
     };
     this.bgmVolume = Math.max(0, options.bgmVolume ?? 1.0);
   }
@@ -77,9 +77,14 @@ class AudioSessionImpl implements AudioSession {
     return result;
   }
 
-  async playBgm(result: PipelineResult, options: PlayBgmOptions = {}): Promise<void> {
+  async playBgm(
+    result: PipelineResult,
+    options: PlayBgmOptions = {}
+  ): Promise<void> {
     const ctx = await this.ensureContext(true);
     await this.ensureBgmSynth(ctx);
+    await this.ensureSeSynth(ctx);
+    await this.ensureSoundEffectController(ctx);
 
     const loop = options.loop ?? true;
     const offset = Math.max(0, options.offset ?? 0);
@@ -92,7 +97,7 @@ class AudioSessionImpl implements AudioSession {
     this.activeTimeline = {
       startTime: timelineStart,
       loop,
-      meta: result.meta
+      meta: result.meta,
     };
     this.lastBgm = result;
 
@@ -104,7 +109,7 @@ class AudioSessionImpl implements AudioSession {
       leadTime,
       lookahead,
       volume,
-      onEvent: options.onEvent ?? undefined
+      onEvent: options.onEvent ?? undefined,
     };
 
     // Launch playback without awaiting the long-running promise (looping = never resolves).
@@ -126,14 +131,17 @@ class AudioSessionImpl implements AudioSession {
     this.bgmVolume = clamped;
     if (this.bgmSynth && this.context) {
       const gainNode = this.bgmSynth.masterGain;
-      gainNode.gain.setValueAtTime(this.bgmGainBase * clamped, this.context.currentTime);
+      gainNode.gain.setValueAtTime(
+        this.bgmGainBase * clamped,
+        this.context.currentTime
+      );
     }
   }
 
   configureSeDefaults(defaults: Partial<SePlaybackDefaults>): void {
     const next: SePlaybackDefaults = {
       ...this.seDefaults,
-      ...defaults
+      ...defaults,
     };
     if (defaults.volume !== undefined) {
       next.volume = Math.max(0, defaults.volume);
@@ -157,13 +165,13 @@ class AudioSessionImpl implements AudioSession {
       type: options.type,
       seed: options.seed,
       templateId: options.templateId,
-      baseFrequency: options.baseFrequency
+      baseFrequency: options.baseFrequency,
     });
 
     const playOptions = {
       duckingDb: options.duckingDb ?? this.seDefaults.duckingDb,
       volume: Math.max(0, options.volume ?? this.seDefaults.volume),
-      quantize: options.quantize ?? this.seDefaults.quantize
+      quantize: options.quantize ?? this.seDefaults.quantize,
     };
 
     await this.soundEffectController!.play(generationResult, playOptions);
@@ -212,7 +220,7 @@ class AudioSessionImpl implements AudioSession {
     if (!this.context) {
       this.context = new AudioContext({
         sampleRate: DEFAULT_SAMPLE_RATE,
-        latencyHint: "interactive"
+        latencyHint: "interactive",
       });
     }
     if (resume && this.context.state === "suspended") {
@@ -225,7 +233,9 @@ class AudioSessionImpl implements AudioSession {
     if (this.bgmSynth) {
       return;
     }
-    this.bgmSynth = new AlgoChipSynthesizer(ctx, { workletBasePath: this.workletBasePath });
+    this.bgmSynth = new AlgoChipSynthesizer(ctx, {
+      workletBasePath: this.workletBasePath,
+    });
     await this.bgmSynth.init();
     this.bgmGainBase = this.bgmSynth.masterGain.gain.value;
     // Apply current volume preference after init
@@ -239,7 +249,9 @@ class AudioSessionImpl implements AudioSession {
     if (this.seSynth) {
       return;
     }
-    this.seSynth = new AlgoChipSynthesizer(ctx, { workletBasePath: this.workletBasePath });
+    this.seSynth = new AlgoChipSynthesizer(ctx, {
+      workletBasePath: this.workletBasePath,
+    });
     await this.seSynth.init();
     this.seGainBase = this.seSynth.masterGain.gain.value;
     this.seSynth.masterGain.gain.setValueAtTime(
@@ -253,7 +265,9 @@ class AudioSessionImpl implements AudioSession {
       return;
     }
     if (!this.bgmSynth || !this.seSynth) {
-      throw new Error("Sound effect controller requires both BGM and SE synthesizers.");
+      throw new Error(
+        "Sound effect controller requires both BGM and SE synthesizers."
+      );
     }
     this.soundEffectController = new SoundEffectController(
       ctx,
@@ -264,6 +278,8 @@ class AudioSessionImpl implements AudioSession {
   }
 }
 
-export function createAudioSession(options: CreateSessionOptions = {}): AudioSession {
+export function createAudioSession(
+  options: CreateSessionOptions = {}
+): AudioSession {
   return new AudioSessionImpl(options);
 }

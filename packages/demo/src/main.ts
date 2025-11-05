@@ -16,7 +16,7 @@ import type {
   PlaybackEvent,
   CompositionOptions,
   PipelineResult,
-  SEType
+  SEType,
 } from "./types.js";
 
 // ============================================================================
@@ -24,17 +24,29 @@ import type {
 // ============================================================================
 const panel = document.getElementById("two-axis-panel") as HTMLDivElement;
 const canvas = document.getElementById("two-axis-canvas") as HTMLCanvasElement;
-const playPauseButton = document.getElementById("play-pause-button") as HTMLButtonElement;
+const playPauseButton = document.getElementById(
+  "play-pause-button"
+) as HTMLButtonElement;
 const buttonText = document.getElementById("button-text") as HTMLSpanElement;
-const statusMessage = document.getElementById("status-message") as HTMLParagraphElement;
+const statusMessage = document.getElementById(
+  "status-message"
+) as HTMLParagraphElement;
 const srStatus = document.getElementById("sr-status") as HTMLDivElement;
 
 // Channel indicator elements for visual feedback
 const indicators = {
-  square1: document.querySelector('[data-channel="square1"] .indicator-light') as HTMLDivElement,
-  square2: document.querySelector('[data-channel="square2"] .indicator-light') as HTMLDivElement,
-  triangle: document.querySelector('[data-channel="triangle"] .indicator-light') as HTMLDivElement,
-  noise: document.querySelector('[data-channel="noise"] .indicator-light') as HTMLDivElement,
+  square1: document.querySelector(
+    '[data-channel="square1"] .indicator-light'
+  ) as HTMLDivElement,
+  square2: document.querySelector(
+    '[data-channel="square2"] .indicator-light'
+  ) as HTMLDivElement,
+  triangle: document.querySelector(
+    '[data-channel="triangle"] .indicator-light'
+  ) as HTMLDivElement,
+  noise: document.querySelector(
+    '[data-channel="noise"] .indicator-light'
+  ) as HTMLDivElement,
 };
 
 type IndicatorChannel = keyof typeof indicators;
@@ -87,7 +99,10 @@ const state: DemoState = {
 let session: AudioSession | null = null;
 let animationFrameId: number | null = null;
 /** Map of active notes for tracking which notes are currently playing (channel-midi -> note data) */
-const activeNotes = new Map<string, { channel: string; velocity: number; endTime: number }>();
+const activeNotes = new Map<
+  string,
+  { channel: string; velocity: number; endTime: number }
+>();
 let resumeOnVisibility = false;
 let resumeOffsetSeconds = 0;
 
@@ -127,7 +142,11 @@ function initCanvas(): void {
  * @param width Canvas width in CSS pixels
  * @param height Canvas height in CSS pixels
  */
-function drawPanel(ctx: CanvasRenderingContext2D, width: number, height: number): void {
+function drawPanel(
+  ctx: CanvasRenderingContext2D,
+  width: number,
+  height: number
+): void {
   // Clear the canvas for redrawing
   ctx.clearRect(0, 0, width, height);
 
@@ -264,13 +283,20 @@ async function ensureSession(): Promise<AudioSession> {
  *
  * @param position Two-axis style coordinates (percussiveMelodic and calmEnergetic)
  */
-async function generateAndPlay(position: { percussiveMelodic: number; calmEnergetic: number }): Promise<void> {
+async function generateAndPlay(position: {
+  percussiveMelodic: number;
+  calmEnergetic: number;
+}): Promise<void> {
   // Stop current playback to avoid overlaps
   stopPlayback();
 
   state.isGenerating = true;
   updateUI();
-  updateStatus(`Generating music at (${position.percussiveMelodic.toFixed(1)}, ${position.calmEnergetic.toFixed(1)})...`);
+  updateStatus(
+    `Generating music at (${position.percussiveMelodic.toFixed(
+      1
+    )}, ${position.calmEnergetic.toFixed(1)})...`
+  );
 
   try {
     // Generate composition
@@ -283,7 +309,9 @@ async function generateAndPlay(position: { percussiveMelodic: number; calmEnerge
     const result = await demoSession.generateBgm(options);
     state.composition = result;
 
-    updateStatus(`Generated: ${result.meta.mood} at ${result.meta.bpm} BPM in ${result.meta.key}`);
+    updateStatus(
+      `Generated: ${result.meta.mood} at ${result.meta.bpm} BPM in ${result.meta.key}`
+    );
 
     // Start playback
     await startPlayback();
@@ -326,7 +354,7 @@ async function startPlayback(offsetSeconds = 0): Promise<void> {
     await demoSession.playBgm(state.composition, {
       offset,
       loop: true,
-      onEvent: handleSynthEvent
+      onEvent: handleSynthEvent,
     });
   } catch (error) {
     console.error("Playback error:", error);
@@ -390,7 +418,8 @@ function handleVisibilityChange(): void {
     if (state.isPlaying && timeline && ctx) {
       const elapsed = Math.max(0, ctx.currentTime - timeline.startTime);
       const totalDuration = timeline.meta?.loopInfo?.totalDuration ?? 0;
-      resumeOffsetSeconds = totalDuration > 0 ? elapsed % totalDuration : elapsed;
+      resumeOffsetSeconds =
+        totalDuration > 0 ? elapsed % totalDuration : elapsed;
     } else {
       resumeOffsetSeconds = 0;
     }
@@ -429,12 +458,11 @@ function handleVisibilityChange(): void {
   }
 }
 
-async function triggerIndicatorSoundEffect(channel: IndicatorChannel): Promise<void> {
+async function triggerIndicatorSoundEffect(
+  channel: IndicatorChannel
+): Promise<void> {
   try {
     const demoSession = await ensureSession();
-    if (!state.composition) {
-      return;
-    }
 
     const seType = indicatorSEMap[channel];
     await demoSession.triggerSe({
@@ -444,7 +472,7 @@ async function triggerIndicatorSoundEffect(channel: IndicatorChannel): Promise<v
         quantizeTo: "beat",
         phase: "next",
         loopAware: true,
-      }
+      },
     });
 
     updateStatus(`Scheduled ${seType} sound effect`);
@@ -511,7 +539,7 @@ function handleSynthEvent(event: PlaybackEvent, when: number): void {
     activeNotes.set(key, {
       channel,
       velocity: typeof velocity === "number" ? velocity : 64,
-      endTime: when + 2.0 // Assume 2s max duration, will be updated on noteOff
+      endTime: when + 2.0, // Assume 2s max duration, will be updated on noteOff
     });
   } else if (event.command === "noteOff") {
     activeNotes.delete(key);
@@ -541,7 +569,10 @@ function startIndicatorAnimation(): void {
       if (currentTime <= note.endTime) {
         const ch = note.channel as keyof typeof channelVelocities;
         if (ch in channelVelocities) {
-          channelVelocities[ch] = Math.max(channelVelocities[ch], note.velocity);
+          channelVelocities[ch] = Math.max(
+            channelVelocities[ch],
+            note.velocity
+          );
         }
       } else {
         // Clean up expired notes
@@ -562,7 +593,9 @@ function startIndicatorAnimation(): void {
         if (isActive) {
           indicator.classList.add("active");
           indicator.style.opacity = String(0.5 + brightness * 0.5);
-          indicator.style.boxShadow = `0 0 ${20 + brightness * 30}px currentColor`;
+          indicator.style.boxShadow = `0 0 ${
+            20 + brightness * 30
+          }px currentColor`;
         } else {
           indicator.classList.remove("active");
           indicator.style.opacity = "0.3";
