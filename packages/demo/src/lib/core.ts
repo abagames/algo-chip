@@ -21,9 +21,9 @@ import type {
   TriggerSeOptions,
   PipelineResult,
   SynthPlayOptions,
-} from "../types.js";
+} from "./types.js";
 
-import { SoundEffectController } from "../playback.js";
+import { SoundEffectController } from "./playback.js";
 
 // Default configuration values
 const DEFAULT_SE_DEFAULTS: SePlaybackDefaults = {

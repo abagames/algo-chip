@@ -11,7 +11,7 @@
  * audio mixing between BGM and SE tracks.
  */
 
-import { ChipSynthesizer } from "./synth.js";
+import { ChipSynthesizer } from "../synth.js";
 import type {
   ActiveTimeline,
   PlaySEOptions,
