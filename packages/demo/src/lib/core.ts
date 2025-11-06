@@ -17,6 +17,8 @@ import type {
   CreateSessionOptions,
   AudioSession,
   PlayBgmOptions,
+  PauseBgmOptions,
+  ResumeBgmOptions,
   SePlaybackDefaults,
   TriggerSeOptions,
   PipelineResult,
@@ -53,6 +55,8 @@ class AudioSessionImpl implements AudioSession {
   private activeTimeline: ActiveTimeline | null = null;
   private lastBgm: PipelineResult | null = null;
   private bgmVolume: number;
+  private pausedOffsetSeconds: number | null = null;
+  private lastPlayOptions: PlayBgmOptions | null = null;
 
   constructor(private readonly options: CreateSessionOptions = {}) {
     if (options.audioContext) {
@@ -112,6 +116,19 @@ class AudioSessionImpl implements AudioSession {
       onEvent: options.onEvent ?? undefined,
     };
 
+    const storedOptions: PlayBgmOptions = {
+      ...options,
+      loop,
+      offset,
+      leadTime,
+      lookahead,
+      volume,
+      onEvent: synthOptions.onEvent,
+    };
+    delete storedOptions.startTime;
+    this.lastPlayOptions = storedOptions;
+    this.pausedOffsetSeconds = null;
+
     // Launch playback without awaiting the long-running promise (looping = never resolves).
     void this.bgmSynth!.play(result.events, synthOptions).catch((error) => {
       console.error("BGM playback error:", error);
@@ -120,10 +137,63 @@ class AudioSessionImpl implements AudioSession {
 
   stopBgm(): void {
     this.bgmSynth?.stop();
-    this.seSynth?.stop();
-    this.soundEffectController?.cancelPendingJobs();
     this.soundEffectController?.resetDucking();
     this.activeTimeline = null;
+    this.pausedOffsetSeconds = null;
+  }
+
+  stopAllAudio(): void {
+    this.pauseBgm({ captureOffset: false });
+    this.seSynth?.stop();
+    this.cancelScheduledSe();
+    this.pausedOffsetSeconds = null;
+  }
+
+  pauseBgm(options: PauseBgmOptions = {}): number | null {
+    const { captureOffset = true } = options;
+
+    if (captureOffset) {
+      const timeline = this.activeTimeline;
+      const ctx = this.context;
+      if (timeline && ctx) {
+        const elapsed = Math.max(0, ctx.currentTime - timeline.startTime);
+        const totalDuration = timeline.meta?.loopInfo?.totalDuration ?? 0;
+        const offset =
+          totalDuration > 0 ? elapsed % totalDuration : elapsed;
+        this.pausedOffsetSeconds = offset;
+      } else {
+        this.pausedOffsetSeconds = null;
+      }
+    }
+
+    this.bgmSynth?.stop();
+    this.soundEffectController?.resetDucking();
+    this.activeTimeline = null;
+
+    return this.pausedOffsetSeconds;
+  }
+
+  async resumeBgm(options: ResumeBgmOptions = {}): Promise<void> {
+    const result = this.lastBgm;
+    if (!result) {
+      throw new Error("No background music available to resume.");
+    }
+
+    const { offsetSeconds, ...rest } = options;
+    const offset =
+      typeof offsetSeconds === "number"
+        ? Math.max(0, offsetSeconds)
+        : this.pausedOffsetSeconds ?? 0;
+    this.pausedOffsetSeconds = null;
+
+    const playOptions: PlayBgmOptions = {
+      ...(this.lastPlayOptions ?? {}),
+      ...rest,
+    };
+    delete playOptions.startTime;
+    playOptions.offset = offset;
+
+    await this.playBgm(result, playOptions);
   }
 
   setBgmVolume(volume: number): void {
@@ -201,8 +271,7 @@ class AudioSessionImpl implements AudioSession {
   }
 
   async close(): Promise<void> {
-    this.stopBgm();
-    this.cancelScheduledSe();
+    this.stopAllAudio();
     if (this.context && this.ownsContext) {
       await this.context.close().catch((error) => {
         console.warn("AudioContext close failed:", error);
@@ -214,6 +283,8 @@ class AudioSessionImpl implements AudioSession {
     this.soundEffectController = null;
     this.activeTimeline = null;
     this.lastBgm = null;
+    this.lastPlayOptions = null;
+    this.pausedOffsetSeconds = null;
   }
 
   private async ensureContext(resume: boolean): Promise<AudioContext> {

@@ -7,7 +7,8 @@
     "packages/core/src/index.ts",
     "packages/demo/src/lib/types.ts",
     "packages/demo/src/lib/core.ts",
-    "packages/demo/src/lib/playback.ts"
+    "packages/demo/src/lib/playback.ts",
+    "packages/demo/src/lib/visibility.ts"
   ],
   "entryPointStrategy": "resolve",
   "excludePrivate": true,

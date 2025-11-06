@@ -11,6 +11,7 @@
  */
 
 import { createAudioSession } from "./lib/core.js";
+import { createVisibilityController } from "./lib/visibility.js";
 import type {
   AudioSession,
   PlaybackEvent,
@@ -109,8 +110,8 @@ const activeNotes = new Map<
   string,
   { channel: string; velocity: number; endTime: number }
 >();
-let resumeOnVisibility = false;
-let resumeOffsetSeconds = 0;
+let detachVisibilityController: (() => void) | null = null;
+let visibilityPaused = false;
 
 // ============================================================================
 // Canvas Management
@@ -275,7 +276,34 @@ async function handlePanelClick(event: MouseEvent | TouchEvent): Promise<void> {
 
 async function ensureSession(): Promise<AudioSession> {
   if (!session) {
+    detachVisibilityController?.();
     session = createAudioSession();
+    detachVisibilityController = createVisibilityController(session, {
+      shouldPause: () => state.isPlaying,
+      onPause: () => {
+        if (state.isPlaying) {
+          stopPlayback({ skipSessionStop: true, skipCancelSe: true });
+          visibilityPaused = true;
+          updateStatus("Playback paused (tab inactive)");
+        } else {
+          visibilityPaused = false;
+        }
+      },
+      onResume: ({ resumed }) => {
+        if (!visibilityPaused || !state.composition) {
+          return;
+        }
+        visibilityPaused = false;
+        if (resumed) {
+          state.isPlaying = true;
+          updateUI();
+          startIndicatorAnimation();
+          updateStatus("Playback resumed");
+        } else {
+          updateStatus("Playback resume failed");
+        }
+      },
+    });
   }
   await session.resumeAudioContext();
   return session;
@@ -371,7 +399,11 @@ async function startPlayback(offsetSeconds = 0): Promise<void> {
 
   // Start animation loop for indicators
   startIndicatorAnimation();
-  resumeOffsetSeconds = 0;
+}
+
+interface StopPlaybackOptions {
+  skipSessionStop?: boolean;
+  skipCancelSe?: boolean;
 }
 
 /**
@@ -380,9 +412,15 @@ async function startPlayback(offsetSeconds = 0): Promise<void> {
  * Halts the synthesizer, clears the animation loop, and resets channel
  * indicators to their inactive state.
  */
-function stopPlayback(): void {
-  session?.stopBgm();
-  session?.cancelScheduledSe();
+function stopPlayback(options: StopPlaybackOptions = {}): void {
+  const { skipSessionStop = false, skipCancelSe = false } = options;
+  if (!skipSessionStop) {
+    session?.stopAllAudio();
+  } else if (!skipCancelSe) {
+    session?.cancelScheduledSe();
+  }
+
+  visibilityPaused = false;
 
   if (animationFrameId !== null) {
     cancelAnimationFrame(animationFrameId);
@@ -400,68 +438,6 @@ function stopPlayback(): void {
   });
 
   updateUI();
-}
-
-/** Suspends the shared AudioContext if it is currently running. */
-async function suspendSessionAudio(): Promise<void> {
-  if (!session) return;
-  try {
-    await session.suspendAudioContext();
-  } catch (error) {
-    console.warn("AudioContext suspend failed:", error);
-  }
-}
-
-/**
- * Handles page visibility changes to pause playback when the tab is hidden
- * and resume smoothly when the tab returns to the foreground.
- */
-function handleVisibilityChange(): void {
-  if (document.hidden) {
-    resumeOnVisibility = state.isPlaying;
-    const timeline = session?.getActiveTimeline();
-    const ctx = session?.getAudioContext();
-    if (state.isPlaying && timeline && ctx) {
-      const elapsed = Math.max(0, ctx.currentTime - timeline.startTime);
-      const totalDuration = timeline.meta?.loopInfo?.totalDuration ?? 0;
-      resumeOffsetSeconds =
-        totalDuration > 0 ? elapsed % totalDuration : elapsed;
-    } else {
-      resumeOffsetSeconds = 0;
-    }
-    if (state.isPlaying) {
-      stopPlayback();
-      updateStatus("Playback paused (tab inactive)");
-    }
-    void suspendSessionAudio();
-    return;
-  }
-
-  const shouldResume = resumeOnVisibility;
-  resumeOnVisibility = false;
-
-  const resumePlayback = async (offset: number): Promise<void> => {
-    try {
-      await ensureSession();
-      if (state.composition) {
-        await startPlayback(offset);
-        updateStatus("Playback resumed");
-      }
-    } catch (error) {
-      console.error("Resuming playback failed:", error);
-      updateStatus("Playback resume failed");
-    }
-  };
-
-  if (shouldResume) {
-    const offset = resumeOffsetSeconds;
-    resumeOffsetSeconds = 0;
-    void resumePlayback(offset);
-  } else if (session) {
-    void session.resumeAudioContext().catch((error) => {
-      console.warn("AudioContext resume failed:", error);
-    });
-  }
 }
 
 async function triggerIndicatorSoundEffect(
@@ -735,8 +711,6 @@ panel.addEventListener("keydown", (e) => {
 window.addEventListener("resize", () => {
   initCanvas();
 });
-
-document.addEventListener("visibilitychange", handleVisibilityChange);
 
 // ============================================================================
 // Initialization

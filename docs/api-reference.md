@@ -8,8 +8,9 @@ function signatures, parameter details, and integration notes.
 ## Coverage
 
 - `@algo-chip/core` public exports (pipeline orchestration, SE generation, utility types)
-- Demo playback helpers, including `SoundEffectController` and `QuantizedSEOptions`
-  for aligning SE playback to the BGM transport ticks
+- Demo playback helpers, including `SoundEffectController`, session lifecycle
+  controls (`pauseBgm`, `resumeBgm`, etc.), and `createVisibilityController`
+  for tab-aware pause/resume orchestration
 
 ## Regenerating the Docs
 

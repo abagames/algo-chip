@@ -105,11 +105,26 @@ export interface CreateSessionOptions {
 /** Playback options accepted by AudioSession.playBgm */
 export type PlayBgmOptions = Partial<SynthPlayOptions>;
 
+/** Options passed to pauseBgm */
+export interface PauseBgmOptions {
+  /** Whether to capture and store the current playback offset (default: true) */
+  captureOffset?: boolean;
+}
+
+/** Options passed to resumeBgm */
+export interface ResumeBgmOptions extends PlayBgmOptions {
+  /** Explicit playback offset in seconds; defaults to captured pause offset */
+  offsetSeconds?: number;
+}
+
 /** Public API surface for the demo audio session */
 export interface AudioSession {
   generateBgm(options: CompositionOptions): Promise<PipelineResult>;
   playBgm(result: PipelineResult, options?: PlayBgmOptions): Promise<void>;
   stopBgm(): void;
+  stopAllAudio(): void;
+  pauseBgm(options?: PauseBgmOptions): number | null;
+  resumeBgm(options?: ResumeBgmOptions): Promise<void>;
   setBgmVolume(volume: number): void;
   configureSeDefaults(defaults: Partial<SePlaybackDefaults>): void;
   triggerSe(options: TriggerSeOptions): Promise<void>;

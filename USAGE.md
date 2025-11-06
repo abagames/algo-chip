@@ -15,8 +15,8 @@ const bgm = await generateComposition({
   seed: 12345,
   twoAxisStyle: {
     percussiveMelodic: -0.2,
-    calmEnergetic: 0.6
-  }
+    calmEnergetic: 0.6,
+  },
 });
 
 console.log(`BPM: ${bgm.meta.bpm}, events: ${bgm.events.length}`);
@@ -34,7 +34,7 @@ import { SEGenerator } from "@algo-chip/core";
 const generator = new SEGenerator();
 const jumpEffect = generator.generateSE({
   type: "jump",
-  seed: 4242
+  seed: 4242,
 });
 
 console.log(`Template used: ${jumpEffect.meta.templateId}`);
@@ -50,18 +50,18 @@ import { AlgoChipSynthesizer } from "@algo-chip/core";
 
 const audioContext = new AudioContext();
 const synth = new AlgoChipSynthesizer(audioContext, {
-  workletBasePath: "./worklets/"
+  workletBasePath: "./worklets/",
 });
 await synth.init();
 
 await synth.play(bgm.events, {
   loop: true,
-  volume: 0.8
+  volume: 0.8,
 });
 
 await synth.play(jumpEffect.events, {
   startTime: audioContext.currentTime + 0.2,
-  volume: 0.6
+  volume: 0.6,
 });
 ```
 
@@ -73,42 +73,42 @@ you control `startTime`, `loop`, `lookahead`, `leadTime`, `onEvent`, and
 
 The demo package now exposes a higher-level `AudioSession`
 (`packages/demo/src/lib/core.ts`) that bundles BGM generation, looping playback,
-and SE quantisation/ducking into a single object. This is what the web demo UI
+and SE quantitation/ducking into a single object. This is what the web demo UI
 uses internally.
 
 ```typescript
 import { createAudioSession } from "./packages/demo/src/lib/core.js";
 
 const session = createAudioSession({
-  workletBasePath: "./worklets/"
+  workletBasePath: "./worklets/",
 });
 
 // Must be invoked from a user-initiated event handler (click/touch) due to browser autoplay policy.
 await session.resumeAudioContext();
 
-// Generate and start looping BGM (stores active timeline for SE quantisation)
+// Generate and start looping BGM (stores active timeline for SE quantitation)
 const bgm = await session.generateBgm({
   lengthInMeasures: 16,
   seed: 9001,
-  twoAxisStyle: { percussiveMelodic: -0.3, calmEnergetic: 0.7 }
+  twoAxisStyle: { percussiveMelodic: -0.3, calmEnergetic: 0.7 },
 });
 
 await session.playBgm(bgm, {
   loop: true,
   onEvent: (event, when) => {
-    // Optional: hook for visualisation
-  }
+    // Optional: hook for visualization
+  },
 });
 
-// Trigger a beat-quantised, ducked SE using the shared SE generator/synth
+// Trigger a beat-quantized, ducked SE using the shared SE generator/synth
 await session.triggerSe({
   type: "coin",
   duckingDb: -4,
   quantize: {
     quantizeTo: "beat",
     phase: "next",
-    loopAware: true
-  }
+    loopAware: true,
+  },
 });
 ```
 
@@ -119,8 +119,40 @@ await session.triggerSe({
   pausing or stopping playback).
 
 Under the hood the session wraps `AlgoChipSynthesizer` and the existing
-`SoundEffectController`; if you need deeper customisation you can still import
+`SoundEffectController`; if you need deeper customization you can still import
 and wire those pieces manually.
+
+### 4.1 Tab Visibility Pause / Resume
+
+`packages/demo/src/lib/visibility.ts` exposes a small helper that wires browser
+visibility changes to the session’s pause/resume flow. It captures the current
+loop offset, suspends the audio context while the tab is hidden, then resumes
+playback seamlessly when focus returns.
+
+```typescript
+import { createAudioSession } from "./packages/demo/src/lib/core.js";
+import { createVisibilityController } from "./packages/demo/src/lib/visibility.js";
+
+const session = createAudioSession();
+
+const detachVisibility = createVisibilityController(session, {
+  // Optional: limit auto-pausing to when BGM is active; omit to pause unconditionally.
+  shouldPause: () => session.getActiveTimeline() !== null,
+  onPause: ({ offsetSeconds }) => {
+    console.log("Paused at", offsetSeconds);
+  },
+  onResume: ({ resumed }) => {
+    console.log(resumed ? "Resumed playback" : "Resume failed");
+  },
+});
+
+// Later, when cleaning up:
+detachVisibility();
+await session.close();
+```
+
+Callbacks are optional—omit them if you only need the default behavior. Always
+call the disposer (and `session.close()`) when tearing down your app.
 
 ## 5. Regenerating API Reference
 
