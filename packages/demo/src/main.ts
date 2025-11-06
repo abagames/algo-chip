@@ -312,7 +312,7 @@ async function ensureSession(): Promise<AudioSession> {
 /**
  * Generates a new composition at the specified two-axis coordinates and starts playback.
  *
- * Stops any current playback, generates a 16-measure composition using the core pipeline,
+ * Stops any current playback, generates a 32-measure composition using the core pipeline,
  * and initializes Web Audio synthesis for real-time playback.
  *
  * @param position Two-axis style coordinates (percussiveMelodic and calmEnergetic)
@@ -336,7 +336,7 @@ async function generateAndPlay(position: {
     // Generate composition
     const options: CompositionOptions = {
       twoAxisStyle: position,
-      lengthInMeasures: 16,
+      lengthInMeasures: 32,
     };
 
     const demoSession = await ensureSession();
