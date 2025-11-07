@@ -100,9 +100,13 @@ await session.playBgm(bgm, {
   },
 });
 
-// Trigger a beat-quantized, ducked SE using the shared SE generator/synth
-await session.triggerSe({
+// Generate then play a beat-quantized, ducked SE with a fixed seed
+const coinSe = session.generateSe({
   type: "coin",
+  seed: 4242,
+});
+
+await session.playSe(coinSe, {
   duckingDb: -4,
   quantize: {
     quantizeTo: "beat",
@@ -117,6 +121,8 @@ await session.triggerSe({
 - `setBgmVolume(value)` rescales the looped BGM without rebuilding the synth.
 - `cancelScheduledSe()` clears any queued-but-not-yet-fired SEs (useful when
   pausing or stopping playback).
+- `triggerSe(options)` remains available as a convenience wrapper that calls
+  `generateSe` + `playSe` in a single step.
 
 Under the hood the session wraps `AlgoChipSynthesizer` and the existing
 `SoundEffectController`; if you need deeper customization you can still import

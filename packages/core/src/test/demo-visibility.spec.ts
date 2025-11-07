@@ -73,7 +73,13 @@ describe("createVisibilityController", () => {
       generateBgm: async () => {
         throw new Error("not implemented");
       },
+      generateSe: () => {
+        throw new Error("not implemented");
+      },
       playBgm: async () => {
+        throw new Error("not implemented");
+      },
+      playSe: async () => {
         throw new Error("not implemented");
       },
       stopBgm: () => {},
@@ -157,7 +163,13 @@ describe("createVisibilityController", () => {
       generateBgm: async () => {
         throw new Error("not implemented");
       },
+      generateSe: () => {
+        throw new Error("not implemented");
+      },
       playBgm: async () => {
+        throw new Error("not implemented");
+      },
+      playSe: async () => {
         throw new Error("not implemented");
       },
       stopBgm: () => {},

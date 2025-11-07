@@ -17,12 +17,15 @@ import type {
   CreateSessionOptions,
   AudioSession,
   PlayBgmOptions,
+  PlaySEOptions,
   PauseBgmOptions,
   ResumeBgmOptions,
   SePlaybackDefaults,
   TriggerSeOptions,
   PipelineResult,
   SynthPlayOptions,
+  SEGenerationOptions,
+  SEGenerationResult,
 } from "./types.js";
 
 import { SoundEffectController } from "./playback.js";
@@ -225,26 +228,41 @@ class AudioSessionImpl implements AudioSession {
     this.seDefaults = next;
   }
 
-  async triggerSe(options: TriggerSeOptions): Promise<void> {
+  generateSe(options: SEGenerationOptions): SEGenerationResult {
+    return this.seGenerator.generateSE(options);
+  }
+
+  async playSe(
+    result: SEGenerationResult,
+    options: PlaySEOptions = {}
+  ): Promise<void> {
     const ctx = await this.ensureContext(true);
     await this.ensureBgmSynth(ctx);
     await this.ensureSeSynth(ctx);
     await this.ensureSoundEffectController(ctx);
 
-    const generationResult = this.seGenerator.generateSE({
+    const playOptions: PlaySEOptions = {
+      duckingDb: options.duckingDb ?? this.seDefaults.duckingDb,
+      volume: Math.max(0, options.volume ?? this.seDefaults.volume),
+      quantize: options.quantize ?? this.seDefaults.quantize,
+    };
+
+    await this.soundEffectController!.play(result, playOptions);
+  }
+
+  async triggerSe(options: TriggerSeOptions): Promise<void> {
+    const generationResult = this.generateSe({
       type: options.type,
       seed: options.seed,
       templateId: options.templateId,
       baseFrequency: options.baseFrequency,
     });
 
-    const playOptions = {
-      duckingDb: options.duckingDb ?? this.seDefaults.duckingDb,
-      volume: Math.max(0, options.volume ?? this.seDefaults.volume),
-      quantize: options.quantize ?? this.seDefaults.quantize,
-    };
-
-    await this.soundEffectController!.play(generationResult, playOptions);
+    await this.playSe(generationResult, {
+      duckingDb: options.duckingDb,
+      volume: options.volume,
+      quantize: options.quantize,
+    });
   }
 
   cancelScheduledSe(): void {

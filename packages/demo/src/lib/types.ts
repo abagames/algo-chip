@@ -80,6 +80,9 @@ export interface PlaySEOptions {
   volume?: number;
 }
 
+/** Alias with camel-case naming for external consumers */
+export type PlaySeOptions = PlaySEOptions;
+
 /** Default SE playback settings for the session */
 export interface SePlaybackDefaults {
   duckingDb: number;
@@ -88,11 +91,9 @@ export interface SePlaybackDefaults {
 }
 
 /** Options for triggering a sound effect through the session */
-export interface TriggerSeOptions extends Omit<SEGenerationOptions, "startTime"> {
-  quantize?: QuantizedSEOptions;
-  duckingDb?: number;
-  volume?: number;
-}
+export interface TriggerSeOptions
+  extends Omit<SEGenerationOptions, "startTime">,
+    PlaySEOptions {}
 
 /** Options for configuring the demo audio session */
 export interface CreateSessionOptions {
@@ -127,6 +128,8 @@ export interface AudioSession {
   resumeBgm(options?: ResumeBgmOptions): Promise<void>;
   setBgmVolume(volume: number): void;
   configureSeDefaults(defaults: Partial<SePlaybackDefaults>): void;
+  generateSe(options: SEGenerationOptions): SEGenerationResult;
+  playSe(result: SEGenerationResult, options?: PlaySEOptions): Promise<void>;
   triggerSe(options: TriggerSeOptions): Promise<void>;
   cancelScheduledSe(): void;
   getActiveTimeline(): ActiveTimeline | null;
