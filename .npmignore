@@ -1,0 +1,39 @@
+# Monorepo-only content that shouldn't ship with the root package
+docs/
+packages/demo/
+packages/*/src/
+packages/*/test/
+packages/*/node_modules/
+packages/*/vite.config.*
+packages/*/tsconfig*.json
+
+# Build & tooling artefacts
+node_modules/
+dist/
+*.tsbuildinfo
+coverage/
+*.log
+npm-debug.log*
+typedoc.json
+tsconfig*.json
+
+# Internal specs & onboarding docs
+AGENTS.md
+CLAUDE.md
+score*.md
+se*.md
+USAGE*.md
+
+# Editor / OS clutter
+.vscode/
+.idea/
+.claude/
+.serena/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Environment/configuration secrets
+.env*
