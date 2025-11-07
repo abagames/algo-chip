@@ -24,13 +24,15 @@ npm install @algo-chip/core
 ```html
 <script src="https://abagames.github.io/algo-chip/lib/algo-chip.umd.js"></script>
 <script>
-  const { generateComposition, SEGenerator, AlgoChipSynthesizer } = window.AlgoChip;
+  const { generateComposition, SEGenerator, AlgoChipSynthesizer } =
+    window.AlgoChip;
 </script>
 ```
 
 **Important**: When using Web Audio playback (`AlgoChipSynthesizer`) via UMD, you need to specify where to load the AudioWorklet processors from.
 
 **Option 1: Use GitHub Pages CDN (Recommended)**
+
 ```html
 <script>
   const audioContext = new AudioContext();
@@ -42,6 +44,7 @@ npm install @algo-chip/core
 ```
 
 **Option 2: Self-host worklets**
+
 ```html
 <!-- Download and host these files on your server: -->
 <!-- worklets/square-processor.js -->
@@ -138,6 +141,52 @@ await synth.play(jump.events, {
 Advanced SE playback patterns (ducking, quantization, controller wiring) are
 documented in [USAGE.md](./USAGE.md) alongside pointers into the demo helpers.
 
+### Session Helpers (`@algo-chip/util`)
+
+When you need session management (auto-looped BGM, SE ducking/quantization,
+visibility pause, etc.) pull in `@algo-chip/util`.
+
+**ESM / npm**
+
+```typescript
+import {
+  createAudioSession,
+  createVisibilityController,
+} from "@algo-chip/util";
+
+const session = createAudioSession({
+  workletBasePath: "./worklets/",
+});
+
+await session.resumeAudioContext();
+const bgm = await session.generateBgm({ seed: 9001 });
+await session.playBgm(bgm, { loop: true });
+
+const detachVisibility = createVisibilityController(session);
+// Later: detachVisibility(); await session.close();
+```
+
+**CDN / UMD**
+
+Both the core engine and util helpers ship prebuilt bundles on GitHub Pages:
+
+```html
+<script src="https://abagames.github.io/algo-chip/lib/algo-chip.umd.js"></script>
+<script src="https://abagames.github.io/algo-chip/lib/algo-chip-util.umd.js"></script>
+<script>
+  const { createAudioSession } = window.AlgoChipUtil;
+  const session = createAudioSession({
+    workletBasePath: "https://abagames.github.io/algo-chip/worklets/",
+  });
+  await session.resumeAudioContext();
+  const bgm = await session.generateBgm({ seed: 12 });
+  await session.playBgm(bgm, { loop: true });
+</script>
+```
+
+See [USAGE.md](./USAGE.md) for deeper API coverage (SE ducking, quantization,
+default overrides, timeline inspection, etc.).
+
 ## 🛠️ Development
 
 ### Setup
@@ -174,6 +223,11 @@ algo-chip/
 │   │       ├── index.js           # ESM bundle
 │   │       ├── index.d.ts         # TypeScript definitions
 │   │       └── algo-chip.umd.js   # UMD bundle
+│   ├── util/              # @algo-chip/util npm package (AudioSession helpers)
+│   │   ├── src/           # Session orchestration, ducking, quantization
+│   │   └── dist/
+│   │       ├── index.js           # ESM bundle
+│   │       └── algo-chip-util.umd.js
 │   └── demo/              # Demo web application
 │       ├── src/           # Demo UI code (Web Audio playback)
 │       ├── index.html     # Main demo page
@@ -181,7 +235,9 @@ algo-chip/
 └── docs/                  # GitHub Pages artifacts (auto-generated)
     ├── index.html         # Demo page (from packages/demo/dist)
     ├── assets/            # Vite build output (from packages/demo/dist)
-    ├── lib/               # UMD bundle (from packages/core/dist)
+    ├── lib/               # UMD bundles (copied from packages/*/dist)
+    │   ├── algo-chip.umd.js
+    │   └── algo-chip-util.umd.js
     └── worklets/          # Web Audio Worklet processors (from packages/demo/dist)
 ```
 
@@ -206,4 +262,6 @@ The composition engine follows a **five-phase pipeline**:
 
 - [Live Demo](https://abagames.github.io/algo-chip/)
 - [UMD Bundle](https://abagames.github.io/algo-chip/lib/algo-chip.umd.js)
-- [npm Package](https://www.npmjs.com/package/@algo-chip/core) _(After publishing)_
+- [Util UMD Bundle](https://abagames.github.io/algo-chip/lib/algo-chip-util.umd.js)
+- [@algo-chip/core on npm](https://www.npmjs.com/package/@algo-chip/core) _(After publishing)_
+- [@algo-chip/util on npm](https://www.npmjs.com/package/@algo-chip/util) _(After publishing)_

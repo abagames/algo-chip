@@ -136,6 +136,47 @@ await synth.play(jump.events, {
 
 **注意**: `AlgoChipSynthesizer`はブラウザ環境（Web Audio API）が必要です。BGMダッキングやクオンタイゼーションを含む高度なSE再生パターンは、[USAGE.md](./USAGE.md)（英語）および demo パッケージ（`packages/demo/src/playback.ts`）を参照してください。
 
+### セッションヘルパー (`@algo-chip/util`)
+
+ループBGM管理やSEのダッキング／クオンタイゼーション、タブの可視状態連動などが必要な場合は`@algo-chip/util`を利用してください。
+
+**ESM / npm**
+
+```typescript
+import { createAudioSession, createVisibilityController } from "@algo-chip/util";
+
+const session = createAudioSession({
+  workletBasePath: "./worklets/",
+});
+
+await session.resumeAudioContext();
+const bgm = await session.generateBgm({ seed: 9001 });
+await session.playBgm(bgm, { loop: true });
+
+const detachVisibility = createVisibilityController(session);
+// クリーンアップ時: detachVisibility(); await session.close();
+```
+
+**CDN / UMD**
+
+コアエンジンとutilヘルパーの両方をGitHub PagesホスティングのUMDバンドルとして提供しています:
+
+```html
+<script src="https://abagames.github.io/algo-chip/lib/algo-chip.umd.js"></script>
+<script src="https://abagames.github.io/algo-chip/lib/algo-chip-util.umd.js"></script>
+<script>
+  const { createAudioSession } = window.AlgoChipUtil;
+  const session = createAudioSession({
+    workletBasePath: "https://abagames.github.io/algo-chip/worklets/",
+  });
+  await session.resumeAudioContext();
+  const bgm = await session.generateBgm({ seed: 12 });
+  await session.playBgm(bgm, { loop: true });
+</script>
+```
+
+より詳しいAPI解説（SEダッキング、クオンタイゼーション、デフォルト上書き、タイムライン検査など）は [USAGE.md](./USAGE.md) を参照してください。
+
 ## 🛠️ 開発
 
 ### セットアップ
@@ -172,6 +213,11 @@ algo-chip/
 │   │       ├── index.js           # ESMバンドル
 │   │       ├── index.d.ts         # TypeScript型定義
 │   │       └── algo-chip.umd.js   # UMDバンドル
+│   ├── util/              # @algo-chip/util npmパッケージ（AudioSessionヘルパー）
+│   │   ├── src/           # セッション制御、ダッキング、クオンタイゼーション
+│   │   └── dist/
+│   │       ├── index.js           # ESMバンドル
+│   │       └── algo-chip-util.umd.js
 │   └── demo/              # デモWebアプリケーション
 │       ├── src/           # デモUIコード（Web Audio再生）
 │       ├── index.html     # メインデモページ
@@ -179,7 +225,9 @@ algo-chip/
 └── docs/                  # GitHub Pagesアーティファクト（自動生成）
     ├── index.html         # デモページ（packages/demo/dist/から）
     ├── assets/            # Viteビルド出力（packages/demo/dist/から）
-    ├── lib/               # UMDバンドル（packages/core/dist/から）
+    ├── lib/               # UMDバンドル（packages/*/dist/からコピー）
+    │   ├── algo-chip.umd.js
+    │   └── algo-chip-util.umd.js
     └── worklets/          # Web Audio Workletプロセッサー（packages/demo/dist/から）
 ```
 
@@ -204,4 +252,6 @@ algo-chip/
 
 - [ライブデモ](https://abagames.github.io/algo-chip/)
 - [UMDバンドル](https://abagames.github.io/algo-chip/lib/algo-chip.umd.js)
-- [npmパッケージ](https://www.npmjs.com/package/@algo-chip/core) _（公開後）_
+- [Util UMDバンドル](https://abagames.github.io/algo-chip/lib/algo-chip-util.umd.js)
+- [@algo-chip/core (npm)](https://www.npmjs.com/package/@algo-chip/core) _（公開後）_
+- [@algo-chip/util (npm)](https://www.npmjs.com/package/@algo-chip/util) _（公開後）_
