@@ -1,5 +1,7 @@
 # Usage Guide
 
+English | [日本語](./USAGE_ja.md)
+
 This guide collects practical examples for integrating `@algo-chip/core` into a
 Web Audio application. The high-level architecture and specifications remain in
 `score.md` and `se.md`; here we focus on code that you can copy into your own
