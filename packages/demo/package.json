@@ -6,11 +6,11 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "build:util": "vite build --config vite.util.config.ts",
     "preview": "vite preview"
   },
   "dependencies": {
-    "@algo-chip/core": "*"
+    "@algo-chip/core": "*",
+    "@algo-chip/util": "*"
   },
   "devDependencies": {
     "@types/node": "^20.14.8",

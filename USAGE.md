@@ -69,15 +69,15 @@ await synth.play(jumpEffect.events, {
 you control `startTime`, `loop`, `lookahead`, `leadTime`, `onEvent`, and
 `volume`.
 
-## 4. Session-Oriented Playback (Demo helpers)
+## 4. Session-Oriented Playback (shared helpers)
 
-The demo package now exposes a higher-level `AudioSession`
-(`packages/demo/src/lib/core.ts`) that bundles BGM generation, looping playback,
-and SE quantitation/ducking into a single object. This is what the web demo UI
-uses internally.
+The `@algo-chip/util` package exposes a higher-level `AudioSession` that
+bundles BGM generation, looping playback, and SE quantization/ducking into a
+single object. This is what the web demo UI uses internally, so downstream apps
+can depend on the published package rather than copying demo code.
 
 ```typescript
-import { createAudioSession } from "./packages/demo/src/lib/core.js";
+import { createAudioSession } from "@algo-chip/util";
 
 const session = createAudioSession({
   workletBasePath: "./worklets/",
@@ -124,20 +124,19 @@ await session.playSe(coinSe, {
 - `triggerSe(options)` remains available as a convenience wrapper that calls
   `generateSe` + `playSe` in a single step.
 
-Under the hood the session wraps `AlgoChipSynthesizer` and the existing
-`SoundEffectController`; if you need deeper customization you can still import
-and wire those pieces manually.
+Under the hood the session wraps `AlgoChipSynthesizer` and the
+`SoundEffectController`; if you need deeper customization you can import and
+wire those pieces manually from `@algo-chip/util`.
 
 ### 4.1 Tab Visibility Pause / Resume
 
-`packages/demo/src/lib/visibility.ts` exposes a small helper that wires browser
+`@algo-chip/util` also ships `createVisibilityController`, which wires browser
 visibility changes to the session’s pause/resume flow. It captures the current
 loop offset, suspends the audio context while the tab is hidden, then resumes
 playback seamlessly when focus returns.
 
 ```typescript
-import { createAudioSession } from "./packages/demo/src/lib/core.js";
-import { createVisibilityController } from "./packages/demo/src/lib/visibility.js";
+import { createAudioSession, createVisibilityController } from "@algo-chip/util";
 
 const session = createAudioSession();
 

@@ -29,14 +29,17 @@
   "scripts": {
     "build": "npm run build -ws --if-present",
     "build:core": "npm run build -w packages/core",
+    "build:util": "npm run build -w packages/util",
     "build:demo": "npm run build -w packages/demo",
-    "build:pages": "npm run build:core && npm run build:demo && npm run copy:artifacts",
-    "copy:artifacts": "rm -rf docs/assets docs/worklets docs/motifs && mkdir -p docs/lib && cp packages/core/dist/algo-chip.umd.js* docs/lib/ && cp -r packages/demo/dist/* docs/",
-    "test": "node --loader ts-node/esm --test \"packages/core/src/test/**/*.spec.ts\"",
+    "build:pages": "npm run build:core && npm run build:util && npm run build:demo && npm run copy:artifacts",
+    "copy:artifacts": "rm -rf docs/assets docs/worklets docs/motifs && mkdir -p docs/lib && cp packages/core/dist/algo-chip.umd.js* docs/lib/ && cp packages/util/dist/algo-chip-util.umd.js* docs/lib/ && cp -r packages/demo/dist/* docs/",
+    "test": "npm run test:core && npm run test:util",
+    "test:core": "node --loader ts-node/esm --test \"packages/core/src/test/**/*.spec.ts\"",
+    "test:util": "npm run test -w packages/util",
     "dev": "npm run dev -w packages/demo",
     "preview": "npm run preview -w packages/demo",
     "docs:api": "typedoc --options typedoc.json",
-    "prepare": "npm run build:core"
+    "prepare": "npm run build:core && npm run build:util"
   },
   "devDependencies": {
     "@types/node": "^20.14.8",

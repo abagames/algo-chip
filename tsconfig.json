@@ -14,6 +14,7 @@
     "packages/core/src/**/*.ts",
     "packages/core/motifs/**/*.json",
     "packages/demo/src/**/*.ts",
-    "packages/demo/scripts/**/*.ts"
+    "packages/demo/scripts/**/*.ts",
+    "packages/util/src/**/*.ts"
   ]
 }

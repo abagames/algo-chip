@@ -2,8 +2,8 @@ import { describe, it } from "node:test";
 import assert from "node:assert/strict";
 import { setImmediate as waitImmediate } from "node:timers/promises";
 
-import type { AudioSession } from "../../../demo/src/lib/types.js";
-import { createVisibilityController } from "../../../demo/src/lib/visibility.js";
+import type { AudioSession } from "../types.js";
+import { createVisibilityController } from "../visibility.js";
 
 class FakeVisibilityDocument {
   hidden = false;

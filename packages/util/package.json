@@ -1,0 +1,33 @@
+{
+  "name": "@algo-chip/util",
+  "version": "1.0.0",
+  "description": "Shared session and playback helpers for Algo Chip",
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "vite build",
+    "dev": "vite build --watch",
+    "test": "node --loader ts-node/esm --test src/test/**/*.spec.ts"
+  },
+  "dependencies": {
+    "@algo-chip/core": "*"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.8",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.4.5",
+    "vite": "^5.3.4",
+    "vite-plugin-dts": "^4.5.4"
+  }
+}

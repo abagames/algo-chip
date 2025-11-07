@@ -8,9 +8,9 @@ function signatures, parameter details, and integration notes.
 ## Coverage
 
 - `@algo-chip/core` public exports (pipeline orchestration, SE generation, utility types)
-- Demo playback helpers, including `SoundEffectController`, session lifecycle
-  controls (`pauseBgm`, `resumeBgm`, etc.), and `createVisibilityController`
-  for tab-aware pause/resume orchestration
+- `@algo-chip/util` playback helpers, including `SoundEffectController`,
+  session lifecycle controls (`pauseBgm`, `resumeBgm`, etc.), and
+  `createVisibilityController` for tab-aware pause/resume orchestration
 
 ## Regenerating the Docs
 

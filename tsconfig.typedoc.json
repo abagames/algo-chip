@@ -5,11 +5,14 @@
     "baseUrl": ".",
     "paths": {
       "@algo-chip/core": ["packages/core/src/index.ts"],
-      "@algo-chip/core/*": ["packages/core/src/*"]
+      "@algo-chip/core/*": ["packages/core/src/*"],
+      "@algo-chip/util": ["packages/util/src/index.ts"],
+      "@algo-chip/util/*": ["packages/util/src/*"]
     }
   },
   "include": [
     "packages/core/src/**/*.ts",
-    "packages/demo/src/**/*.ts"
+    "packages/demo/src/**/*.ts",
+    "packages/util/src/**/*.ts"
   ]
 }

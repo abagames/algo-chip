@@ -5,10 +5,7 @@
   "readme": "docs/api-reference.md",
   "entryPoints": [
     "packages/core/src/index.ts",
-    "packages/demo/src/lib/types.ts",
-    "packages/demo/src/lib/core.ts",
-    "packages/demo/src/lib/playback.ts",
-    "packages/demo/src/lib/visibility.ts"
+    "packages/util/src/index.ts"
   ],
   "entryPointStrategy": "resolve",
   "excludePrivate": true,

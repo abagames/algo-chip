@@ -7,11 +7,11 @@
  * - Quantization: Aligns SE playback to musical beats/measures
  * - Per-type gating: Prevents duplicate SEs of the same type within a quantized window
  *
- * The controller works in tandem with ChipSynthesizer to provide seamless
+ * The controller works in tandem with AlgoChipSynthesizer to provide seamless
  * audio mixing between BGM and SE tracks.
  */
 
-import { ChipSynthesizer } from "../synth.js";
+import { AlgoChipSynthesizer } from "@algo-chip/core";
 import type {
   ActiveTimeline,
   PlaySEOptions,
@@ -20,6 +20,8 @@ import type {
   SEType,
   PlaybackEvent
 } from "./types.js";
+
+type ChipSynthesizer = AlgoChipSynthesizer;
 
 // ============================================================================
 // Internal Types

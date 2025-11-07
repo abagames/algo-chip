@@ -79,7 +79,7 @@ authoritative specs for the full story.
   source of truth when resolving disagreements.
 - Expand motif catalog with well-tagged variations; prefer variation links over
   copy & paste.
-- Maintain demo parity with core library updates (`packages/demo/src/lib` and
+- Maintain demo parity with core + util updates (`packages/util/src` and
   `docs/` outputs).
 - Strengthen test coverage alongside fixes—add targeted specs whenever a bug or
   regression is addressed.

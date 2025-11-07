@@ -10,15 +10,14 @@
  * - Web Audio synthesis with looping support
  */
 
-import { createAudioSession } from "./lib/core.js";
-import { createVisibilityController } from "./lib/visibility.js";
+import { createAudioSession, createVisibilityController } from "@algo-chip/util";
 import type {
   AudioSession,
   PlaybackEvent,
   CompositionOptions,
   PipelineResult,
   SEType,
-} from "./lib/types.js";
+} from "@algo-chip/util";
 
 // ============================================================================
 // DOM Elements
