@@ -87,7 +87,7 @@ describe("createVisibilityController", () => {
       setBgmVolume: () => {},
       configureSeDefaults: () => {},
       triggerSe: async () => {},
-      getActiveTimeline: () => null,
+      getActiveTimeline: () => ({ startTime: 0, loop: true, meta: {} }),
       getAudioContext: () => null,
       resumeAudioContext: async () => {
         sessionState.resumeCtxCalls += 1;
@@ -209,6 +209,75 @@ describe("createVisibilityController", () => {
     assert.deepStrictEqual(resumeEvents, [
       { offsetSeconds: null, resumed: false }
     ]);
+
+    detach();
+  });
+
+  it("skips pause/resume when no active timeline exists", async () => {
+    const sessionState = {
+      pauseCalls: 0,
+      resumeBgmCalls: 0,
+      resumeCtxCalls: 0,
+      suspendCtxCalls: 0,
+      cancelCalls: 0
+    };
+
+    const session = {
+      pauseBgm: () => {
+        sessionState.pauseCalls += 1;
+        return null;
+      },
+      resumeBgm: async () => {
+        sessionState.resumeBgmCalls += 1;
+      },
+      cancelScheduledSe: () => {
+        sessionState.cancelCalls += 1;
+      },
+      suspendAudioContext: async () => {
+        sessionState.suspendCtxCalls += 1;
+      },
+      resumeAudioContext: async () => {
+        sessionState.resumeCtxCalls += 1;
+      },
+      getActiveTimeline: () => null,
+      // Unused members
+      generateBgm: async () => {
+        throw new Error("not implemented");
+      },
+      generateSe: () => {
+        throw new Error("not implemented");
+      },
+      playBgm: async () => {
+        throw new Error("not implemented");
+      },
+      playSe: async () => {
+        throw new Error("not implemented");
+      },
+      stopBgm: () => {},
+      stopAllAudio: () => {},
+      setBgmVolume: () => {},
+      configureSeDefaults: () => {},
+      triggerSe: async () => {},
+      getAudioContext: () => null,
+      close: async () => {}
+    } as unknown as AudioSession;
+
+    const fakeDoc = new FakeVisibilityDocument();
+
+    const detach = createVisibilityController(session, {
+      documentRef: fakeDoc as unknown as Document
+    });
+
+    fakeDoc.trigger(true);
+    assert.strictEqual(sessionState.pauseCalls, 0);
+    assert.strictEqual(sessionState.cancelCalls, 1);
+    assert.strictEqual(sessionState.suspendCtxCalls, 1);
+
+    fakeDoc.trigger(false);
+    await waitImmediate();
+
+    assert.strictEqual(sessionState.resumeCtxCalls, 1);
+    assert.strictEqual(sessionState.resumeBgmCalls, 0);
 
     detach();
   });

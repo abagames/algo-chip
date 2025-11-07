@@ -58,6 +58,23 @@ export function createVisibilityController(
         return;
       }
 
+      const hasActiveTimeline = session.getActiveTimeline() !== null;
+      if (!hasActiveTimeline) {
+        storedOffset = null;
+        resumePending = false;
+
+        if (cancelSe) {
+          session.cancelScheduledSe();
+        }
+
+        if (suspendCtx) {
+          void session.suspendAudioContext().catch((error) => {
+            console.warn("AudioContext suspend failed:", error);
+          });
+        }
+        return;
+      }
+
       storedOffset = session.pauseBgm();
       resumePending = true;
 
