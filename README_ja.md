@@ -2,14 +2,14 @@
 
 [English](./README.md) | 日本語
 
-**4チャンネルチップチューン音源による高品質BGM自動作曲エンジン**
+**4 チャンネルチップチューン音源による高品質 BGM 自動作曲エンジン**
 
 ## 🎵 特徴
 
 - **モチーフベース作曲**: インテリジェントなバリエーションを持つ事前定義済み楽曲パターン
-- **4チャンネルチップチューン音源**: クラシックな4チャンネル音響（矩形波×2、三角波、ノイズ）
-- **決定論的生成**: シードベースRNGによる再現可能な結果
-- **2系統の配布形式**: npmパッケージ + CDN/`<script>`タグ用UMDバンドル
+- **4 チャンネルチップチューン音源**: クラシックな 4 チャンネル音響（矩形波 ×2、三角波、ノイズ）
+- **決定論的生成**: シードベース RNG による再現可能な結果
+- **2 系統の配布形式**: npm パッケージ + CDN/`<script>`タグ用 UMD バンドル
 
 ## 📦 インストール
 
@@ -24,13 +24,15 @@ npm install @algo-chip/core
 ```html
 <script src="https://abagames.github.io/algo-chip/lib/algo-chip.umd.js"></script>
 <script>
-  const { generateComposition, SEGenerator, AlgoChipSynthesizer } = window.AlgoChip;
+  const { generateComposition, SEGenerator, AlgoChipSynthesizer } =
+    window.AlgoChip;
 </script>
 ```
 
-**重要**: UMD経由でWeb Audio再生（`AlgoChipSynthesizer`）を使用する場合、AudioWorkletプロセッサーの読み込み元を指定する必要があります。
+**重要**: UMD 経由で Web Audio 再生（`AlgoChipSynthesizer`）を使用する場合、AudioWorklet プロセッサーの読み込み元を指定する必要があります。
 
-**オプション1: GitHub Pages CDNを使用（推奨）**
+**オプション 1: GitHub Pages CDN を使用（推奨）**
+
 ```html
 <script>
   const audioContext = new AudioContext();
@@ -41,7 +43,8 @@ npm install @algo-chip/core
 </script>
 ```
 
-**オプション2: workletsを自分でホスト**
+**オプション 2: worklets を自分でホスト**
+
 ```html
 <!-- サーバーに以下のファイルをダウンロード・配置: -->
 <!-- worklets/square-processor.js -->
@@ -59,7 +62,7 @@ npm install @algo-chip/core
 
 ## 🚀 使い方
 
-### 基本的なBGM生成
+### 基本的な BGM 生成
 
 ```typescript
 import { generateComposition } from "@algo-chip/core";
@@ -95,9 +98,9 @@ const se = generator.generateSE({
 // se.meta - SEメタデータ
 ```
 
-### Web Audio再生
+### Web Audio 再生
 
-coreパッケージには音量制御付きWeb Audio再生用の`AlgoChipSynthesizer`が含まれています：
+core パッケージには音量制御付き Web Audio 再生用の`AlgoChipSynthesizer`が含まれています：
 
 ```typescript
 import {
@@ -128,22 +131,25 @@ await synth.play(jump.events, {
 });
 ```
 
-**volumeオプション**:
+**volume オプション**:
 
 - デフォルト: `1.0`（ベースゲイン = 0.7）
 - 範囲: `0.0+`（例: `0.5` = 50%、`1.5` = 150%）
 - 生成時ではなく再生時に適用
 
-**注意**: `AlgoChipSynthesizer`はブラウザ環境（Web Audio API）が必要です。BGMダッキングやクオンタイゼーションを含む高度なSE再生パターンは、[USAGE.md](./USAGE.md)（英語）および demo パッケージ（`packages/demo/src/playback.ts`）を参照してください。
+**注意**: `AlgoChipSynthesizer`はブラウザ環境（Web Audio API）が必要です。BGM ダッキングやクオンタイゼーションを含む高度な SE 再生パターンは、[USAGE_ja.md](./USAGE_ja.md)および demo パッケージ（`packages/demo/src/playback.ts`）を参照してください。
 
 ### セッションヘルパー (`@algo-chip/util`)
 
-ループBGM管理やSEのダッキング／クオンタイゼーション、タブの可視状態連動などが必要な場合は`@algo-chip/util`を利用してください。
+ループ BGM 管理や SE のダッキング／クオンタイゼーション、タブの可視状態連動などが必要な場合は`@algo-chip/util`を利用してください。
 
 **ESM / npm**
 
 ```typescript
-import { createAudioSession, createVisibilityController } from "@algo-chip/util";
+import {
+  createAudioSession,
+  createVisibilityController,
+} from "@algo-chip/util";
 
 const session = createAudioSession({
   workletBasePath: "./worklets/",
@@ -159,7 +165,7 @@ const detachVisibility = createVisibilityController(session);
 
 **CDN / UMD**
 
-コアエンジンとutilヘルパーの両方をGitHub PagesホスティングのUMDバンドルとして提供しています:
+コアエンジンと util ヘルパーの両方を GitHub Pages ホスティングの UMD バンドルとして提供しています:
 
 ```html
 <script src="https://abagames.github.io/algo-chip/lib/algo-chip.umd.js"></script>
@@ -175,7 +181,7 @@ const detachVisibility = createVisibilityController(session);
 </script>
 ```
 
-より詳しいAPI解説（SEダッキング、クオンタイゼーション、デフォルト上書き、タイムライン検査など）は [USAGE.md](./USAGE.md) を参照してください。
+より詳しい API 解説（SE ダッキング、クオンタイゼーション、デフォルト上書き、タイムライン検査など）は [USAGE.md](./USAGE.md) を参照してください。
 
 ## 🛠️ 開発
 
@@ -233,25 +239,25 @@ algo-chip/
 
 ## 🎼 パイプラインアーキテクチャ
 
-作曲エンジンは**5フェーズパイプライン**に従います：
+作曲エンジンは**5 フェーズパイプライン**に従います：
 
 1. **構造設計（Structure Planning）** - BPM、キー、セクション、コード進行
 2. **モチーフ選択（Motif Selection）** - リズム、メロディ、ベース、ドラムパターン割り当て
 3. **イベント実現（Event Realization）** - 抽象モチーフを具体的なノートイベントに変換
 4. **テクニック適用（Techniques）** - エコー、デチューン、アルペジオを適用
-5. **タイムライン確定（Timeline Finalization）** - イベントソート、拍→時間変換、診断情報生成
+5. **タイムライン確定（Timeline Finalization）** - イベントソート、拍 → 時間変換、診断情報生成
 
 ## 📖 ドキュメント
 
 - `score_ja.md` ([English](./score.md)) - プロダクション仕様（主要リファレンス）
 - `se_ja.md` ([English](./se.md)) - 効果音生成仕様
 - `CLAUDE.md` - 開発ガイドラインとコーディング規約
-- `docs/` - GitHub Pagesデプロイ先（`npm run build:pages`で同期）
+- `docs/` - GitHub Pages デプロイ先（`npm run build:pages`で同期）
 
 ## 🔗 リンク
 
 - [ライブデモ](https://abagames.github.io/algo-chip/)
-- [UMDバンドル](https://abagames.github.io/algo-chip/lib/algo-chip.umd.js)
-- [Util UMDバンドル](https://abagames.github.io/algo-chip/lib/algo-chip-util.umd.js)
+- [UMD バンドル](https://abagames.github.io/algo-chip/lib/algo-chip.umd.js)
+- [Util UMD バンドル](https://abagames.github.io/algo-chip/lib/algo-chip-util.umd.js)
 - [@algo-chip/core (npm)](https://www.npmjs.com/package/@algo-chip/core) _（公開後）_
 - [@algo-chip/util (npm)](https://www.npmjs.com/package/@algo-chip/util) _（公開後）_
