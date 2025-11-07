@@ -17,7 +17,8 @@ import type {
   PlaySEOptions,
   QuantizedSEOptions,
   SEGenerationResult,
-  SEType
+  SEType,
+  PlaybackEvent
 } from "./types.js";
 
 // ============================================================================
@@ -239,23 +240,33 @@ export class SoundEffectController {
     const startTime = Math.max(triggerTime, ctx.currentTime + 0.005);
     const maxDuration = jobs.reduce((acc, job) => Math.max(acc, job.result.meta.duration), 0);
     const minDucking = jobs.reduce((acc, job) => Math.min(acc, job.options.duckingDb), DEFAULT_DUCKING_DB);
+    const batchVolume = this.resolveBatchVolume(jobs);
+    const mergedEvents = this.mergeScheduledEvents(jobs, batchVolume);
 
     this.applyDucking(minDucking, maxDuration, startTime);
 
     this.nextTriggerTime = null;
     this.scheduledByType = {};
 
-    for (const job of jobs) {
-      try {
-        void this.seSynth.play(job.result.events, {
-          startTime,
-          loop: false,
-          volume: job.options.volume
-        }).then(job.resolve, job.reject);
-      } catch (error) {
-        job.reject(error);
-      }
+    if (mergedEvents.length === 0) {
+      jobs.forEach((job) => job.resolve());
+      return;
     }
+
+    const playbackPromise = this.seSynth.play(mergedEvents, {
+      startTime,
+      loop: false,
+      volume: batchVolume
+    });
+
+    void playbackPromise.then(
+      () => {
+        jobs.forEach((job) => job.resolve());
+      },
+      (error) => {
+        jobs.forEach((job) => job.reject(error));
+      }
+    );
   }
 
   /**
@@ -397,5 +408,54 @@ export class SoundEffectController {
     gainParam.setValueAtTime(this.nominalGain, attackStart);
     gainParam.linearRampToValueAtTime(minimumGain, attackEnd);
     gainParam.linearRampToValueAtTime(this.nominalGain, releaseEnd);
+  }
+
+  /** Determines the loudest requested volume for the batch. */
+  private resolveBatchVolume(jobs: ScheduledJob[]): number {
+    return jobs.reduce((acc, job) => Math.max(acc, job.options.volume), 0);
+  }
+
+  /**
+   * Merges scheduled SE event lists into a single chronologically ordered array.
+   * Scales individual job velocities so their relative volumes remain intact even
+   * though the batch shares a single synth invocation.
+   */
+  private mergeScheduledEvents(jobs: ScheduledJob[], batchVolume: number): PlaybackEvent[] {
+    const merged: PlaybackEvent[] = [];
+    for (const job of jobs) {
+      const ratio = this.resolveVolumeRatio(job.options.volume, batchVolume);
+      for (const event of job.result.events) {
+        merged.push(this.scaleEventForVolume(event, ratio));
+      }
+    }
+    merged.sort((a, b) => a.time - b.time);
+    return merged;
+  }
+
+  /** Returns the per-job gain ratio relative to the batch master volume. */
+  private resolveVolumeRatio(jobVolume: number, batchVolume: number): number {
+    if (batchVolume <= 0) {
+      return 0;
+    }
+    const ratio = jobVolume / batchVolume;
+    if (!Number.isFinite(ratio) || ratio <= 0) {
+      return 0;
+    }
+    return Math.min(1, ratio);
+  }
+
+  /** Applies volume ratio to noteOn velocities while cloning the event object. */
+  private scaleEventForVolume(event: PlaybackEvent, ratio: number): PlaybackEvent {
+    const cloned: PlaybackEvent = {
+      ...event,
+      data: { ...event.data }
+    };
+
+    if (event.command === "noteOn" && typeof event.data.velocity === "number") {
+      const scaled = event.data.velocity * ratio;
+      cloned.data.velocity = Math.max(0, Math.min(127, scaled));
+    }
+
+    return cloned;
   }
 }
