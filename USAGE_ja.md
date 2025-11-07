@@ -2,12 +2,12 @@
 
 [English](./USAGE.md) | 日本語
 
-このガイドは `@algo-chip/core` を Web Audio アプリケーションへ統合する際の実用例をまとめています。高レベルのアーキテクチャや詳細仕様は `score.md` と `se.md` が正となるため、ここではプロジェクトに貼り付けて使えるコードにフォーカスします。
+このガイドは npm パッケージ `algo-chip` を Web Audio アプリケーションへ統合する際の実用例をまとめています。高レベルのアーキテクチャや詳細仕様は `score.md` と `se.md` が正となるため、ここではプロジェクトに貼り付けて使えるコードにフォーカスします。
 
 ## 1. BGM 生成
 
 ```typescript
-import { generateComposition } from "@algo-chip/core";
+import { generateComposition } from "algo-chip";
 
 const bgm = await generateComposition({
   lengthInMeasures: 16,
@@ -27,7 +27,7 @@ console.log(`BPM: ${bgm.meta.bpm}, events: ${bgm.events.length}`);
 ## 2. 効果音生成
 
 ```typescript
-import { SEGenerator } from "@algo-chip/core";
+import { SEGenerator } from "algo-chip";
 
 const generator = new SEGenerator();
 const jumpEffect = generator.generateSE({
@@ -43,7 +43,7 @@ console.log(`Template used: ${jumpEffect.meta.templateId}`);
 ## 3. AlgoChipSynthesizer での最小再生
 
 ```typescript
-import { AlgoChipSynthesizer } from "@algo-chip/core";
+import { AlgoChipSynthesizer } from "algo-chip";
 
 const audioContext = new AudioContext();
 const synth = new AlgoChipSynthesizer(audioContext, {
@@ -66,10 +66,10 @@ await synth.play(jumpEffect.events, {
 
 ## 4. セッション志向の再生（共有ヘルパー）
 
-`@algo-chip/util` パッケージは、BGM 生成・ループ再生・効果音の量子化/ダッキングをまとめた高レベルな `AudioSession` を提供します。Web デモ UI もこの仕組みを内部で利用しているため、下流アプリはデモコードをコピーせず公開パッケージへ依存できます。
+`algo-chip` に含まれる util ヘルパーは、BGM 生成・ループ再生・効果音の量子化/ダッキングをまとめた高レベルな `AudioSession` を提供します。Web デモ UI もこの仕組みを内部で利用しているため、下流アプリはデモコードをコピーせず公開パッケージへ依存できます（必要であればサブパス `algo-chip/util` を直接参照できます）。
 
 ```typescript
-import { createAudioSession } from "@algo-chip/util";
+import { createAudioSession } from "algo-chip";
 
 const session = createAudioSession({
   workletBasePath: "./worklets/",
@@ -113,14 +113,14 @@ await session.playSe(coinSe, {
 - `cancelScheduledSe()` は未再生の SE をすべてキャンセルします（ポーズ/停止時に有用）。
 - `triggerSe(options)` は `generateSe` と `playSe` を一括実行するラッパーとして使えます。
 
-内部的には `AlgoChipSynthesizer` と `SoundEffectController` をラップしているため、より細かい制御が必要な場合は `@algo-chip/util` から個別に import して組み合わせられます。
+内部的には `AlgoChipSynthesizer` と `SoundEffectController` をラップしているため、より細かい制御が必要な場合は `algo-chip` の util エクスポート（または `algo-chip/util` サブパス）から個別に import して組み合わせられます。
 
 ### 4.1 タブ非表示時の一時停止/再開
 
-`@algo-chip/util` には `createVisibilityController` も含まれており、ブラウザの visibility 変化に合わせてセッションの pause/resume を管理します。現在のループオフセットを保持し、タブ非表示中は AudioContext を suspend し、復帰時にシームレスに再生を再開します。
+`algo-chip` には `createVisibilityController` も含まれており、ブラウザの visibility 変化に合わせてセッションの pause/resume を管理します。現在のループオフセットを保持し、タブ非表示中は AudioContext を suspend し、復帰時にシームレスに再生を再開します。
 
 ```typescript
-import { createAudioSession, createVisibilityController } from "@algo-chip/util";
+import { createAudioSession, createVisibilityController } from "algo-chip";
 
 const session = createAudioSession();
 

@@ -2,15 +2,16 @@
 
 English | [日本語](./USAGE_ja.md)
 
-This guide collects practical examples for integrating `@algo-chip/core` into a
-Web Audio application. The high-level architecture and specifications remain in
+This guide collects practical examples for integrating the published
+`algo-chip` npm package into a Web Audio application. The high-level
+architecture and specifications remain in
 `score.md` and `se.md`; here we focus on code that you can copy into your own
 project.
 
 ## 1. BGM Generation
 
 ```typescript
-import { generateComposition } from "@algo-chip/core";
+import { generateComposition } from "algo-chip";
 
 const bgm = await generateComposition({
   lengthInMeasures: 16,
@@ -31,7 +32,7 @@ console.log(`BPM: ${bgm.meta.bpm}, events: ${bgm.events.length}`);
 ## 2. Sound Effect Generation
 
 ```typescript
-import { SEGenerator } from "@algo-chip/core";
+import { SEGenerator } from "algo-chip";
 
 const generator = new SEGenerator();
 const jumpEffect = generator.generateSE({
@@ -48,7 +49,7 @@ mixed or scheduled together.
 ## 3. Minimal Playback with AlgoChipSynthesizer
 
 ```typescript
-import { AlgoChipSynthesizer } from "@algo-chip/core";
+import { AlgoChipSynthesizer } from "algo-chip";
 
 const audioContext = new AudioContext();
 const synth = new AlgoChipSynthesizer(audioContext, {
@@ -73,13 +74,13 @@ you control `startTime`, `loop`, `lookahead`, `leadTime`, `onEvent`, and
 
 ## 4. Session-Oriented Playback (shared helpers)
 
-The `@algo-chip/util` package exposes a higher-level `AudioSession` that
+The util helpers included in `algo-chip` expose a higher-level `AudioSession` that
 bundles BGM generation, looping playback, and SE quantization/ducking into a
 single object. This is what the web demo UI uses internally, so downstream apps
 can depend on the published package rather than copying demo code.
 
 ```typescript
-import { createAudioSession } from "@algo-chip/util";
+import { createAudioSession } from "algo-chip";
 
 const session = createAudioSession({
   workletBasePath: "./worklets/",
@@ -128,17 +129,18 @@ await session.playSe(coinSe, {
 
 Under the hood the session wraps `AlgoChipSynthesizer` and the
 `SoundEffectController`; if you need deeper customization you can import and
-wire those pieces manually from `@algo-chip/util`.
+wire those pieces manually from the util exports provided by `algo-chip` (or
+the optional subpath `algo-chip/util`).
 
 ### 4.1 Tab Visibility Pause / Resume
 
-`@algo-chip/util` also ships `createVisibilityController`, which wires browser
+`algo-chip` also ships `createVisibilityController`, which wires browser
 visibility changes to the session’s pause/resume flow. It captures the current
 loop offset, suspends the audio context while the tab is hidden, then resumes
 playback seamlessly when focus returns.
 
 ```typescript
-import { createAudioSession, createVisibilityController } from "@algo-chip/util";
+import { createAudioSession, createVisibilityController } from "algo-chip";
 
 const session = createAudioSession();
 

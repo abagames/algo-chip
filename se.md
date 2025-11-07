@@ -310,7 +310,7 @@ Sample from `packages/core/motifs/se-templates.json`:
 #### **D. Usage Example**
 
 ```typescript
-import { SEGenerator } from "@algo-chip/core/se/seGenerator.js";
+import { SEGenerator } from "algo-chip";
 
 const generator = new SEGenerator();
 
@@ -332,7 +332,7 @@ const explosionSE = generator.generateSE({
 });
 
 // Use in combination with BGM
-import { generateComposition } from "@algo-chip/core";
+import { generateComposition } from "algo-chip";
 
 const bgm = await generateComposition({ seed: 999 });
 const jump = generator.generateSE({ type: "jump", startTime: 3.0 });

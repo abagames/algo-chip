@@ -16,7 +16,7 @@
 ### npm
 
 ```bash
-npm install @algo-chip/core
+npm install algo-chip
 ```
 
 ### CDN (UMD)
@@ -65,7 +65,7 @@ npm install @algo-chip/core
 ### 基本的な BGM 生成
 
 ```typescript
-import { generateComposition } from "@algo-chip/core";
+import { generateComposition } from "algo-chip";
 
 const result = await generateComposition({
   lengthInMeasures: 16,
@@ -86,7 +86,7 @@ console.log(
 ### 効果音（SE）生成
 
 ```typescript
-import { SEGenerator } from "@algo-chip/core";
+import { SEGenerator } from "algo-chip";
 
 const generator = new SEGenerator();
 const se = generator.generateSE({
@@ -107,7 +107,7 @@ import {
   generateComposition,
   SEGenerator,
   AlgoChipSynthesizer,
-} from "@algo-chip/core";
+} from "algo-chip";
 
 // シンセサイザーを初期化
 const audioContext = new AudioContext();
@@ -139,9 +139,10 @@ await synth.play(jump.events, {
 
 **注意**: `AlgoChipSynthesizer`はブラウザ環境（Web Audio API）が必要です。BGM ダッキングやクオンタイゼーションを含む高度な SE 再生パターンは、[USAGE_ja.md](./USAGE_ja.md)および demo パッケージ（`packages/demo/src/playback.ts`）を参照してください。
 
-### セッションヘルパー (`@algo-chip/util`)
+### セッションヘルパー（utilエクスポート）
 
-ループ BGM 管理や SE のダッキング／クオンタイゼーション、タブの可視状態連動などが必要な場合は`@algo-chip/util`を利用してください。
+ループBGM管理やSEダッキング／クオンタイゼーション、タブの可視状態連動が必要な場合は `algo-chip` から util ヘルパーをインポートできます。
+必要に応じて `algo-chip/util` サブパスを指定しても構いません。
 
 **ESM / npm**
 
@@ -149,7 +150,7 @@ await synth.play(jump.events, {
 import {
   createAudioSession,
   createVisibilityController,
-} from "@algo-chip/util";
+} from "algo-chip";
 
 const session = createAudioSession({
   workletBasePath: "./worklets/",
@@ -212,14 +213,14 @@ npm run preview            # プロダクションビルドをプレビュー
 ```
 algo-chip/
 ├── packages/
-│   ├── core/              # @algo-chip/core npmパッケージ
+│   ├── core/              # コアワークスペース（npm "algo-chip" が再エクスポート）
 │   │   ├── src/           # TypeScriptソース（5フェーズパイプライン）
 │   │   ├── motifs/        # モチーフJSONライブラリ（コード、メロディ、リズムなど）
 │   │   └── dist/          # ビルド出力
 │   │       ├── index.js           # ESMバンドル
 │   │       ├── index.d.ts         # TypeScript型定義
 │   │       └── algo-chip.umd.js   # UMDバンドル
-│   ├── util/              # @algo-chip/util npmパッケージ（AudioSessionヘルパー）
+│   ├── util/              # util ワークスペース（AudioSessionヘルパーはルートから利用）
 │   │   ├── src/           # セッション制御、ダッキング、クオンタイゼーション
 │   │   └── dist/
 │   │       ├── index.js           # ESMバンドル
@@ -259,5 +260,4 @@ algo-chip/
 - [ライブデモ](https://abagames.github.io/algo-chip/)
 - [UMD バンドル](https://abagames.github.io/algo-chip/lib/algo-chip.umd.js)
 - [Util UMD バンドル](https://abagames.github.io/algo-chip/lib/algo-chip-util.umd.js)
-- [@algo-chip/core (npm)](https://www.npmjs.com/package/@algo-chip/core) _（公開後）_
-- [@algo-chip/util (npm)](https://www.npmjs.com/package/@algo-chip/util) _（公開後）_
+- [algo-chip (npm)](https://www.npmjs.com/package/algo-chip)

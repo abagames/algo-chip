@@ -3,13 +3,14 @@ docs/
 packages/demo/
 packages/*/src/
 packages/*/test/
+packages/*/motifs/
 packages/*/node_modules/
 packages/*/vite.config.*
 packages/*/tsconfig*.json
 
 # Build & tooling artefacts
 node_modules/
-dist/
+/dist/
 *.tsbuildinfo
 coverage/
 *.log
@@ -22,13 +23,13 @@ AGENTS.md
 CLAUDE.md
 score*.md
 se*.md
-USAGE*.md
 
 # Editor / OS clutter
 .vscode/
 .idea/
 .claude/
 .serena/
+.npm-cache/
 *.swp
 *.swo
 *~

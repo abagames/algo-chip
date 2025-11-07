@@ -308,7 +308,7 @@ export interface SEGenerationResult {
 #### **D. 使用例**
 
 ```typescript
-import { SEGenerator } from "@algo-chip/core/se/seGenerator.js";
+import { SEGenerator } from "algo-chip";
 
 const generator = new SEGenerator();
 
@@ -330,7 +330,7 @@ const explosionSE = generator.generateSE({
 });
 
 // BGMと組み合わせて使用
-import { generateComposition } from "@algo-chip/core";
+import { generateComposition } from "algo-chip";
 
 const bgm = await generateComposition({ seed: 999 });
 const jump = generator.generateSE({ type: "jump", startTime: 3.0 });

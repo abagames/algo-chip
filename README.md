@@ -16,7 +16,7 @@ English | [日本語](./README_ja.md)
 ### npm
 
 ```bash
-npm install @algo-chip/core
+npm install algo-chip
 ```
 
 ### CDN (UMD)
@@ -65,7 +65,7 @@ npm install @algo-chip/core
 ### Basic BGM Generation
 
 ```typescript
-import { generateComposition } from "@algo-chip/core";
+import { generateComposition } from "algo-chip";
 
 const result = await generateComposition({
   lengthInMeasures: 16,
@@ -86,7 +86,7 @@ console.log(
 ### Sound Effect Generation
 
 ```typescript
-import { SEGenerator } from "@algo-chip/core";
+import { SEGenerator } from "algo-chip";
 
 const generator = new SEGenerator();
 const se = generator.generateSE({
@@ -107,7 +107,7 @@ import {
   generateComposition,
   SEGenerator,
   AlgoChipSynthesizer,
-} from "@algo-chip/core";
+} from "algo-chip";
 
 // Initialize synthesizer
 const audioContext = new AudioContext();
@@ -141,10 +141,12 @@ await synth.play(jump.events, {
 Advanced SE playback patterns (ducking, quantization, controller wiring) are
 documented in [USAGE.md](./USAGE.md) alongside pointers into the demo helpers.
 
-### Session Helpers (`@algo-chip/util`)
+### Session Helpers (util exports)
 
 When you need session management (auto-looped BGM, SE ducking/quantization,
-visibility pause, etc.) pull in `@algo-chip/util`.
+visibility pause, etc.) import the util helpers directly from `algo-chip`.
+You can also target the subpath `algo-chip/util` if you prefer an explicit
+entry point for bundlers.
 
 **ESM / npm**
 
@@ -152,7 +154,7 @@ visibility pause, etc.) pull in `@algo-chip/util`.
 import {
   createAudioSession,
   createVisibilityController,
-} from "@algo-chip/util";
+} from "algo-chip";
 
 const session = createAudioSession({
   workletBasePath: "./worklets/",
@@ -216,14 +218,14 @@ npm run preview            # Preview production build
 ```
 algo-chip/
 ├── packages/
-│   ├── core/              # @algo-chip/core npm package
+│   ├── core/              # Core workspace (exports re-used by npm "algo-chip")
 │   │   ├── src/           # TypeScript source (5-phase pipeline)
 │   │   ├── motifs/        # Motif JSON libraries (chords, melody, rhythm, etc.)
 │   │   └── dist/          # Build output
 │   │       ├── index.js           # ESM bundle
 │   │       ├── index.d.ts         # TypeScript definitions
 │   │       └── algo-chip.umd.js   # UMD bundle
-│   ├── util/              # @algo-chip/util npm package (AudioSession helpers)
+│   ├── util/              # Util workspace (AudioSession helpers re-exported via root)
 │   │   ├── src/           # Session orchestration, ducking, quantization
 │   │   └── dist/
 │   │       ├── index.js           # ESM bundle
@@ -263,5 +265,4 @@ The composition engine follows a **five-phase pipeline**:
 - [Live Demo](https://abagames.github.io/algo-chip/)
 - [UMD Bundle](https://abagames.github.io/algo-chip/lib/algo-chip.umd.js)
 - [Util UMD Bundle](https://abagames.github.io/algo-chip/lib/algo-chip-util.umd.js)
-- [@algo-chip/core on npm](https://www.npmjs.com/package/@algo-chip/core) _(After publishing)_
-- [@algo-chip/util on npm](https://www.npmjs.com/package/@algo-chip/util) _(After publishing)_
+- [algo-chip on npm](https://www.npmjs.com/package/algo-chip)

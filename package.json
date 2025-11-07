@@ -2,6 +2,33 @@
   "name": "algo-chip",
   "version": "1.0.0",
   "description": "High-quality automatic BGM and sound effect composition engine with 4-channel chiptune synthesis",
+  "main": "./index.js",
+  "module": "./index.js",
+  "types": "./index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./index.js",
+      "types": "./index.d.ts"
+    },
+    "./core": {
+      "import": "./packages/core/dist/index.js",
+      "types": "./packages/core/dist/index.d.ts"
+    },
+    "./util": {
+      "import": "./packages/util/dist/index.js",
+      "types": "./packages/util/dist/index.d.ts"
+    }
+  },
+  "files": [
+    "index.js",
+    "index.d.ts",
+    "USAGE.md",
+    "USAGE_ja.md",
+    "packages/core/dist",
+    "packages/core/worklets",
+    "packages/core/motifs",
+    "packages/util/dist"
+  ],
   "type": "module",
   "author": "abagames",
   "license": "MIT",
