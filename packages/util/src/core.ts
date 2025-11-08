@@ -308,13 +308,27 @@ class AudioSessionImpl implements AudioSession {
 
   private async ensureContext(resume: boolean): Promise<AudioContext> {
     if (!this.context) {
-      this.context = new AudioContext({
-        sampleRate: DEFAULT_SAMPLE_RATE,
-        latencyHint: "interactive",
-      });
+      try {
+        this.context = new AudioContext({
+          sampleRate: DEFAULT_SAMPLE_RATE,
+          latencyHint: "interactive",
+        });
+      } catch (error) {
+        const reason = error instanceof Error ? error.message : String(error);
+        throw new Error(
+          `AudioContext initialization failed. Ensure the page has a user interaction and autoplay is allowed. Cause: ${reason}`
+        );
+      }
     }
     if (resume && this.context.state === "suspended") {
-      await this.context.resume();
+      try {
+        await this.context.resume();
+      } catch (error) {
+        const reason = error instanceof Error ? error.message : String(error);
+        throw new Error(
+          `AudioContext resume failed. Try resuming after a user gesture or check browser policies. Cause: ${reason}`
+        );
+      }
     }
     return this.context;
   }

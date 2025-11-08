@@ -404,9 +404,22 @@ export class AlgoChipSynthesizer {
   async init(): Promise<void> {
     const ctx = this.context;
     const basePath = this.workletBasePath;
-    await ctx.audioWorklet.addModule(`${basePath}square-processor.js`);
-    await ctx.audioWorklet.addModule(`${basePath}triangle-processor.js`);
-    await ctx.audioWorklet.addModule(`${basePath}noise-processor.js`);
+    const loadModule = async (fileName: string): Promise<void> => {
+      const url = `${basePath}${fileName}`;
+      try {
+        await ctx.audioWorklet.addModule(url);
+      } catch (error) {
+        const reason = error instanceof Error ? error.message : String(error);
+        throw new Error(
+          `Failed to load AudioWorklet "${fileName}" from "${url}". ` +
+            `Verify that the processor file is hosted and workletBasePath is correct. Cause: ${reason}`
+        );
+      }
+    };
+
+    await loadModule("square-processor.js");
+    await loadModule("triangle-processor.js");
+    await loadModule("noise-processor.js");
 
     this.channels = {
       square1: new SquareChannel(ctx, this.masterGainNode),
