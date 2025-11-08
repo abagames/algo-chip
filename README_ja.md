@@ -19,6 +19,11 @@
 npm install algo-chip
 ```
 
+**npm で利用する場合の AudioWorklet 配置**
+
+1. `node_modules/algo-chip/packages/core/worklets` を静的ファイル配信ディレクトリ（例: Vite/Next.js/CRA の `public/worklets`）にコピーしてください。バージョンアップ時にずれないよう、ビルドスクリプトへコピー処理を組み込みます。
+2. `workletBasePath` をコピー先の公開パスに設定します（例: `workletBasePath: "/worklets/"`）。`AlgoChipSynthesizer` のデフォルトは `./worklets/` ですが、ファイルが存在しないと `audioWorklet.addModule` が実行時に失敗します。
+
 ### CDN (UMD)
 
 ```html

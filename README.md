@@ -19,6 +19,11 @@ English | [日本語](./README_ja.md)
 npm install algo-chip
 ```
 
+**Copy the AudioWorklets when using npm**
+
+1. Copy `node_modules/algo-chip/packages/core/worklets` into the directory that your bundler serves as static assets (for example `public/worklets` in Vite/Next.js or CRA). Automate this in your build step so upgrades stay in sync.
+2. Set `workletBasePath` to the public path you copied to (e.g. `workletBasePath: "/worklets/"`). `AlgoChipSynthesizer` defaults to `./worklets/`, and missing files will cause `audioWorklet.addModule` to throw at runtime.
+
 ### CDN (UMD)
 
 ```html
