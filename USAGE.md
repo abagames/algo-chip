@@ -1,6 +1,6 @@
 # Usage Guide
 
-English | [日本語](./USAGE_ja.md)
+English | [日本語](https://github.com/abagames/algo-chip/blob/master/USAGE_ja.md)
 
 This guide collects practical examples for integrating the published
 `algo-chip` npm package into a Web Audio application. The high-level

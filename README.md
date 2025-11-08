@@ -1,6 +1,6 @@
 # algo-chip
 
-English | [日本語](./README_ja.md)
+English | [日本語](https://github.com/abagames/algo-chip/blob/master/README_ja.md)
 
 **High-quality automatic BGM composition engine with 4-channel chiptune synthesis**
 
@@ -166,7 +166,7 @@ await synth.play(jump.events, {
 Call `playLoop()` for background loops (do not await) and `await play()` for
 finite renders or sound effects.
 Advanced SE playback patterns (ducking, quantization, controller wiring) are
-documented in [USAGE.md](./USAGE.md) alongside pointers into the demo helpers.
+documented in [USAGE.md](https://github.com/abagames/algo-chip/blob/master/USAGE.md) alongside pointers into the demo helpers.
 
 ### Session Helpers (util exports)
 
@@ -213,7 +213,7 @@ Both the core engine and util helpers ship prebuilt bundles on GitHub Pages:
 </script>
 ```
 
-See [USAGE.md](./USAGE.md) for deeper API coverage (SE ducking, quantization,
+See [USAGE.md](https://github.com/abagames/algo-chip/blob/master/USAGE.md) for deeper API coverage (SE ducking, quantization,
 default overrides, timeline inspection, etc.).
 
 ## 🛠️ Development
@@ -282,8 +282,8 @@ The composition engine follows a **five-phase pipeline**:
 
 ## 📖 Documentation
 
-- `score.md` ([日本語](./score_ja.md)) - Production specification (primary reference)
-- `se.md` ([日本語](./se_ja.md)) - Sound effect generation specification
+- `score.md` ([日本語](https://github.com/abagames/algo-chip/blob/master/score_ja.md)) - Production specification (primary reference)
+- `se.md` ([日本語](https://github.com/abagames/algo-chip/blob/master/se_ja.md)) - Sound effect generation specification
 - `AGENTS.md` - Development guidelines and coding conventions
 - `docs/` - GitHub Pages deployment target (kept in sync via `npm run build:pages`)
 

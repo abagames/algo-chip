@@ -1,6 +1,6 @@
 # 利用ガイド
 
-[English](./USAGE.md) | 日本語
+[English](https://github.com/abagames/algo-chip/blob/master/USAGE.md) | 日本語
 
 このガイドは npm パッケージ `algo-chip` を Web Audio アプリケーションへ統合する際の実用例をまとめています。高レベルのアーキテクチャや詳細仕様は `score.md` と `se.md` が正となるため、ここではプロジェクトに貼り付けて使えるコードにフォーカスします。
 

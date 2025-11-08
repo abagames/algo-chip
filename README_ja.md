@@ -1,6 +1,6 @@
 # algo-chip
 
-[English](./README.md) | 日本語
+[English](https://github.com/abagames/algo-chip/blob/master/README.md) | 日本語
 
 **4 チャンネルチップチューン音源による高品質 BGM 自動作曲エンジン**
 
@@ -160,7 +160,7 @@ await synth.play(jump.events, {
 - 範囲: `0.0+`（例: `0.5` = 50%、`1.5` = 150%）
 - 生成時ではなく再生時に適用
 
-**注意**: `AlgoChipSynthesizer`はブラウザ環境（Web Audio API）が必要です。ループ再生は `playLoop()` を呼び出して `await` しないようにし、単発再生や SE には `await play()` を使用してください。BGM ダッキングやクオンタイゼーションを含む高度な SE 再生パターンは、[USAGE_ja.md](./USAGE_ja.md)および demo パッケージ（`packages/demo/src/playback.ts`）を参照してください。
+**注意**: `AlgoChipSynthesizer`はブラウザ環境（Web Audio API）が必要です。ループ再生は `playLoop()` を呼び出して `await` しないようにし、単発再生や SE には `await play()` を使用してください。BGM ダッキングやクオンタイゼーションを含む高度な SE 再生パターンは、[USAGE_ja.md](https://github.com/abagames/algo-chip/blob/master/USAGE_ja.md)および demo パッケージ（`packages/demo/src/playback.ts`）を参照してください。
 
 ### セッションヘルパー（utilエクスポート）
 
@@ -205,7 +205,7 @@ const detachVisibility = createVisibilityController(session);
 </script>
 ```
 
-より詳しい API 解説（SE ダッキング、クオンタイゼーション、デフォルト上書き、タイムライン検査など）は [USAGE.md](./USAGE.md) を参照してください。
+より詳しい API 解説（SE ダッキング、クオンタイゼーション、デフォルト上書き、タイムライン検査など）は [USAGE.md](https://github.com/abagames/algo-chip/blob/master/USAGE.md) を参照してください。
 
 ## 🛠️ 開発
 
@@ -273,8 +273,8 @@ algo-chip/
 
 ## 📖 ドキュメント
 
-- `score_ja.md` ([English](./score.md)) - プロダクション仕様（主要リファレンス）
-- `se_ja.md` ([English](./se.md)) - 効果音生成仕様
+- `score_ja.md` ([English](https://github.com/abagames/algo-chip/blob/master/score.md)) - プロダクション仕様（主要リファレンス）
+- `se_ja.md` ([English](https://github.com/abagames/algo-chip/blob/master/se.md)) - 効果音生成仕様
 - `CLAUDE.md` - 開発ガイドラインとコーディング規約
 - `docs/` - GitHub Pages デプロイ先（`npm run build:pages`で同期）
 
