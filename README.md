@@ -103,6 +103,27 @@ const se = generator.generateSE({
 // se.meta - SE metadata
 ```
 
+#### Available SE types
+
+`SEGenerator` supports the following `type` strings out of the box (see `se.md`
+for template details):
+
+| Type | Description |
+| --- | --- |
+| `jump` | Light ascending jump sound |
+| `coin` | Coin/collectible pickup |
+| `explosion` | Short noise-heavy explosion |
+| `hit` | Damage/impact accent |
+| `powerup` | Power-up fanfare burst |
+| `select` | UI/menu selection blip |
+| `laser` | Retro shot/laser |
+| `click` | Minimal percussive click |
+| `synth` | Single-note synth accent |
+| `tone` | Sustained square/triangle tone |
+
+Use the table as a quick reference when wiring SE triggers; each entry maps to a
+template family with deterministic parameter ranges.
+
 ### Web Audio Playback
 
 The core package includes `AlgoChipSynthesizer` for Web Audio-based playback with volume control:

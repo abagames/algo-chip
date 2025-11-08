@@ -120,7 +120,8 @@ await session.playSe(coinSe, {
 ```
 
 - `configureSeDefaults({ duckingDb, volume, quantize })` adjusts the defaults
-  used by subsequent `triggerSe` calls.
+  applied whenever `playSe` (and therefore `triggerSe`) is called without those
+  options.
 - `setBgmVolume(value)` rescales the looped BGM without rebuilding the synth.
 - `cancelScheduledSe()` clears any queued-but-not-yet-fired SEs (useful when
   pausing or stopping playback).
@@ -162,6 +163,44 @@ await session.close();
 
 Callbacks are optional—omit them if you only need the default behavior. Always
 call the disposer (and `session.close()`) when tearing down your app.
+
+### 4.2 Transport & lifecycle controls
+
+`AudioSession` exposes pause/resume/stop helpers beyond the simple happy path.
+The snippet below shows how to capture offsets, resume at a specific point, and
+cleanly shut down the underlying `AudioContext`.
+
+```typescript
+// Pause playback and remember the loop position (returns seconds or null)
+const offsetSeconds = session.pauseBgm({ captureOffset: true }) ?? 0;
+
+// Resume from the captured offset or override it manually
+await session.resumeBgm({ offsetSeconds });
+
+// Stop the loop entirely (clears ducking + active timeline info)
+session.stopBgm();
+
+// Hard-stop everything, including queued SE jobs
+session.stopAllAudio();
+session.cancelScheduledSe();
+
+// Inspect and manage the shared AudioContext
+const ctx = session.getAudioContext();
+await session.suspendAudioContext();
+await session.resumeAudioContext();
+
+// When shutting down the app
+await session.close();
+```
+
+- `pauseBgm({ captureOffset })` controls whether the loop offset is measured;
+  skip it for immediate mutes when you plan to restart from zero.
+- `resumeBgm({ offsetSeconds, loop, volume, ... })` accepts the same playback
+  options as `playBgm`, letting you tweak loop/volume settings while resuming.
+- `stopAllAudio()` also resets the SE ducking envelope and cancels quantized
+  triggers, which is safer than calling `stopBgm()` when exiting a scene.
+- `getActiveTimeline()` remains handy for UI widgets; it returns `null` once
+  `stopBgm()` or `stopAllAudio()` clears state.
 
 ## 5. Regenerating API Reference
 

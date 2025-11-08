@@ -103,6 +103,25 @@ const se = generator.generateSE({
 // se.meta - SEメタデータ
 ```
 
+#### 利用可能な SE type
+
+`SEGenerator` は以下の `type` 文字列を標準サポートしています（詳細は `se.md` を参照）。
+
+| Type | 説明 |
+| --- | --- |
+| `jump` | 軽い上昇系のジャンプ音 |
+| `coin` | コイン/アイテム取得音 |
+| `explosion` | ノイズ主体の爆発音 |
+| `hit` | ダメージ/ヒットアクセント |
+| `powerup` | パワーアップ風ファンファーレ |
+| `select` | UI/メニュー選択のブリップ音 |
+| `laser` | レトロなショット/レーザー |
+| `click` | ミニマルなクリック音 |
+| `synth` | ワンショットのシンセアクセント |
+| `tone` | 持続する矩形波/三角波トーン |
+
+各タイプはテンプレートファミリーと紐づいており、決定的なパラメーター範囲で生成されます。
+
 ### Web Audio 再生
 
 core パッケージには音量制御付き Web Audio 再生用の`AlgoChipSynthesizer`が含まれています：

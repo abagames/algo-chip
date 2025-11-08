@@ -107,7 +107,7 @@ await session.playSe(coinSe, {
 });
 ```
 
-- `configureSeDefaults({ duckingDb, volume, quantize })` で後続の `triggerSe` 呼び出しが使うデフォルト値を調整できます。
+- `configureSeDefaults({ duckingDb, volume, quantize })` で `playSe`（およびそれを内部で呼ぶ `triggerSe`）が参照するデフォルト値を調整できます。
 - `setBgmVolume(value)` はシンセを再構築せずにループ中の BGM 音量をスケールします。
 - `cancelScheduledSe()` は未再生の SE をすべてキャンセルします（ポーズ/停止時に有用）。
 - `triggerSe(options)` は `generateSe` と `playSe` を一括実行するラッパーとして使えます。
@@ -140,6 +140,38 @@ await session.close();
 ```
 
 コールバックは任意で、デフォルト動作だけが必要なら省略可能です。アプリ終了時は必ず disposer（`detachVisibility`）と `session.close()` を呼び出してください。
+
+### 4.2 トランスポートとライフサイクル制御
+
+`AudioSession` はループ制御や AudioContext 管理のための補助 API も提供します。以下の例ではオフセット取得、任意位置からの再開、完全停止、AudioContext の suspend/resume までをまとめています。
+
+```typescript
+// ループ位置を記録しつつ一時停止（秒単位のオフセットを返す）
+const offsetSeconds = session.pauseBgm({ captureOffset: true }) ?? 0;
+
+// 記録したオフセット、または任意の値から再開
+await session.resumeBgm({ offsetSeconds });
+
+// ループ自体を停止（ダッキングとタイムライン情報をリセット）
+session.stopBgm();
+
+// BGM/SE をまとめて停止し、量子化キューも破棄
+session.stopAllAudio();
+session.cancelScheduledSe();
+
+// 共有 AudioContext の状態を直接確認・制御
+const ctx = session.getAudioContext();
+await session.suspendAudioContext();
+await session.resumeAudioContext();
+
+// アプリ終了時
+await session.close();
+```
+
+- `pauseBgm({ captureOffset })` でオフセット取得の有無を切り替えられます。ゼロから再開するだけなら `captureOffset: false` でも構いません。
+- `resumeBgm({ offsetSeconds, loop, volume, ... })` は `playBgm` と同じオプションを受けるため、ループ可否や音量を再設定しながら再開できます。
+- `stopAllAudio()` は SE ダッキングのエンベロープと量子化キューも初期化するため、シーン遷移時はこちらを使う方が安全です。
+- `getActiveTimeline()` は UI 表示に便利ですが、`stopBgm()` / `stopAllAudio()` 後は `null` を返す点に注意してください。
 
 ## 5. API リファレンスの再生成
 
