@@ -292,6 +292,7 @@ The composition engine follows a **five-phase pipeline**:
 ## 🔗 Links
 
 - [Live Demo](https://abagames.github.io/algo-chip/)
+- [API Docs](https://abagames.github.io/algo-chip/api/)
 - [UMD Bundle](https://abagames.github.io/algo-chip/lib/algo-chip.umd.js)
 - [Util UMD Bundle](https://abagames.github.io/algo-chip/lib/algo-chip-util.umd.js)
 - [algo-chip on npm](https://www.npmjs.com/package/algo-chip)

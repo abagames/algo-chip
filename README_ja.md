@@ -280,6 +280,7 @@ algo-chip/
 ## 🔗 リンク
 
 - [ライブデモ](https://abagames.github.io/algo-chip/)
+- [API ドキュメント](https://abagames.github.io/algo-chip/api/)
 - [UMD バンドル](https://abagames.github.io/algo-chip/lib/algo-chip.umd.js)
 - [Util UMD バンドル](https://abagames.github.io/algo-chip/lib/algo-chip-util.umd.js)
 - [algo-chip (npm)](https://www.npmjs.com/package/algo-chip)
