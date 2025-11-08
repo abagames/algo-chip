@@ -10,7 +10,10 @@
  * - Web Audio synthesis with looping support
  */
 
-import { createAudioSession, createVisibilityController } from "@algo-chip/util";
+import {
+  createAudioSession,
+  createVisibilityController,
+} from "@algo-chip/util";
 import type {
   AudioSession,
   PlaybackEvent,
@@ -304,7 +307,12 @@ async function ensureSession(): Promise<AudioSession> {
       },
     });
   }
-  await session.resumeAudioContext();
+  // On some mobile browsers (especially Safari on iOS/iPadOS), awaiting
+  // resumeAudioContext() can fail if there's a delay, as the browser might
+  // lose the "user gesture" context. Calling it without await allows the
+  // context to resume in the background while generation proceeds. This is a
+  // pragmatic workaround for a common browser-specific issue.
+  /*await*/ session.resumeAudioContext();
   return session;
 }
 
