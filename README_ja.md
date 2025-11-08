@@ -1,8 +1,10 @@
-# algo-chip
+# algo-chip ([Demo](https://abagames.github.io/algo-chip/))
 
 [English](https://github.com/abagames/algo-chip/blob/master/README.md) | 日本語
 
 **4 チャンネルチップチューン音源による高品質 BGM 自動作曲エンジン**
+
+https://github.com/user-attachments/assets/b0897d24-abd3-4d9a-932a-4a0d4280a1f3
 
 ## 🎵 特徴
 
@@ -107,18 +109,18 @@ const se = generator.generateSE({
 
 `SEGenerator` は以下の `type` 文字列を標準サポートしています（詳細は `se.md` を参照）。
 
-| Type | 説明 |
-| --- | --- |
-| `jump` | 軽い上昇系のジャンプ音 |
-| `coin` | コイン/アイテム取得音 |
-| `explosion` | ノイズ主体の爆発音 |
-| `hit` | ダメージ/ヒットアクセント |
-| `powerup` | パワーアップ風ファンファーレ |
-| `select` | UI/メニュー選択のブリップ音 |
-| `laser` | レトロなショット/レーザー |
-| `click` | ミニマルなクリック音 |
-| `synth` | ワンショットのシンセアクセント |
-| `tone` | 持続する矩形波/三角波トーン |
+| Type        | 説明                           |
+| ----------- | ------------------------------ |
+| `jump`      | 軽い上昇系のジャンプ音         |
+| `coin`      | コイン/アイテム取得音          |
+| `explosion` | ノイズ主体の爆発音             |
+| `hit`       | ダメージ/ヒットアクセント      |
+| `powerup`   | パワーアップ風ファンファーレ   |
+| `select`    | UI/メニュー選択のブリップ音    |
+| `laser`     | レトロなショット/レーザー      |
+| `click`     | ミニマルなクリック音           |
+| `synth`     | ワンショットのシンセアクセント |
+| `tone`      | 持続する矩形波/三角波トーン    |
 
 各タイプはテンプレートファミリーと紐づいており、決定的なパラメーター範囲で生成されます。
 
@@ -162,18 +164,15 @@ await synth.play(jump.events, {
 
 **注意**: `AlgoChipSynthesizer`はブラウザ環境（Web Audio API）が必要です。ループ再生は `playLoop()` を呼び出して `await` しないようにし、単発再生や SE には `await play()` を使用してください。BGM ダッキングやクオンタイゼーションを含む高度な SE 再生パターンは、[USAGE_ja.md](https://github.com/abagames/algo-chip/blob/master/USAGE_ja.md)および demo パッケージ（`packages/demo/src/playback.ts`）を参照してください。
 
-### セッションヘルパー（utilエクスポート）
+### セッションヘルパー（util エクスポート）
 
-ループBGM管理やSEダッキング／クオンタイゼーション、タブの可視状態連動が必要な場合は `algo-chip` から util ヘルパーをインポートできます。
+ループ BGM 管理や SE ダッキング／クオンタイゼーション、タブの可視状態連動が必要な場合は `algo-chip` から util ヘルパーをインポートできます。
 必要に応じて `algo-chip/util` サブパスを指定しても構いません。
 
 **ESM / npm**
 
 ```typescript
-import {
-  createAudioSession,
-  createVisibilityController,
-} from "algo-chip";
+import { createAudioSession, createVisibilityController } from "algo-chip";
 
 const session = createAudioSession({
   workletBasePath: "./worklets/",
