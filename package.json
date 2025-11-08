@@ -26,7 +26,6 @@
     "USAGE_ja.md",
     "packages/core/dist",
     "packages/core/worklets",
-    "packages/core/motifs",
     "packages/util/dist"
   ],
   "type": "module",
