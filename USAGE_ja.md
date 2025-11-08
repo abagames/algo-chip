@@ -51,8 +51,7 @@ const synth = new AlgoChipSynthesizer(audioContext, {
 });
 await synth.init();
 
-await synth.play(bgm.events, {
-  loop: true,
+synth.playLoop(bgm.events, {
   volume: 0.8,
 });
 
@@ -62,7 +61,7 @@ await synth.play(jumpEffect.events, {
 });
 ```
 
-`SynthPlayOptions`（`docs/api/` に出力される TypeDoc を参照）で `startTime`, `loop`, `lookahead`, `leadTime`, `onEvent`, `volume` を制御できます。
+`SynthPlayOptions`（`docs/api/` に出力される TypeDoc を参照）で `startTime`, `lookahead`, `leadTime`, `offset`, `onEvent`, `volume` を制御できます。ループ再生は `playLoop()` を使い、単発再生は `await play()` を使ってください。
 
 ## 4. セッション志向の再生（共有ヘルパー）
 

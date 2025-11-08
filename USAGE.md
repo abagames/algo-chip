@@ -57,8 +57,7 @@ const synth = new AlgoChipSynthesizer(audioContext, {
 });
 await synth.init();
 
-await synth.play(bgm.events, {
-  loop: true,
+synth.playLoop(bgm.events, {
   volume: 0.8,
 });
 
@@ -69,8 +68,9 @@ await synth.play(jumpEffect.events, {
 ```
 
 `SynthPlayOptions` (documented in the generated TypeDoc under `docs/api/`) lets
-you control `startTime`, `loop`, `lookahead`, `leadTime`, `onEvent`, and
-`volume`.
+you control `startTime`, `lookahead`, `leadTime`, `offset`, `onEvent`, and
+`volume`. Call `playLoop()` for looping playback (it returns immediately) and
+`await play()` for finite renders.
 
 ## 4. Session-Oriented Playback (shared helpers)
 

@@ -121,10 +121,9 @@ const synth = new AlgoChipSynthesizer(audioContext);
 // const synth = new AlgoChipSynthesizer(audioContext, { workletBasePath: './custom-path/' });
 await synth.init();
 
-// Play BGM with volume control
+// Play BGM with volume control (looped playback returns immediately)
 const bgm = await generateComposition({ seed: 123 });
-await synth.play(bgm.events, {
-  loop: true,
+synth.playLoop(bgm.events, {
   volume: 0.8, // 80% volume (default: 1.0)
 });
 
@@ -143,6 +142,8 @@ await synth.play(jump.events, {
 - Applied at playback time, not generation time
 
 **Note**: `AlgoChipSynthesizer` requires a browser environment (Web Audio API).
+Call `playLoop()` for background loops (do not await) and `await play()` for
+finite renders or sound effects.
 Advanced SE playback patterns (ducking, quantization, controller wiring) are
 documented in [USAGE.md](./USAGE.md) alongside pointers into the demo helpers.
 

@@ -3,10 +3,9 @@ It complements the high-level production specifications in <code>score.md</code>
 and <code>se.md</code> (sound effect system). Use this documentation when you need exact
 function signatures, parameter details, and integration notes.</p>
 <a id="md:coverage" class="tsd-anchor"></a><h2><a href="#md:coverage">Coverage</a></h2><ul>
-<li><code>@algo-chip/core</code> public exports (pipeline orchestration, SE generation, utility types)</li>
-<li><code>@algo-chip/util</code> playback helpers, including <code>SoundEffectController</code>,
-session lifecycle controls (<code>pauseBgm</code>, <code>resumeBgm</code>, etc.), and
-<code>createVisibilityController</code> for tab-aware pause/resume orchestration</li>
+<li><code>algo-chip</code> public exports (pipeline orchestration, SE generation, utility
+types, and session helpers such as <code>SoundEffectController</code>,
+<code>createAudioSession</code>, and <code>createVisibilityController</code>)</li>
 </ul>
 <a id="md:regenerating-the-docs" class="tsd-anchor"></a><h2><a href="#md:regenerating-the-docs">Regenerating the Docs</a></h2><pre><code class="language-bash"><span class="hl-0">npm</span><span class="hl-1"> </span><span class="hl-2">run</span><span class="hl-1"> </span><span class="hl-2">docs:api</span>
 </code><button>Copy</button></pre>

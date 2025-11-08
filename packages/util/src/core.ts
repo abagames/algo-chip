@@ -109,9 +109,7 @@ class AudioSessionImpl implements AudioSession {
     this.lastBgm = result;
 
     const synthOptions: SynthPlayOptions = {
-      ...options,
       startTime,
-      loop,
       offset,
       leadTime,
       lookahead,
@@ -132,10 +130,13 @@ class AudioSessionImpl implements AudioSession {
     this.lastPlayOptions = storedOptions;
     this.pausedOffsetSeconds = null;
 
-    // Launch playback without awaiting the long-running promise (looping = never resolves).
-    void this.bgmSynth!.play(result.events, synthOptions).catch((error) => {
-      console.error("BGM playback error:", error);
-    });
+    if (loop) {
+      this.bgmSynth!.playLoop(result.events, synthOptions);
+    } else {
+      void this.bgmSynth!.play(result.events, synthOptions).catch((error) => {
+        console.error("BGM playback error:", error);
+      });
+    }
   }
 
   stopBgm(): void {

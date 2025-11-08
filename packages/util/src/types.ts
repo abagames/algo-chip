@@ -104,7 +104,9 @@ export interface CreateSessionOptions {
 }
 
 /** Playback options accepted by AudioSession.playBgm */
-export type PlayBgmOptions = Partial<SynthPlayOptions>;
+export type PlayBgmOptions = Partial<SynthPlayOptions> & {
+  loop?: boolean;
+};
 
 /** Options passed to pauseBgm */
 export interface PauseBgmOptions {

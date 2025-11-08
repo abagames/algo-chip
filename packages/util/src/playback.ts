@@ -257,7 +257,6 @@ export class SoundEffectController {
 
     const playbackPromise = this.seSynth.play(mergedEvents, {
       startTime,
-      loop: false,
       volume: batchVolume
     });
 

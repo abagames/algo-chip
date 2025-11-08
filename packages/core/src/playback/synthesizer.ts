@@ -123,7 +123,6 @@ interface NoiseData {
 /** Options for synthesizer playback */
 export interface SynthPlayOptions {
   startTime?: number;
-  loop?: boolean;
   lookahead?: number;
   leadTime?: number;
   offset?: number;
@@ -366,7 +365,8 @@ type ChannelInstances = {
  * ```typescript
  * const synth = new AlgoChipSynthesizer(audioContext);
  * await synth.init();
- * await synth.play(events, { loop: true, onEvent: handleEvent });
+ * await synth.play(oneShotEvents);
+ * synth.playLoop(loopingEvents, { onEvent: handleEvent });
  * ```
  */
 export class AlgoChipSynthesizer {
@@ -440,21 +440,44 @@ export class AlgoChipSynthesizer {
   }
 
   /**
-   * Starts playback of the given event list.
+   * Plays the provided events one time and resolves when playback ends.
    *
-   * Schedules events with lookahead buffering for glitch-free playback.
-   * Supports looping and event callbacks for real-time visualization.
-   *
-   * @param events List of playback events to schedule
-   * @param options Playback configuration (startTime, loop, callbacks)
-   * @returns Promise that resolves when playback completes (never resolves if looping)
+   * Use this for finite SE/BGM renders that should signal completion. For
+   * looping playback, call {@link playLoop} instead so the caller is not
+   * blocked by a never-resolving promise.
    */
   play(events: PlaybackEvent[], options: SynthPlayOptions = {}): Promise<void> {
+    this.preparePlayback(events, options, false);
+    return new Promise<void>((resolve) => {
+      this.completionResolver = resolve;
+      this.startScheduler();
+    });
+  }
+
+  /**
+   * Starts looping playback of the provided events.
+   *
+   * Returns immediately after scheduling begins; call {@link stop} to halt
+   * the loop. This keeps the async contract simple for callers that want
+   * background music playback without awaiting.
+   */
+  playLoop(events: PlaybackEvent[], options: SynthPlayOptions = {}): void {
+    this.preparePlayback(events, options, true);
+    this.completionResolver = null;
+    this.startScheduler();
+  }
+
+  /** Common setup shared by play() and playLoop(). */
+  private preparePlayback(
+    events: PlaybackEvent[],
+    options: SynthPlayOptions,
+    loop: boolean
+  ): void {
     this.stop();
     this.events = events ?? [];
     this.lookahead = options.lookahead ?? LOOKAHEAD_SECONDS;
     this.leadTime = options.leadTime ?? LEAD_TIME;
-    this.loopEnabled = options.loop ?? false;
+    this.loopEnabled = loop;
     this.eventCallback = options.onEvent ?? null;
 
     // Apply volume multiplier (default: 1.0)
@@ -464,7 +487,7 @@ export class AlgoChipSynthesizer {
     const totalDuration = this.events.length ? this.events[this.events.length - 1]!.time : 0;
     let offset = Math.max(0, options.offset ?? 0);
     if (offset > 0) {
-      if (this.loopEnabled && totalDuration > 0) {
+      if (loop && totalDuration > 0) {
         offset = offset % totalDuration;
       } else {
         offset = Math.min(offset, totalDuration);
@@ -476,15 +499,13 @@ export class AlgoChipSynthesizer {
     this.startTime = baseStart - offset;
     this.lastEventTime = totalDuration;
     this.eventIndex = this.resolveEventIndex(offset);
+  }
 
-    const promise = new Promise<void>((resolve) => {
-      this.completionResolver = resolve;
-    });
-
+  /** Launches the scheduling interval and immediately runs an initial tick. */
+  private startScheduler(): void {
     const scheduleStep = () => this.tick();
     this.intervalHandle = window.setInterval(scheduleStep, SCHEDULE_INTERVAL_MS);
     scheduleStep();
-    return promise;
   }
 
   /** Determines the event index that should be scheduled after applying an offset */

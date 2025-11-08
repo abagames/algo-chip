@@ -121,10 +121,9 @@ const synth = new AlgoChipSynthesizer(audioContext);
 // const synth = new AlgoChipSynthesizer(audioContext, { workletBasePath: './custom-path/' });
 await synth.init();
 
-// 音量制御付きでBGMを再生
+// 音量制御付きでBGMを再生（ループは非同期解決しません）
 const bgm = await generateComposition({ seed: 123 });
-await synth.play(bgm.events, {
-  loop: true,
+synth.playLoop(bgm.events, {
   volume: 0.8, // 80%音量（デフォルト: 1.0）
 });
 
@@ -142,7 +141,7 @@ await synth.play(jump.events, {
 - 範囲: `0.0+`（例: `0.5` = 50%、`1.5` = 150%）
 - 生成時ではなく再生時に適用
 
-**注意**: `AlgoChipSynthesizer`はブラウザ環境（Web Audio API）が必要です。BGM ダッキングやクオンタイゼーションを含む高度な SE 再生パターンは、[USAGE_ja.md](./USAGE_ja.md)および demo パッケージ（`packages/demo/src/playback.ts`）を参照してください。
+**注意**: `AlgoChipSynthesizer`はブラウザ環境（Web Audio API）が必要です。ループ再生は `playLoop()` を呼び出して `await` しないようにし、単発再生や SE には `await play()` を使用してください。BGM ダッキングやクオンタイゼーションを含む高度な SE 再生パターンは、[USAGE_ja.md](./USAGE_ja.md)および demo パッケージ（`packages/demo/src/playback.ts`）を参照してください。
 
 ### セッションヘルパー（utilエクスポート）
 
