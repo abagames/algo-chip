@@ -1,8 +1,10 @@
-# algo-chip
+# algo-chip ([Demo](https://abagames.github.io/algo-chip/))
 
 English | [日本語](https://github.com/abagames/algo-chip/blob/master/README_ja.md)
 
 **High-quality automatic BGM composition engine with 4-channel chiptune synthesis**
+
+https://github.com/user-attachments/assets/b0897d24-abd3-4d9a-932a-4a0d4280a1f3
 
 ## 🎵 Features
 
