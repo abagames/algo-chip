@@ -52,32 +52,41 @@ mixed or scheduled together.
 import { AlgoChipSynthesizer } from "algo-chip";
 
 const audioContext = new AudioContext();
-const synth = new AlgoChipSynthesizer(audioContext, {
+
+// BGM gets its own synthesizer so the loop keeps running
+const bgmSynth = new AlgoChipSynthesizer(audioContext, {
   workletBasePath: "./worklets/",
 });
-await synth.init();
+await bgmSynth.init();
+bgmSynth.playLoop(bgm.events, { volume: 0.8 });
 
-synth.playLoop(bgm.events, {
-  volume: 0.8,
+// Sound effects use a separate instance, allowing per-SE volume/ducking
+const seSynth = new AlgoChipSynthesizer(audioContext, {
+  workletBasePath: "./worklets/",
 });
-
-await synth.play(jumpEffect.events, {
+await seSynth.init();
+await seSynth.play(jumpEffect.events, {
   startTime: audioContext.currentTime + 0.2,
   volume: 0.6,
 });
 ```
+
+> **Why two instances?** `play()` stops any active loop on the same
+> synthesizer, so BGM and SE must not share an `AlgoChipSynthesizer`. The
+> session helpers shown in the next section set up this split automatically.
 
 `SynthPlayOptions` (documented in the generated TypeDoc under `docs/api/`) lets
 you control `startTime`, `lookahead`, `leadTime`, `offset`, `onEvent`, and
 `volume`. Call `playLoop()` for looping playback (it returns immediately) and
 `await play()` for finite renders.
 
-## 4. Session-Oriented Playback (shared helpers)
+## 4. Session-Oriented Playback (session helpers)
 
-The util helpers included in `algo-chip` expose a higher-level `AudioSession` that
-bundles BGM generation, looping playback, and SE quantization/ducking into a
-single object. This is what the web demo UI uses internally, so downstream apps
-can depend on the published package rather than copying demo code.
+The `algo-chip` session helpers (exported from the util package) expose a
+higher-level `AudioSession` that bundles BGM generation, looping playback, and
+SE quantization/ducking into a single object. This is what the web demo UI uses
+internally, so downstream apps can depend on the published package rather than
+copying demo code.
 
 ```typescript
 import { createAudioSession } from "algo-chip";

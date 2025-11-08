@@ -46,26 +46,32 @@ console.log(`Template used: ${jumpEffect.meta.templateId}`);
 import { AlgoChipSynthesizer } from "algo-chip";
 
 const audioContext = new AudioContext();
-const synth = new AlgoChipSynthesizer(audioContext, {
+
+// BGM 用シンセ（ループ再生を維持）
+const bgmSynth = new AlgoChipSynthesizer(audioContext, {
   workletBasePath: "./worklets/",
 });
-await synth.init();
+await bgmSynth.init();
+bgmSynth.playLoop(bgm.events, { volume: 0.8 });
 
-synth.playLoop(bgm.events, {
-  volume: 0.8,
+// 効果音用シンセ（個別ボリュームやダッキング制御）
+const seSynth = new AlgoChipSynthesizer(audioContext, {
+  workletBasePath: "./worklets/",
 });
-
-await synth.play(jumpEffect.events, {
+await seSynth.init();
+await seSynth.play(jumpEffect.events, {
   startTime: audioContext.currentTime + 0.2,
   volume: 0.6,
 });
 ```
 
+> **なぜ 2 つ必要？** `play()` は同じインスタンスで走っているループ再生を強制停止するため、BGM と SE を同時に鳴らす場合は `AlgoChipSynthesizer` を共有しないでください。次節のセッションヘルパーはこの構成を自動的に組んでいます。
+
 `SynthPlayOptions`（`docs/api/` に出力される TypeDoc を参照）で `startTime`, `lookahead`, `leadTime`, `offset`, `onEvent`, `volume` を制御できます。ループ再生は `playLoop()` を使い、単発再生は `await play()` を使ってください。
 
-## 4. セッション志向の再生（共有ヘルパー）
+## 4. セッション志向の再生（セッションヘルパー）
 
-`algo-chip` に含まれる util ヘルパーは、BGM 生成・ループ再生・効果音の量子化/ダッキングをまとめた高レベルな `AudioSession` を提供します。Web デモ UI もこの仕組みを内部で利用しているため、下流アプリはデモコードをコピーせず公開パッケージへ依存できます（必要であればサブパス `algo-chip/util` を直接参照できます）。
+`algo-chip` のセッションヘルパー（util エクスポート）では、BGM 生成・ループ再生・効果音の量子化/ダッキングをまとめた高レベルな `AudioSession` を提供します。Web デモ UI もこの仕組みを内部で利用しているため、下流アプリはデモコードをコピーせず公開パッケージへ依存できます（必要であればサブパス `algo-chip/util` を直接参照できます）。
 
 ```typescript
 import { createAudioSession } from "algo-chip";
