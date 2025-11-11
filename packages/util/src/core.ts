@@ -45,6 +45,7 @@ class AudioSessionImpl implements AudioSession {
   private context: AudioContext | null;
   private readonly ownsContext: boolean;
   private readonly workletBasePath: string;
+  private readonly gainNode: GainNode | null;
 
   private bgmSynth: AlgoChipSynthesizer | null = null;
   private seSynth: AlgoChipSynthesizer | null = null;
@@ -70,6 +71,7 @@ class AudioSessionImpl implements AudioSession {
       this.ownsContext = true;
     }
 
+    this.gainNode = options.gainNode ?? null;
     this.workletBasePath = options.workletBasePath ?? DEFAULT_WORKLET_BASE_PATH;
     this.seDefaults = {
       ...DEFAULT_SE_DEFAULTS,
@@ -339,6 +341,7 @@ class AudioSessionImpl implements AudioSession {
     }
     this.bgmSynth = new AlgoChipSynthesizer(ctx, {
       workletBasePath: this.workletBasePath,
+      gainNode: this.gainNode ?? undefined,
     });
     await this.bgmSynth.init();
     this.bgmGainBase = this.bgmSynth.masterGain.gain.value;
@@ -355,6 +358,7 @@ class AudioSessionImpl implements AudioSession {
     }
     this.seSynth = new AlgoChipSynthesizer(ctx, {
       workletBasePath: this.workletBasePath,
+      gainNode: this.gainNode ?? undefined,
     });
     await this.seSynth.init();
     this.seGainBase = this.seSynth.masterGain.gain.value;

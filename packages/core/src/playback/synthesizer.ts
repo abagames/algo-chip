@@ -387,11 +387,14 @@ export class AlgoChipSynthesizer {
 
   constructor(
     private readonly context: AudioContext,
-    options: { workletBasePath?: string } = {}
+    options: { workletBasePath?: string; gainNode?: GainNode } = {}
   ) {
-    this.masterGainNode = context.createGain();
+    this.masterGainNode = options.gainNode ?? context.createGain();
     this.masterGainNode.gain.value = AlgoChipSynthesizer.BASE_GAIN;
-    this.masterGainNode.connect(context.destination);
+    // Only connect to destination if we created the gain node ourselves
+    if (!options.gainNode) {
+      this.masterGainNode.connect(context.destination);
+    }
     this.workletBasePath = options.workletBasePath ?? "./worklets/";
   }
 

@@ -98,6 +98,7 @@ export interface TriggerSeOptions
 /** Options for configuring the demo audio session */
 export interface CreateSessionOptions {
   audioContext?: AudioContext;
+  gainNode?: GainNode;
   workletBasePath?: string;
   seDefaults?: Partial<SePlaybackDefaults>;
   bgmVolume?: number;
