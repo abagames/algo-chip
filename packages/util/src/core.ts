@@ -80,6 +80,14 @@ class AudioSessionImpl implements AudioSession {
     this.bgmVolume = Math.max(0, options.bgmVolume ?? 1.0);
   }
 
+  async ensureReady(): Promise<AudioContext> {
+    const ctx = await this.ensureContext(true);
+    await this.ensureBgmSynth(ctx);
+    await this.ensureSeSynth(ctx);
+    await this.ensureSoundEffectController(ctx);
+    return ctx;
+  }
+
   async generateBgm(options: CompositionOptions): Promise<PipelineResult> {
     const result = await generateComposition(options);
     this.lastBgm = result;
@@ -90,10 +98,7 @@ class AudioSessionImpl implements AudioSession {
     result: PipelineResult,
     options: PlayBgmOptions = {}
   ): Promise<void> {
-    const ctx = await this.ensureContext(true);
-    await this.ensureBgmSynth(ctx);
-    await this.ensureSeSynth(ctx);
-    await this.ensureSoundEffectController(ctx);
+    const ctx = await this.ensureReady();
 
     const loop = options.loop ?? true;
     const offset = Math.max(0, options.offset ?? 0);
@@ -164,8 +169,7 @@ class AudioSessionImpl implements AudioSession {
       if (timeline && ctx) {
         const elapsed = Math.max(0, ctx.currentTime - timeline.startTime);
         const totalDuration = timeline.meta?.loopInfo?.totalDuration ?? 0;
-        const offset =
-          totalDuration > 0 ? elapsed % totalDuration : elapsed;
+        const offset = totalDuration > 0 ? elapsed % totalDuration : elapsed;
         this.pausedOffsetSeconds = offset;
       } else {
         this.pausedOffsetSeconds = null;
@@ -239,10 +243,7 @@ class AudioSessionImpl implements AudioSession {
     result: SEGenerationResult,
     options: PlaySEOptions = {}
   ): Promise<void> {
-    const ctx = await this.ensureContext(true);
-    await this.ensureBgmSynth(ctx);
-    await this.ensureSeSynth(ctx);
-    await this.ensureSoundEffectController(ctx);
+    await this.ensureReady();
 
     const playOptions: PlaySEOptions = {
       duckingDb: options.duckingDb ?? this.seDefaults.duckingDb,
