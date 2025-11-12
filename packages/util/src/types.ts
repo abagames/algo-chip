@@ -64,6 +64,10 @@ export interface QuantizedSEOptions {
   offsetBeats?: number;
   /** Whether to respect loop boundaries when quantizing */
   loopAware?: boolean;
+  /** Fallback BPM when no BGM timeline is active */
+  fallbackTempo?: number;
+  /** Optional start time reference when using fallbackTempo (defaults to 0) */
+  referenceTime?: number;
 }
 
 /**

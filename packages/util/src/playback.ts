@@ -281,14 +281,28 @@ export class SoundEffectController {
    */
   private quantizeStart(options: QuantizedSEOptions, earliest: number): number | null {
     const timeline = this.getTimeline();
-    if (!timeline) {
+    
+    let bpm: number;
+    let startTime: number;
+    let loopBeats: number;
+    
+    if (timeline) {
+      // BGM is active: use timeline metadata
+      bpm = timeline.meta.bpm;
+      startTime = timeline.startTime;
+      loopBeats = timeline.meta.loopInfo.totalBeats;
+    } else if (options.fallbackTempo !== undefined && options.fallbackTempo > 0) {
+      // No BGM but fallbackTempo specified: use it
+      bpm = options.fallbackTempo;
+      startTime = options.referenceTime ?? 0;
+      loopBeats = 0; // No loop info when using fallback
+    } else {
+      // No BGM and no fallbackTempo: cannot quantize
       return null;
     }
 
-    const { meta, startTime } = timeline;
-    const beatDuration = 60 / meta.bpm;
+    const beatDuration = 60 / bpm;
     const beatsPerMeasure = 4; // score.md assumes 4/4 backing
-    const loopBeats = meta.loopInfo.totalBeats;
 
     const stepBeats = this.resolveStepBeats(options.quantizeTo, beatsPerMeasure);
     if (stepBeats <= 0) {
