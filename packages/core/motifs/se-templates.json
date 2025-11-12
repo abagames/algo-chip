@@ -3,7 +3,7 @@
     {
       "id": "SE_JUMP_01",
       "type": "jump",
-      "description": "軽快な上昇ジャンプ音（矩形波スイープ）",
+      "description": "Light upward jump sound (square wave sweep)",
       "channels": ["square1"],
       "durationRange": [0.12, 0.25],
       "channelParams": {
@@ -23,7 +23,7 @@
     {
       "id": "SE_JUMP_02",
       "type": "jump",
-      "description": "力強いジャンプ音（線形スイープ、低音域開始）",
+      "description": "Powerful jump sound (linear sweep, low-pitch start)",
       "channels": ["square2"],
       "durationRange": [0.15, 0.30],
       "channelParams": {
@@ -43,7 +43,7 @@
     {
       "id": "SE_COIN_01",
       "type": "coin",
-      "description": "キラキラ感のあるコイン取得音（2音アルペジオ）",
+      "description": "Sparkling coin collection sound (2-note arpeggio)",
       "channels": ["square1"],
       "durationRange": [0.18, 0.24],
       "channelParams": {
@@ -61,7 +61,7 @@
     {
       "id": "SE_COIN_02",
       "type": "coin",
-      "description": "スーパーマリオ風コイン音（3音アルペジオ、高音域）",
+      "description": "Super Mario-style coin sound (3-note arpeggio, high-pitch)",
       "channels": ["square1"],
       "durationRange": [0.20, 0.28],
       "channelParams": {
@@ -78,7 +78,7 @@
     {
       "id": "SE_EXPLOSION_01",
       "type": "explosion",
-      "description": "衝撃的な爆発音（ノイズ + 三角波ベーススイープ）",
+      "description": "Impact explosion sound (noise + triangle bass sweep)",
       "channels": ["noise", "triangle"],
       "durationRange": [0.80, 1.20],
       "channelParams": {
@@ -101,7 +101,7 @@
     {
       "id": "SE_EXPLOSION_02",
       "type": "explosion",
-      "description": "短めの爆発音（ノイズのみ、高周波）",
+      "description": "Short explosion sound (noise only, high-frequency)",
       "channels": ["noise"],
       "durationRange": [0.40, 0.60],
       "channelParams": {
@@ -116,7 +116,7 @@
     {
       "id": "SE_HIT_01",
       "type": "hit",
-      "description": "被ダメージ音（短い下降アルペジオ）",
+      "description": "Damage sound (short descending arpeggio)",
       "channels": ["square1"],
       "durationRange": [0.08, 0.12],
       "channelParams": {
@@ -135,7 +135,7 @@
     {
       "id": "SE_HIT_02",
       "type": "hit",
-      "description": "鋭いダメージ音（ノイズ + 矩形波の組み合わせ）",
+      "description": "Sharp damage sound (noise + square wave combo)",
       "channels": ["square1", "noise"],
       "durationRange": [0.10, 0.15],
       "channelParams": {
@@ -155,9 +155,9 @@
     {
       "id": "SE_POWERUP_01",
       "type": "powerup",
-      "description": "パワーアップ音（上昇アルペジオ）",
+      "description": "Power-up sound (ascending arpeggio, fast)",
       "channels": ["square1"],
-      "durationRange": [0.33, 0.46],
+      "durationRange": [0.24, 0.32],
       "channelParams": {
         "square1": {
           "pitchStart": { "min": 60, "max": 67 },
@@ -165,16 +165,16 @@
         }
       },
       "noteSequence": {
-        "intervals": [0, 4, 7, 12],
-        "noteDurations": [0.08, 0.08, 0.08, 0.13]
+        "intervals": [0, 3, 5, 7, 10, 12],
+        "noteDurations": [0.04, 0.04, 0.04, 0.04, 0.04, 0.08]
       }
     },
     {
       "id": "SE_POWERUP_02",
       "type": "powerup",
-      "description": "華やかなパワーアップ音（5音アルペジオ、高音域）",
+      "description": "Bright power-up sound (fast arpeggio, high-pitch)",
       "channels": ["square2"],
-      "durationRange": [0.40, 0.52],
+      "durationRange": [0.28, 0.36],
       "channelParams": {
         "square2": {
           "pitchStart": { "min": 64, "max": 72 },
@@ -182,14 +182,14 @@
         }
       },
       "noteSequence": {
-        "intervals": [0, 4, 7, 12, 16],
-        "noteDurations": [0.07, 0.07, 0.07, 0.07, 0.16]
+        "intervals": [0, 2, 4, 7, 9, 12, 16],
+        "noteDurations": [0.04, 0.04, 0.04, 0.04, 0.04, 0.04, 0.08]
       }
     },
     {
       "id": "SE_SELECT_01",
       "type": "select",
-      "description": "メニュー選択音（短い単音）",
+      "description": "Menu selection sound (short single tone)",
       "channels": ["square1"],
       "durationRange": [0.05, 0.08],
       "channelParams": {
@@ -202,7 +202,7 @@
     {
       "id": "SE_SELECT_02",
       "type": "select",
-      "description": "選択音（2音上昇アルペジオ）",
+      "description": "Selection sound (2-note ascending arpeggio)",
       "channels": ["square1"],
       "durationRange": [0.06, 0.10],
       "channelParams": {
@@ -219,7 +219,7 @@
     {
       "id": "SE_LASER_01",
       "type": "laser",
-      "description": "レーザー発射音（高速下降スイープ）",
+      "description": "Laser fire sound (fast descending sweep)",
       "channels": ["square1"],
       "durationRange": [0.10, 0.15],
       "channelParams": {
@@ -237,7 +237,7 @@
     {
       "id": "SE_LASER_02",
       "type": "laser",
-      "description": "レーザー発射音（線形下降スイープ）",
+      "description": "Laser fire sound (linear descending sweep)",
       "channels": ["square2"],
       "durationRange": [0.12, 0.20],
       "channelParams": {
@@ -255,7 +255,7 @@
     {
       "id": "SE_CLICK_01",
       "type": "click",
-      "description": "クリック音（極短・高音）",
+      "description": "Click sound (very short, high-pitch)",
       "channels": ["square1"],
       "durationRange": [0.02, 0.03],
       "channelParams": {
@@ -269,7 +269,7 @@
     {
       "id": "SE_CLICK_02",
       "type": "click",
-      "description": "クリック音（やや長め）",
+      "description": "Click sound (slightly longer)",
       "channels": ["square1"],
       "durationRange": [0.03, 0.04],
       "channelParams": {
@@ -283,7 +283,7 @@
     {
       "id": "SE_SYNTH_01",
       "type": "synth",
-      "description": "シンセ単音（矩形波）",
+      "description": "Synth single tone (square wave)",
       "channels": ["square1"],
       "durationRange": [0.15, 0.30],
       "channelParams": {
@@ -296,7 +296,7 @@
     {
       "id": "SE_SYNTH_02",
       "type": "synth",
-      "description": "シンセ単音（三角波）",
+      "description": "Synth single tone (triangle wave)",
       "channels": ["triangle"],
       "durationRange": [0.20, 0.40],
       "channelParams": {
@@ -308,7 +308,7 @@
     {
       "id": "SE_TONE_01",
       "type": "tone",
-      "description": "基本トーン（矩形波・中音域）",
+      "description": "Basic tone (square wave, mid-range)",
       "channels": ["square1"],
       "durationRange": [0.10, 0.20],
       "channelParams": {
@@ -321,7 +321,7 @@
     {
       "id": "SE_TONE_02",
       "type": "tone",
-      "description": "基本トーン（三角波・中音域）",
+      "description": "Basic tone (triangle wave, mid-range)",
       "channels": ["triangle"],
       "durationRange": [0.12, 0.30],
       "channelParams": {
