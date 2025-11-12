@@ -1,6 +1,6 @@
 {
   "name": "algo-chip",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "High-quality automatic BGM and sound effect composition engine with 4-channel chiptune synthesis",
   "main": "./index.js",
   "module": "./index.js",
