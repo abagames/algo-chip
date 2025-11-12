@@ -87,29 +87,57 @@ export interface PlaySEOptions {
 /** Alias with camel-case naming for external consumers */
 export type PlaySeOptions = PlaySEOptions;
 
-/** Default SE playback settings for the session */
+/**
+ * Default sound effect playback settings for the session.
+ *
+ * These defaults are applied when playSe() or triggerSe() are called
+ * without explicit options.
+ */
 export interface SePlaybackDefaults {
+  /** BGM volume reduction in dB during SE playback */
   duckingDb: number;
+  /** SE playback volume multiplier */
   volume: number;
+  /** Default quantization settings (if any) */
   quantize?: QuantizedSEOptions;
 }
 
-/** Options for triggering a sound effect through the session */
+/**
+ * Options for generating and playing a sound effect in one call.
+ *
+ * Combines SE generation options (type, seed, template) with playback
+ * options (volume, ducking, quantization).
+ */
 export interface TriggerSeOptions
   extends Omit<SEGenerationOptions, "startTime">,
     PlaySEOptions {}
 
-/** Options for configuring the demo audio session */
+/**
+ * Options for configuring an audio session.
+ *
+ * All options are optional. If not provided, the session will create
+ * its own AudioContext and use default settings.
+ */
 export interface CreateSessionOptions {
+  /** Existing AudioContext to use (if omitted, a new one will be created) */
   audioContext?: AudioContext;
+  /** Existing GainNode to connect to (if omitted, connects to context destination) */
   gainNode?: GainNode;
+  /** Base path for AudioWorklet modules (default: "./worklets/") */
   workletBasePath?: string;
+  /** Default sound effect playback settings */
   seDefaults?: Partial<SePlaybackDefaults>;
+  /** Initial background music volume (default: 1.0) */
   bgmVolume?: number;
 }
 
-/** Playback options accepted by AudioSession.playBgm */
+/**
+ * Options for playing background music.
+ *
+ * Extends synthesizer playback options with loop control.
+ */
 export type PlayBgmOptions = Partial<SynthPlayOptions> & {
+  /** Whether to loop the composition (default: true) */
   loop?: boolean;
 };
 
@@ -125,23 +153,148 @@ export interface ResumeBgmOptions extends PlayBgmOptions {
   offsetSeconds?: number;
 }
 
-/** Public API surface for the demo audio session */
+/**
+ * Audio session for background music generation and sound effect playback.
+ *
+ * Provides a high-level interface for:
+ * - Generating procedural chiptune compositions with two-axis style control
+ * - Managing BGM playback with loop, pause/resume, and volume control
+ * - Triggering sound effects with quantization and BGM ducking support
+ * - Managing AudioContext lifecycle and resource cleanup
+ *
+ * @example Basic usage
+ * ```typescript
+ * const session = createAudioSession({ bgmVolume: 0.7 });
+ *
+ * // Generate and play BGM
+ * const bgm = await session.generateBgm({
+ *   twoAxisStyle: { percussiveMelodic: 0.5, calmEnergetic: 0.0 }
+ * });
+ * await session.playBgm(bgm, { loop: true });
+ *
+ * // Trigger sound effect
+ * await session.triggerSe({
+ *   type: "coin",
+ *   quantize: { quantizeTo: "beat", phase: "next" }
+ * });
+ *
+ * // Clean up
+ * await session.close();
+ * ```
+ */
 export interface AudioSession {
+  /**
+   * Generates a new background music composition.
+   *
+   * @param options - Composition generation options (style, length, seed).
+   * @returns The generated composition result with events and metadata.
+   */
   generateBgm(options: CompositionOptions): Promise<PipelineResult>;
+
+  /**
+   * Plays a background music composition.
+   *
+   * @param result - The composition result to play.
+   * @param options - Playback options (loop, volume, offset, callbacks, etc.).
+   */
   playBgm(result: PipelineResult, options?: PlayBgmOptions): Promise<void>;
+
+  /**
+   * Stops the currently playing background music and resets ducking.
+   */
   stopBgm(): void;
+
+  /**
+   * Stops all audio playback (BGM and sound effects) and cancels scheduled SE.
+   */
   stopAllAudio(): void;
+
+  /**
+   * Pauses background music playback.
+   *
+   * @param options - Pause options (whether to capture current offset).
+   * @returns The offset in seconds where playback was paused, or null if not captured.
+   */
   pauseBgm(options?: PauseBgmOptions): number | null;
+
+  /**
+   * Resumes previously paused background music.
+   *
+   * @param options - Resume options (can override offset).
+   * @throws Error if no BGM is available to resume.
+   */
   resumeBgm(options?: ResumeBgmOptions): Promise<void>;
+
+  /**
+   * Sets the background music volume.
+   *
+   * @param volume - Volume level (0.0 or higher, where 1.0 is normal).
+   */
   setBgmVolume(volume: number): void;
+
+  /**
+   * Configures default settings for sound effect playback.
+   *
+   * @param defaults - Partial SE defaults to merge with current settings.
+   */
   configureSeDefaults(defaults: Partial<SePlaybackDefaults>): void;
+
+  /**
+   * Generates a sound effect based on the provided options.
+   *
+   * @param options - SE generation options (type, seed, template, frequency).
+   * @returns The generated sound effect result.
+   */
   generateSe(options: SEGenerationOptions): SEGenerationResult;
+
+  /**
+   * Plays a generated sound effect.
+   *
+   * @param result - The SE generation result to play.
+   * @param options - Playback options (volume, ducking, quantization).
+   */
   playSe(result: SEGenerationResult, options?: PlaySEOptions): Promise<void>;
+
+  /**
+   * Generates and immediately plays a sound effect in one call.
+   *
+   * @param options - Combined generation and playback options.
+   */
   triggerSe(options: TriggerSeOptions): Promise<void>;
+
+  /**
+   * Cancels all scheduled (quantized) sound effects that haven't started yet.
+   */
   cancelScheduledSe(): void;
+
+  /**
+   * Gets the currently active BGM timeline, if any.
+   *
+   * @returns The active timeline or null if no BGM is playing.
+   */
   getActiveTimeline(): ActiveTimeline | null;
+
+  /**
+   * Gets the underlying AudioContext instance.
+   *
+   * @returns The AudioContext or null if not yet created.
+   */
   getAudioContext(): AudioContext | null;
+
+  /**
+   * Resumes the AudioContext if it is suspended.
+   * Useful for responding to user gestures to enable audio playback.
+   */
   resumeAudioContext(): void;
+
+  /**
+   * Suspends the AudioContext to save resources when audio is not needed.
+   */
   suspendAudioContext(): void;
+
+  /**
+   * Closes the session and releases all resources.
+   * If the AudioContext was created by this session, it will be closed.
+   */
   close(): Promise<void>;
 }
