@@ -85,16 +85,14 @@ export class SoundEffectController {
   private scheduledByType: Partial<Record<SEType, ScheduledJob>> = {};
   private nextTriggerTime: number | null = null;
   private flushHandle: number | null = null;
-  private readonly nominalGain: number;
 
   constructor(
     private readonly context: AudioContext,
     private readonly seSynth: ChipSynthesizer,
     private readonly getTimeline: () => ActiveTimeline | null,
-    private readonly bgmGain: GainNode
-  ) {
-    this.nominalGain = bgmGain.gain.value;
-  }
+    private readonly bgmGain: GainNode,
+    private readonly getBgmBaseVolume: () => number
+  ) {}
 
   /**
    * Plays a sound effect with optional ducking and quantization.
@@ -128,15 +126,16 @@ export class SoundEffectController {
   }
 
   /**
-   * Resets BGM gain to nominal level, canceling any active ducking.
+   * Resets BGM gain to base level, canceling any active ducking automation.
    *
    * Useful for stopping ducking when BGM stops or context changes.
    */
   resetDucking(): void {
     const now = this.context.currentTime;
     const gainParam = this.bgmGain.gain;
+    const baseGain = this.getBgmBaseVolume();
     gainParam.cancelScheduledValues(now);
-    gainParam.setValueAtTime(this.nominalGain, now);
+    gainParam.setValueAtTime(baseGain, now);
   }
 
   /**
@@ -396,8 +395,10 @@ export class SoundEffectController {
     }
     const gainNode = this.bgmGain;
     const now = this.context.currentTime;
+    // Use base BGM volume to prevent ducking accumulation when multiple SEs overlap
+    const baseGain = this.getBgmBaseVolume();
     const linear = Math.pow(10, duckingDb / 20);
-    const minimumGain = Math.max(0, this.nominalGain * linear);
+    const minimumGain = Math.max(0, baseGain * linear);
     const attackStart = Math.max(now, startTime - 0.005);
     const attackEnd = attackStart + 0.02;
     const sustainEnd = Math.max(attackEnd, startTime + durationSeconds);
@@ -405,10 +406,10 @@ export class SoundEffectController {
 
     const gainParam = gainNode.gain;
     gainParam.cancelScheduledValues(now);
-    gainParam.setValueAtTime(this.nominalGain, now);
-    gainParam.setValueAtTime(this.nominalGain, attackStart);
+    gainParam.setValueAtTime(gainParam.value, now);
+    gainParam.setValueAtTime(gainParam.value, attackStart);
     gainParam.linearRampToValueAtTime(minimumGain, attackEnd);
-    gainParam.linearRampToValueAtTime(this.nominalGain, releaseEnd);
+    gainParam.linearRampToValueAtTime(baseGain, releaseEnd);
   }
 
   /** Determines the loudest requested volume for the batch. */

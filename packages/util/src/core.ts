@@ -81,7 +81,7 @@ class AudioSessionImpl implements AudioSession {
   }
 
   async ensureReady(): Promise<AudioContext> {
-    const ctx = await this.ensureContext(true);
+    const ctx = this.ensureContext(true);
     await this.ensureBgmSynth(ctx);
     await this.ensureSeSynth(ctx);
     await this.ensureSoundEffectController(ctx);
@@ -281,14 +281,14 @@ class AudioSessionImpl implements AudioSession {
     return this.context;
   }
 
-  async resumeAudioContext(): Promise<void> {
-    await this.ensureContext(true);
+  resumeAudioContext(): void {
+    this.ensureContext(true);
   }
 
-  async suspendAudioContext(): Promise<void> {
+  suspendAudioContext(): void {
     if (!this.context) return;
     if (this.context.state === "running") {
-      await this.context.suspend();
+      this.context.suspend();
     }
   }
 
@@ -309,7 +309,7 @@ class AudioSessionImpl implements AudioSession {
     this.pausedOffsetSeconds = null;
   }
 
-  private async ensureContext(resume: boolean): Promise<AudioContext> {
+  private ensureContext(resume: boolean): AudioContext {
     if (!this.context) {
       try {
         this.context = new AudioContext({
@@ -325,7 +325,7 @@ class AudioSessionImpl implements AudioSession {
     }
     if (resume && this.context.state === "suspended") {
       try {
-        await this.context.resume();
+        this.context.resume();
       } catch (error) {
         const reason = error instanceof Error ? error.message : String(error);
         throw new Error(
@@ -382,7 +382,13 @@ class AudioSessionImpl implements AudioSession {
       ctx,
       this.seSynth,
       () => this.activeTimeline,
-      this.bgmSynth.masterGain
+      this.bgmSynth.masterGain,
+      () => {
+        // Use the volume from the current playback session if available,
+        // otherwise fall back to the default bgmVolume
+        const effectiveVolume = this.lastPlayOptions?.volume ?? this.bgmVolume;
+        return this.bgmGainBase * effectiveVolume;
+      }
     );
   }
 }

@@ -51,9 +51,11 @@ export function createVisibilityController(
       const shouldPause = options.shouldPause ? options.shouldPause() : true;
       if (!shouldPause) {
         if (suspendCtx) {
-          void session.suspendAudioContext().catch((error) => {
+          try {
+            session.suspendAudioContext();
+          } catch (error) {
             console.warn("AudioContext suspend failed:", error);
-          });
+          }
         }
         return;
       }
@@ -68,9 +70,11 @@ export function createVisibilityController(
         }
 
         if (suspendCtx) {
-          void session.suspendAudioContext().catch((error) => {
+          try {
+            session.suspendAudioContext();
+          } catch (error) {
             console.warn("AudioContext suspend failed:", error);
-          });
+          }
         }
         return;
       }
@@ -85,9 +89,11 @@ export function createVisibilityController(
       options.onPause?.({ offsetSeconds: storedOffset });
 
       if (suspendCtx) {
-        void session.suspendAudioContext().catch((error) => {
+        try {
+          session.suspendAudioContext();
+        } catch (error) {
           console.warn("AudioContext suspend failed:", error);
-        });
+        }
       }
       return;
     }
@@ -97,9 +103,11 @@ export function createVisibilityController(
 
     if (!resumePending) {
       if (resumeCtx) {
-        void session.resumeAudioContext().catch((error) => {
+        try {
+          session.resumeAudioContext();
+        } catch (error) {
           console.warn("AudioContext resume failed:", error);
-        });
+        }
       }
       options.onResume?.({ offsetSeconds: offset, resumed: false });
       return;

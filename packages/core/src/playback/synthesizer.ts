@@ -31,7 +31,9 @@ const LEAD_TIME = 0.3;
 const CHIP_BASE_CLOCK = 1_789_773;
 
 /** Noise channel period lookup table (clock divider values) */
-const NOISE_PERIOD_TABLE = [4, 8, 16, 32, 64, 96, 128, 160, 202, 254, 380, 508, 762, 1016, 2034, 4068];
+const NOISE_PERIOD_TABLE = [
+  4, 8, 16, 32, 64, 96, 128, 160, 202, 254, 380, 508, 762, 1016, 2034, 4068,
+];
 
 /** Noise instrument types: K=kick, S=snare, H=hihat, O=open, T=tom */
 type NoiseInstrument = "K" | "S" | "H" | "O" | "T" | "default";
@@ -43,12 +45,54 @@ type NoiseInstrument = "K" | "S" | "H" | "O" | "T" | "default";
  * and filter cutoff to emulate different percussion instruments.
  */
 const NOISE_PRESETS: Record<NoiseInstrument, NoisePreset> = {
-  K: { mode: "long", periodIndex: 14, baseAmplitude: 0.75, decaySeconds: 0.22, releaseSeconds: 0.04, cutoffHz: 3200 },
-  S: { mode: "short", periodIndex: 4, baseAmplitude: 0.65, decaySeconds: 0.14, releaseSeconds: 0.03, cutoffHz: 5200 },
-  H: { mode: "short", periodIndex: 1, baseAmplitude: 0.45, decaySeconds: 0.06, releaseSeconds: 0.02, cutoffHz: 7800 },
-  O: { mode: "short", periodIndex: 2, baseAmplitude: 0.6, decaySeconds: 0.4, releaseSeconds: 0.06, cutoffHz: 6800 },
-  T: { mode: "long", periodIndex: 10, baseAmplitude: 0.6, decaySeconds: 0.26, releaseSeconds: 0.05, cutoffHz: 3600 },
-  default: { mode: "short", periodIndex: 3, baseAmplitude: 0.6, decaySeconds: 0.14, releaseSeconds: 0.03, cutoffHz: 6000 }
+  K: {
+    mode: "long",
+    periodIndex: 14,
+    baseAmplitude: 0.75,
+    decaySeconds: 0.22,
+    releaseSeconds: 0.04,
+    cutoffHz: 3200,
+  },
+  S: {
+    mode: "short",
+    periodIndex: 4,
+    baseAmplitude: 0.65,
+    decaySeconds: 0.14,
+    releaseSeconds: 0.03,
+    cutoffHz: 5200,
+  },
+  H: {
+    mode: "short",
+    periodIndex: 1,
+    baseAmplitude: 0.45,
+    decaySeconds: 0.06,
+    releaseSeconds: 0.02,
+    cutoffHz: 7800,
+  },
+  O: {
+    mode: "short",
+    periodIndex: 2,
+    baseAmplitude: 0.6,
+    decaySeconds: 0.4,
+    releaseSeconds: 0.06,
+    cutoffHz: 6800,
+  },
+  T: {
+    mode: "long",
+    periodIndex: 10,
+    baseAmplitude: 0.6,
+    decaySeconds: 0.26,
+    releaseSeconds: 0.05,
+    cutoffHz: 3600,
+  },
+  default: {
+    mode: "short",
+    periodIndex: 3,
+    baseAmplitude: 0.6,
+    decaySeconds: 0.14,
+    releaseSeconds: 0.03,
+    cutoffHz: 6000,
+  },
 };
 
 /** MIDI note number for A4 (440 Hz) */
@@ -127,7 +171,7 @@ export interface SynthPlayOptions {
   leadTime?: number;
   offset?: number;
   onEvent?: (event: PlaybackEvent, when: number) => void;
-  volume?: number;  // Playback volume multiplier (default: 1.0, range: 0.0+)
+  volume?: number; // Playback volume multiplier (default: 1.0, range: 0.0+)
 }
 
 // ============================================================================
@@ -192,12 +236,14 @@ class SquareChannel extends BaseChannel {
       type: "noteOn",
       frequency: data.frequency * detuneRatio,
       amplitude: data.amplitude ?? 0.8,
-      duty: data.duty ?? this.currentDuty
+      duty: data.duty ?? this.currentDuty,
     };
     if (data.slide) {
       payload.slide = {
         targetFrequency: data.slide.targetFrequency,
-        durationSamples: Math.round((data.slide.durationSeconds ?? 0) * this.sampleRate)
+        durationSamples: Math.round(
+          (data.slide.durationSeconds ?? 0) * this.sampleRate
+        ),
       };
     }
     this.scheduleMessage(payload, when);
@@ -221,13 +267,16 @@ class SquareChannel extends BaseChannel {
           param: "pitchBend",
           value: targetFrequency,
           rampDuration,
-          curve
+          curve,
         },
         when
       );
       return;
     }
-    this.scheduleMessage({ type: "setParam", param: data.param, value: data.value }, when);
+    this.scheduleMessage(
+      { type: "setParam", param: data.param, value: data.value },
+      when
+    );
   }
 }
 
@@ -246,7 +295,7 @@ class TriangleChannel extends BaseChannel {
     const payload = {
       type: "noteOn",
       frequency: data.frequency,
-      amplitude: data.amplitude ?? 0.7
+      amplitude: data.amplitude ?? 0.7,
     };
     this.scheduleMessage(payload, when);
   }
@@ -266,13 +315,16 @@ class TriangleChannel extends BaseChannel {
           param: "pitchBend",
           value: targetFrequency,
           rampDuration,
-          curve
+          curve,
         },
         when
       );
       return;
     }
-    this.scheduleMessage({ type: "setParam", param: data.param, value: data.value }, when);
+    this.scheduleMessage(
+      { type: "setParam", param: data.param, value: data.value },
+      when
+    );
   }
 }
 
@@ -292,17 +344,35 @@ class NoiseChannel extends BaseChannel {
   }
 
   noteOn(data: NoiseData & { periodIndex?: number }, when: number): void {
-    const periodIndex = Math.max(0, Math.min(NOISE_PERIOD_TABLE.length - 1, data.periodIndex ?? this.periodIndex));
+    const periodIndex = Math.max(
+      0,
+      Math.min(
+        NOISE_PERIOD_TABLE.length - 1,
+        data.periodIndex ?? this.periodIndex
+      )
+    );
     const periodCycles = NOISE_PERIOD_TABLE[periodIndex];
     const periodSeconds = (periodCycles * 16) / CHIP_BASE_CLOCK;
-    const periodSamples = Math.max(1, Math.round(periodSeconds * this.sampleRate));
+    const periodSamples = Math.max(
+      1,
+      Math.round(periodSeconds * this.sampleRate)
+    );
     const decaySeconds = Math.max(0.001, data.decaySeconds ?? 0.12);
     const releaseSeconds = Math.max(0.001, data.releaseSeconds ?? 0.03);
-    const decaySamples = Math.max(1, Math.round(decaySeconds * this.sampleRate));
-    const releaseSamples = Math.max(1, Math.round(releaseSeconds * this.sampleRate));
+    const decaySamples = Math.max(
+      1,
+      Math.round(decaySeconds * this.sampleRate)
+    );
+    const releaseSamples = Math.max(
+      1,
+      Math.round(releaseSeconds * this.sampleRate)
+    );
     const amplitude = Math.max(0, Math.min(1, data.amplitude ?? 0.6));
     const mode = data.mode === "long" ? "long" : "short";
-    const cutoffHz = Math.max(100, Math.min(this.sampleRate / 2, data.cutoffHz ?? 6000));
+    const cutoffHz = Math.max(
+      100,
+      Math.min(this.sampleRate / 2, data.cutoffHz ?? 6000)
+    );
 
     this.periodIndex = periodIndex;
     this.mode = mode;
@@ -315,15 +385,21 @@ class NoiseChannel extends BaseChannel {
         periodSamples,
         decaySamples,
         releaseSamples,
-        cutoffHz
+        cutoffHz,
       },
       when
     );
   }
 
   noteOff(data: Record<string, unknown>, when: number): void {
-    const releaseSeconds = Math.max(0.001, Number(data?.releaseSeconds ?? 0.03));
-    const releaseSamples = Math.max(1, Math.round(releaseSeconds * this.sampleRate));
+    const releaseSeconds = Math.max(
+      0.001,
+      Number(data?.releaseSeconds ?? 0.03)
+    );
+    const releaseSamples = Math.max(
+      1,
+      Math.round(releaseSeconds * this.sampleRate)
+    );
     this.scheduleMessage({ type: "noteOff", releaseSamples }, when);
   }
 
@@ -336,9 +412,15 @@ class NoiseChannel extends BaseChannel {
     }
     if (data.param === "periodIndex") {
       const index = Number(data.value ?? this.periodIndex);
-      this.periodIndex = Math.max(0, Math.min(NOISE_PERIOD_TABLE.length - 1, index));
+      this.periodIndex = Math.max(
+        0,
+        Math.min(NOISE_PERIOD_TABLE.length - 1, index)
+      );
     }
-    this.scheduleMessage({ type: "setParam", param: data.param, value: data.value }, when);
+    this.scheduleMessage(
+      { type: "setParam", param: data.param, value: data.value },
+      when
+    );
   }
 }
 
@@ -353,6 +435,12 @@ type ChannelInstances = {
 // ============================================================================
 // Main Synthesizer Class
 // ============================================================================
+
+/**
+ * Tracks which AudioContexts have already loaded the required worklet modules.
+ * Key: AudioContext instance, Value: Set of loaded module file names.
+ */
+const loadedWorklets = new WeakMap<BaseAudioContext, Set<string>>();
 
 /**
  * AlgoChip chiptune synthesizer.
@@ -370,7 +458,7 @@ type ChannelInstances = {
  * ```
  */
 export class AlgoChipSynthesizer {
-  private static readonly BASE_GAIN = 0.16;  // Default master gain value
+  private static readonly BASE_GAIN = 0.16; // Default master gain value
   private readonly masterGainNode: GainNode;
   private readonly workletBasePath: string;
   private channels!: ChannelInstances;
@@ -383,7 +471,8 @@ export class AlgoChipSynthesizer {
   private lastEventTime = 0;
   private completionResolver: (() => void) | null = null;
   private loopEnabled = false;
-  private eventCallback: ((event: PlaybackEvent, when: number) => void) | null = null;
+  private eventCallback: ((event: PlaybackEvent, when: number) => void) | null =
+    null;
 
   constructor(
     private readonly context: AudioContext,
@@ -402,15 +491,30 @@ export class AlgoChipSynthesizer {
    * Initializes the synthesizer by loading AudioWorklet processors.
    *
    * Must be called once before playback. Loads the square, triangle,
-   * and noise processor modules and creates channel instances.
+   * and noise processor modules (if not already loaded for this context)
+   * and creates channel instances.
    */
   async init(): Promise<void> {
     const ctx = this.context;
     const basePath = this.workletBasePath;
+
+    // Get or create the set of loaded modules for this context
+    let loaded = loadedWorklets.get(ctx);
+    if (!loaded) {
+      loaded = new Set<string>();
+      loadedWorklets.set(ctx, loaded);
+    }
+
     const loadModule = async (fileName: string): Promise<void> => {
+      // Skip if already loaded for this context
+      if (loaded!.has(fileName)) {
+        return;
+      }
+
       const url = `${basePath}${fileName}`;
       try {
         await ctx.audioWorklet.addModule(url);
+        loaded!.add(fileName);
       } catch (error) {
         const reason = error instanceof Error ? error.message : String(error);
         throw new Error(
@@ -428,7 +532,7 @@ export class AlgoChipSynthesizer {
       square1: new SquareChannel(ctx, this.masterGainNode),
       square2: new SquareChannel(ctx, this.masterGainNode),
       triangle: new TriangleChannel(ctx, this.masterGainNode),
-      noise: new NoiseChannel(ctx, this.masterGainNode)
+      noise: new NoiseChannel(ctx, this.masterGainNode),
     };
   }
 
@@ -500,7 +604,9 @@ export class AlgoChipSynthesizer {
     const volume = options.volume ?? 1.0;
     this.masterGainNode.gain.value = AlgoChipSynthesizer.BASE_GAIN * volume;
 
-    const totalDuration = this.events.length ? this.events[this.events.length - 1]!.time : 0;
+    const totalDuration = this.events.length
+      ? this.events[this.events.length - 1]!.time
+      : 0;
     let offset = Math.max(0, options.offset ?? 0);
     if (offset > 0) {
       if (loop && totalDuration > 0) {
@@ -520,7 +626,10 @@ export class AlgoChipSynthesizer {
   /** Launches the scheduling interval and immediately runs an initial tick. */
   private startScheduler(): void {
     const scheduleStep = () => this.tick();
-    this.intervalHandle = window.setInterval(scheduleStep, SCHEDULE_INTERVAL_MS);
+    this.intervalHandle = window.setInterval(
+      scheduleStep,
+      SCHEDULE_INTERVAL_MS
+    );
     scheduleStep();
   }
 
@@ -642,22 +751,24 @@ export class AlgoChipSynthesizer {
       if (typeof slideData.targetMidi === "number") {
         slide = {
           targetFrequency: midiToFrequency(slideData.targetMidi),
-          durationSeconds: Number(slideData.durationSeconds ?? 0)
+          durationSeconds: Number(slideData.durationSeconds ?? 0),
         };
       } else if (typeof slideData.targetFrequency === "number") {
         slide = {
           targetFrequency: slideData.targetFrequency,
-          durationSeconds: Number(slideData.durationSeconds ?? 0)
+          durationSeconds: Number(slideData.durationSeconds ?? 0),
         };
       }
     }
 
     return {
       frequency: midiToFrequency(midi),
-      amplitude: velocityToGain(typeof data.velocity === "number" ? data.velocity : undefined),
+      amplitude: velocityToGain(
+        typeof data.velocity === "number" ? data.velocity : undefined
+      ),
       duty: typeof data.duty === "number" ? data.duty : undefined,
       detuneCents,
-      slide
+      slide,
     };
   }
 
@@ -673,14 +784,44 @@ export class AlgoChipSynthesizer {
   private mapNoiseData(data: Record<string, unknown>): NoiseData {
     const velocity = typeof data.velocity === "number" ? data.velocity : 100;
     const velocityGain = Math.max(0, Math.min(1, velocity / 127));
-    const instrument = (typeof data.instrument === "string" ? data.instrument : "S") as NoiseInstrument;
+    const instrument = (
+      typeof data.instrument === "string" ? data.instrument : "S"
+    ) as NoiseInstrument;
     const preset = NOISE_PRESETS[instrument] ?? NOISE_PRESETS.default;
-    const amplitude = Math.min(1, Math.max(0, (typeof data.amplitude === "number" ? data.amplitude : preset.baseAmplitude) * velocityGain));
-    const decaySeconds = typeof data.decaySeconds === "number" ? data.decaySeconds : preset.decaySeconds;
-    const releaseSeconds = typeof data.releaseSeconds === "number" ? data.releaseSeconds : preset.releaseSeconds;
-    const periodIndex = typeof data.periodIndex === "number" ? data.periodIndex : typeof data.clockDivider === "number" ? data.clockDivider : typeof data.period === "number" ? data.period : preset.periodIndex;
-    const mode = (typeof data.mode === "string" ? data.mode : typeof data.noiseMode === "string" ? data.noiseMode : preset.mode) as "short" | "long";
-    const cutoffHz = typeof data.cutoffHz === "number" ? data.cutoffHz : preset.cutoffHz;
+    const amplitude = Math.min(
+      1,
+      Math.max(
+        0,
+        (typeof data.amplitude === "number"
+          ? data.amplitude
+          : preset.baseAmplitude) * velocityGain
+      )
+    );
+    const decaySeconds =
+      typeof data.decaySeconds === "number"
+        ? data.decaySeconds
+        : preset.decaySeconds;
+    const releaseSeconds =
+      typeof data.releaseSeconds === "number"
+        ? data.releaseSeconds
+        : preset.releaseSeconds;
+    const periodIndex =
+      typeof data.periodIndex === "number"
+        ? data.periodIndex
+        : typeof data.clockDivider === "number"
+        ? data.clockDivider
+        : typeof data.period === "number"
+        ? data.period
+        : preset.periodIndex;
+    const mode = (
+      typeof data.mode === "string"
+        ? data.mode
+        : typeof data.noiseMode === "string"
+        ? data.noiseMode
+        : preset.mode
+    ) as "short" | "long";
+    const cutoffHz =
+      typeof data.cutoffHz === "number" ? data.cutoffHz : preset.cutoffHz;
 
     return {
       amplitude,
@@ -688,7 +829,7 @@ export class AlgoChipSynthesizer {
       releaseSeconds,
       periodIndex,
       mode,
-      cutoffHz
+      cutoffHz,
     };
   }
 }

@@ -14,7 +14,7 @@ import type {
   SEGenerationOptions,
   SEGenerationResult,
   SEType,
-  SynthPlayOptions
+  SynthPlayOptions,
 } from "@algo-chip/core";
 
 // ============================================================================
@@ -30,7 +30,7 @@ export type {
   SEGenerationOptions,
   SEGenerationResult,
   SEType,
-  SynthPlayOptions
+  SynthPlayOptions,
 } from "@algo-chip/core";
 
 // ============================================================================
@@ -137,7 +137,7 @@ export interface AudioSession {
   cancelScheduledSe(): void;
   getActiveTimeline(): ActiveTimeline | null;
   getAudioContext(): AudioContext | null;
-  resumeAudioContext(): Promise<void>;
-  suspendAudioContext(): Promise<void>;
+  resumeAudioContext(): void;
+  suspendAudioContext(): void;
   close(): Promise<void>;
 }
