@@ -478,12 +478,12 @@ export class AlgoChipSynthesizer {
     private readonly context: AudioContext,
     options: { workletBasePath?: string; gainNode?: GainNode } = {}
   ) {
-    this.masterGainNode = options.gainNode ?? context.createGain();
+    // Always create our own masterGainNode for independent volume control
+    this.masterGainNode = context.createGain();
     this.masterGainNode.gain.value = AlgoChipSynthesizer.BASE_GAIN;
-    // Only connect to destination if we created the gain node ourselves
-    if (!options.gainNode) {
-      this.masterGainNode.connect(context.destination);
-    }
+    // Connect to external gainNode if provided, otherwise to destination
+    const destination = options.gainNode ?? context.destination;
+    this.masterGainNode.connect(destination);
     this.workletBasePath = options.workletBasePath ?? "./worklets/";
   }
 
