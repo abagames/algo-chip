@@ -187,6 +187,7 @@ export interface SynthPlayOptions {
 class BaseChannel {
   protected readonly port: MessagePort;
   protected readonly sampleRate: number;
+  protected readonly nodeStartTime: number;
 
   constructor(
     protected readonly context: AudioContext,
@@ -197,6 +198,7 @@ class BaseChannel {
     node.connect(masterGain);
     this.port = node.port;
     this.sampleRate = context.sampleRate;
+    this.nodeStartTime = context.currentTime;
   }
 
   /**
@@ -206,7 +208,11 @@ class BaseChannel {
    * @param when Absolute time in seconds (AudioContext.currentTime)
    */
   scheduleMessage(message: Record<string, unknown>, when: number): void {
-    const sampleFrame = Math.max(0, Math.round(when * this.sampleRate));
+    const relativeSeconds = when - this.nodeStartTime;
+    const sampleFrame = Math.max(
+      0,
+      Math.round(relativeSeconds * this.sampleRate)
+    );
     this.port.postMessage({ ...message, sampleFrame });
   }
 
