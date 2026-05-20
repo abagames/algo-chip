@@ -102,7 +102,9 @@ import {
   MoodSetting,
   TempoSetting,
   StylePreset,
-  VoiceArrangementPreset
+  VoiceArrangementPreset,
+  MotifSelectionDiagnostics,
+  MotifSelectionDiagnosticCategory
 } from "../types.js";
 import {
   BEATS_PER_MEASURE,
@@ -241,6 +243,71 @@ const MELODY_RHYTHM_TAGS: Record<PipelineCompositionOptions["mood"], string[]> =
   tense: ["syncopated", "staccato"],
   peaceful: ["legato", "simple"]
 };
+
+interface PresetMotifTagProfile {
+  rhythm?: string[];
+  melody?: string[];
+  melodyRhythm?: string[];
+  bass?: string[];
+  drumsBeat?: string[];
+  drumsFill?: string[];
+  transitions?: string[];
+}
+
+const PRESET_MOTIF_TAGS: Record<StylePreset, PresetMotifTagProfile> = {
+  minimalTechno: {
+    rhythm: ["texture_loop", "straight", "grid16"],
+    melody: ["ostinato", "static", "short", "texture_loop"],
+    melodyRhythm: ["texture_loop", "grid16", "simple"],
+    bass: ["four_on_floor", "static", "drone", "loop_safe"],
+    drumsBeat: ["four_on_floor", "texture_loop", "simple"],
+    drumsFill: ["noise_fx", "transition"],
+    transitions: ["build", "noise_fx"]
+  },
+  progressiveHouse: {
+    rhythm: ["drive", "syncopation", "accented"],
+    melody: ["ascending", "bright", "arch"],
+    melodyRhythm: ["drive", "syncopated", "loop_safe"],
+    bass: ["four_on_floor", "percussive_layer", "variation"],
+    drumsBeat: ["four_on_floor", "percussive_layer", "grid16"],
+    drumsFill: ["build", "drum_fill", "transition"],
+    transitions: ["build", "drum_fill", "noise_fx"]
+  },
+  retroLoopwave: {
+    rhythm: ["loop_safe", "grid16", "straight"],
+    melody: ["bright", "ostinato", "texture_loop", "loop_safe"],
+    melodyRhythm: ["loop_safe", "drive", "simple"],
+    bass: ["bright", "overworld", "loop_safe"],
+    drumsBeat: ["retro", "loop_safe", "grid16"],
+    drumsFill: ["transition", "drum_fill"],
+    transitions: ["retro", "loop_out", "drum_fill"]
+  },
+  breakbeatJungle: {
+    rhythm: ["syncopation", "accented", "grid16"],
+    melody: ["breakbeat", "complex", "leaping", "dark"],
+    melodyRhythm: ["syncopated", "staccato", "breakbeat"],
+    bass: ["breakbeat", "syncopated", "tense"],
+    drumsBeat: ["breakbeat", "syncopation", "grid16"],
+    drumsFill: ["break", "breakbeat", "drum_fill"],
+    transitions: ["breakbeat", "drum_fill", "grid16"]
+  },
+  lofiChillhop: {
+    rhythm: ["rest_heavy", "simple", "texture_loop"],
+    melody: ["lofi", "peaceful", "stepwise", "simple"],
+    melodyRhythm: ["rest_heavy", "legato", "simple"],
+    bass: ["lofi", "rest_heavy", "drone", "static"],
+    drumsBeat: ["lofi", "rest_heavy", "swing_hint"],
+    drumsFill: ["lofi", "noise_fx", "rest_heavy"],
+    transitions: ["lofi", "noise_fx", "rest_heavy"]
+  }
+};
+
+function presetTags(
+  preset: StylePreset | undefined,
+  key: keyof PresetMotifTagProfile
+): string[] {
+  return preset ? (PRESET_MOTIF_TAGS[preset]?.[key] ?? []) : [];
+}
 
 const rhythmById = new Map(rhythmList.map((motif) => [motif.id, motif]));
 
@@ -438,6 +505,89 @@ function preferTagPresence<T extends { tags?: string[] }>(
   return matched;
 }
 
+function createMotifSelectionDiagnostics(): MotifSelectionDiagnostics {
+  return {
+    candidatePools: [],
+    fallbackCount: 0,
+    hookReuse: {
+      exact: 0,
+      varied: 0
+    }
+  };
+}
+
+function recordCandidatePool(
+  diagnostics: MotifSelectionDiagnostics | undefined,
+  category: MotifSelectionDiagnosticCategory,
+  stage: string,
+  requestedTags: string[],
+  beforeCount: number,
+  matchedCount: number,
+  afterCount: number,
+  fallback: boolean,
+  fallbackReason?: "empty_match" | "min_ratio" | "empty_pool"
+): void {
+  if (!diagnostics) {
+    return;
+  }
+  diagnostics.candidatePools.push({
+    category,
+    stage,
+    requestedTags: [...requestedTags],
+    beforeCount,
+    matchedCount,
+    afterCount,
+    fallback,
+    fallbackReason
+  });
+  if (fallback) {
+    diagnostics.fallbackCount += 1;
+  }
+}
+
+function preferTagPresenceWithDiagnostics<T extends { tags?: string[] }>(
+  candidates: T[],
+  tags: string[],
+  diagnostics: MotifSelectionDiagnostics | undefined,
+  category: MotifSelectionDiagnosticCategory,
+  stage: string,
+  minRatio: number = 0.4
+): T[] {
+  if (!tags.length) {
+    return candidates;
+  }
+  const matched = candidates.filter((candidate) => {
+    const sourceTags = candidate.tags ?? [];
+    return tags.some((tag) => sourceTags.includes(tag));
+  });
+  let result = matched;
+  let fallback = false;
+  let fallbackReason: "empty_match" | "min_ratio" | undefined;
+
+  if (matched.length === 0) {
+    result = candidates;
+    fallback = true;
+    fallbackReason = "empty_match";
+  } else if (candidates.length >= 4 && matched.length < candidates.length * minRatio) {
+    result = candidates;
+    fallback = true;
+    fallbackReason = "min_ratio";
+  }
+
+  recordCandidatePool(
+    diagnostics,
+    category,
+    stage,
+    tags,
+    candidates.length,
+    matched.length,
+    result.length,
+    fallback,
+    fallbackReason
+  );
+  return result;
+}
+
 function shuffleWithRng<T>(items: T[], rng: () => number): T[] {
   const copy = [...items];
   for (let i = copy.length - 1; i > 0; i--) {
@@ -585,7 +735,8 @@ function selectRhythmMotif(
   last: (typeof rhythmList)[number] | undefined,
   requiredTags: string[],
   rng: () => number,
-  used: Set<string>
+  used: Set<string>,
+  diagnostics?: MotifSelectionDiagnostics
 ) {
   const safeRhythms = rhythmList.filter(isRhythmMotifConsistent);
   const propertyTags = RHYTHM_PROPERTY_TAGS[options.mood] ?? [];
@@ -595,36 +746,76 @@ function selectRhythmMotif(
   const requiredPool = safeRhythms.filter((motif) => hasAllTags(motif, requiredTags));
   let candidates = safeRhythms.filter((motif) => motif.tags.includes(functionTag));
   const propertyFiltered = filterByTags(candidates, propertyTags);
+  recordCandidatePool(
+    diagnostics,
+    "rhythm",
+    "mood-property",
+    propertyTags,
+    candidates.length,
+    propertyFiltered.length,
+    propertyFiltered.length || candidates.length,
+    propertyTags.length > 0 && propertyFiltered.length === 0,
+    propertyTags.length > 0 && propertyFiltered.length === 0 ? "empty_match" : undefined
+  );
   if (propertyFiltered.length) {
     candidates = propertyFiltered;
   } else {
     const fallback = filterByTags(safeRhythms, propertyTags);
+    recordCandidatePool(
+      diagnostics,
+      "rhythm",
+      "mood-property-global-fallback",
+      propertyTags,
+      safeRhythms.length,
+      fallback.length,
+      fallback.length || candidates.length,
+      propertyTags.length > 0 && fallback.length === 0,
+      propertyTags.length > 0 && fallback.length === 0 ? "empty_match" : undefined
+    );
     if (fallback.length) {
       candidates = fallback;
     }
   }
 
   if (styleIntent.loopCentric) {
-    candidates = preferTagPresence(candidates, ["loop_safe", "texture_loop"]);
+    candidates = preferTagPresenceWithDiagnostics(candidates, ["loop_safe", "texture_loop"], diagnostics, "rhythm", "loopCentric");
   }
 
   if (styleIntent.textureFocus) {
-    candidates = preferTagPresence(candidates, ["texture_loop", "straight", "simple", "grid16"]);
+    candidates = preferTagPresenceWithDiagnostics(candidates, ["texture_loop", "straight", "simple", "grid16"], diagnostics, "rhythm", "textureFocus");
   }
 
   if (styleIntent.percussiveLayering) {
-    candidates = preferTagPresence(candidates, ["grid16", "percussive_layer"]);
+    candidates = preferTagPresenceWithDiagnostics(candidates, ["grid16", "percussive_layer"], diagnostics, "rhythm", "percussiveLayering");
   }
 
   if (styleIntent.syncopationBias) {
-    candidates = preferTagPresence(candidates, ["syncopation"]);
+    candidates = preferTagPresenceWithDiagnostics(candidates, ["syncopation"], diagnostics, "rhythm", "syncopationBias");
   }
+
+  const presetRhythmTags = presetTags(options.stylePreset, "rhythm");
+  if (presetRhythmTags.length) {
+    candidates = preferTagPresenceWithDiagnostics(candidates, presetRhythmTags, diagnostics, "rhythm", "preset", 0.25);
+  }
+
   if (!candidates.length) {
+    recordCandidatePool(diagnostics, "rhythm", "empty-pool-fallback", [], 0, 0, safeRhythms.length, true, "empty_pool");
     candidates = safeRhythms;
   }
 
   if (requiredTags.length) {
     const requiredFiltered = candidates.filter((motif) => hasAllTags(motif, requiredTags));
+    recordCandidatePool(
+      diagnostics,
+      "rhythm",
+      "required-tags",
+      requiredTags,
+      candidates.length,
+      requiredFiltered.length,
+      requiredFiltered.length || requiredPool.length || candidates.length,
+      requiredFiltered.length === 0,
+      requiredFiltered.length === 0 ? "empty_match" : undefined
+    );
     if (requiredFiltered.length) {
       candidates = requiredFiltered;
     } else if (requiredPool.length) {
@@ -651,12 +842,25 @@ function selectMelodyFragment(
   requiredTags: string[],
   rng: () => number,
   lastFragment: (typeof melodyList)[number] | undefined,
-  used: Set<string>
+  used: Set<string>,
+  diagnostics?: MotifSelectionDiagnostics
 ): (typeof melodyList)[number] {
   const moodTags = MELODY_MOOD_TAGS[options.mood] ?? [];
   let candidates = melodyList.filter((fragment) => moodTags.some((tag) => fragment.tags.includes(tag)));
+  recordCandidatePool(diagnostics, "melody", "mood", moodTags, melodyList.length, candidates.length, candidates.length, candidates.length === 0, candidates.length === 0 ? "empty_match" : undefined);
   if (requiredTags.length) {
     const requiredFiltered = candidates.filter((fragment) => hasAllTags(fragment, requiredTags));
+    recordCandidatePool(
+      diagnostics,
+      "melody",
+      "required-tags",
+      requiredTags,
+      candidates.length,
+      requiredFiltered.length,
+      requiredFiltered.length || candidates.length,
+      requiredFiltered.length === 0,
+      requiredFiltered.length === 0 ? "empty_match" : undefined
+    );
     if (requiredFiltered.length) {
       candidates = requiredFiltered;
     } else {
@@ -667,11 +871,12 @@ function selectMelodyFragment(
     }
   }
   if (!candidates.length) {
+    recordCandidatePool(diagnostics, "melody", "empty-pool-fallback", [], 0, 0, melodyList.length, true, "empty_pool");
     candidates = melodyList;
   }
 
   if (styleIntent.textureFocus) {
-    candidates = preferTagPresence(candidates, ["texture_loop", "ostinato", "loop_safe", "short", "static"]);
+    candidates = preferTagPresenceWithDiagnostics(candidates, ["texture_loop", "ostinato", "loop_safe", "short", "static"], diagnostics, "melody", "textureFocus");
   }
 
   if (styleIntent.harmonicStatic) {
@@ -679,7 +884,12 @@ function selectMelodyFragment(
   }
 
   if (styleIntent.gradualBuild) {
-    candidates = preferTagPresence(candidates, ["ascending"]);
+    candidates = preferTagPresenceWithDiagnostics(candidates, ["ascending"], diagnostics, "melody", "gradualBuild");
+  }
+
+  const presetMelodyTags = presetTags(options.stylePreset, "melody");
+  if (presetMelodyTags.length) {
+    candidates = preferTagPresenceWithDiagnostics(candidates, presetMelodyTags, diagnostics, "melody", "preset", 0.25);
   }
 
   const pool = preferUnused(candidates, used);
@@ -694,37 +904,47 @@ function selectMelodyRhythmMotif(
   requiredTags: string[],
   rng: () => number,
   lastId: string | undefined,
-  used: Set<string>
+  used: Set<string>,
+  diagnostics?: MotifSelectionDiagnostics
 ): MelodyRhythmMotif {
   const tolerance = 1e-6;
   const moodTags = MELODY_RHYTHM_TAGS[options.mood] ?? [];
   let candidates = melodyRhythmList.filter((motif) => Math.abs(motif.length - totalBeats) < tolerance);
+  recordCandidatePool(diagnostics, "melodyRhythm", "length", [`length:${totalBeats}`], melodyRhythmList.length, candidates.length, candidates.length, candidates.length === 0, candidates.length === 0 ? "empty_match" : undefined);
   if (!candidates.length) {
     throw new Error(`No melody rhythm motifs of length ${totalBeats}`);
   }
   let filtered = candidates.filter((motif) => motif.tags.includes(functionTag));
+  recordCandidatePool(diagnostics, "melodyRhythm", "function", [functionTag], candidates.length, filtered.length, filtered.length || candidates.length, filtered.length === 0, filtered.length === 0 ? "empty_match" : undefined);
   if (!filtered.length) {
     filtered = candidates;
   }
   let moodFiltered = filtered.filter((motif) => moodTags.some((tag) => motif.tags.includes(tag)));
+  recordCandidatePool(diagnostics, "melodyRhythm", "mood", moodTags, filtered.length, moodFiltered.length, moodFiltered.length || filtered.length, moodFiltered.length === 0, moodFiltered.length === 0 ? "empty_match" : undefined);
   if (!moodFiltered.length) {
     moodFiltered = filtered;
   }
 
   if (styleIntent.loopCentric) {
-    moodFiltered = preferTagPresence(moodFiltered, ["loop_safe", "texture_loop"]);
+    moodFiltered = preferTagPresenceWithDiagnostics(moodFiltered, ["loop_safe", "texture_loop"], diagnostics, "melodyRhythm", "loopCentric");
   }
 
   if (styleIntent.textureFocus) {
-    moodFiltered = preferTagPresence(moodFiltered, ["texture_loop", "grid16", "simple"]);
+    moodFiltered = preferTagPresenceWithDiagnostics(moodFiltered, ["texture_loop", "grid16", "simple"], diagnostics, "melodyRhythm", "textureFocus");
   }
 
   if (styleIntent.syncopationBias) {
-    moodFiltered = preferTagPresence(moodFiltered, ["syncopated", "drive"]);
+    moodFiltered = preferTagPresenceWithDiagnostics(moodFiltered, ["syncopated", "drive"], diagnostics, "melodyRhythm", "syncopationBias");
+  }
+
+  const presetMelodyRhythmTags = presetTags(options.stylePreset, "melodyRhythm");
+  if (presetMelodyRhythmTags.length) {
+    moodFiltered = preferTagPresenceWithDiagnostics(moodFiltered, presetMelodyRhythmTags, diagnostics, "melodyRhythm", "preset", 0.25);
   }
 
   if (requiredTags.length) {
     const requiredFiltered = moodFiltered.filter((motif) => hasAllTags(motif, requiredTags));
+    recordCandidatePool(diagnostics, "melodyRhythm", "required-tags", requiredTags, moodFiltered.length, requiredFiltered.length, requiredFiltered.length || moodFiltered.length, requiredFiltered.length === 0, requiredFiltered.length === 0 ? "empty_match" : undefined);
     if (requiredFiltered.length) {
       moodFiltered = requiredFiltered;
     }
@@ -1008,7 +1228,9 @@ function resolveBassPattern(
   used: Set<string>,
   cache: Map<string, BassPatternMotif>,
   styleIntent: StyleIntent,
-  options?: { enforceDroneStatic?: boolean; preferredTags?: string[] }
+  stylePreset: StylePreset | undefined,
+  options?: { enforceDroneStatic?: boolean; preferredTags?: string[] },
+  diagnostics?: MotifSelectionDiagnostics
 ): BassPatternMotif {
   const enforceDroneStatic = options?.enforceDroneStatic ?? true;
   const preferredTags = options?.preferredTags ?? [];
@@ -1019,10 +1241,12 @@ function resolveBassPattern(
       const endPattern = selectBassPattern(
         section.texture,
         styleIntent,
+        stylePreset,
         rng,
         used,
         ["section_end"],
-        cached.id
+        cached.id,
+        diagnostics
       );
       if (endPattern) {
         used.add(endPattern.id);
@@ -1038,10 +1262,12 @@ function resolveBassPattern(
       const preferredPattern = selectBassPattern(
         section.texture,
         styleIntent,
+        stylePreset,
         rng,
         used,
         preferredTags,
-        undefined
+        undefined,
+        diagnostics
       );
       if (preferredPattern) {
         cache.set(section.id, preferredPattern);
@@ -1053,10 +1279,12 @@ function resolveBassPattern(
     const dronePattern = selectBassPattern(
       section.texture,
       styleIntent,
+      stylePreset,
       rng,
       used,
       ["drone", "static"],
-      undefined
+      undefined,
+      diagnostics
     );
     if (dronePattern && enforceDroneStatic) {
       cache.set(section.id, dronePattern);
@@ -1067,8 +1295,8 @@ function resolveBassPattern(
 
   const initialTags = establishesHook(section) ? ["pickup"] : [];
   const basePattern =
-    selectBassPattern(section.texture, styleIntent, rng, used, initialTags, undefined) ??
-    selectBassPattern(section.texture, styleIntent, rng, used, [], undefined) ??
+    selectBassPattern(section.texture, styleIntent, stylePreset, rng, used, initialTags, undefined, diagnostics) ??
+    selectBassPattern(section.texture, styleIntent, stylePreset, rng, used, [], undefined, diagnostics) ??
     FALLBACK_BASS_PATTERN;
   cache.set(section.id, basePattern);
   used.add(basePattern.id);
@@ -1077,10 +1305,12 @@ function resolveBassPattern(
     const endPattern = selectBassPattern(
       section.texture,
       styleIntent,
+      stylePreset,
       rng,
       used,
       ["section_end"],
-      basePattern.id
+      basePattern.id,
+      diagnostics
     );
     if (endPattern) {
       used.add(endPattern.id);
@@ -1094,43 +1324,52 @@ function resolveBassPattern(
 function selectBassPattern(
   texture: TextureProfile,
   styleIntent: StyleIntent,
+  stylePreset: StylePreset | undefined,
   rng: () => number,
   used: Set<string>,
   requiredTags: string[],
-  avoidId?: string
+  avoidId?: string,
+  diagnostics?: MotifSelectionDiagnostics
 ): BassPatternMotif | undefined {
   let candidates = bassPatternsByTexture.get(texture) ?? [];
+  recordCandidatePool(diagnostics, "bass", "texture", [`texture:${texture}`], bassPatternList.length, candidates.length, candidates.length, candidates.length === 0, candidates.length === 0 ? "empty_match" : undefined);
   if (!candidates.length && texture !== "steady") {
     candidates = bassPatternsByTexture.get("steady") ?? [];
+    recordCandidatePool(diagnostics, "bass", "texture-steady-fallback", ["texture:steady"], bassPatternList.length, candidates.length, candidates.length, candidates.length === 0, candidates.length === 0 ? "empty_match" : undefined);
   }
   if (!candidates.length) {
     return undefined;
   }
   if (styleIntent.loopCentric || styleIntent.harmonicStatic) {
-    candidates = preferTagPresence(candidates, ["loop_safe"]);
+    candidates = preferTagPresenceWithDiagnostics(candidates, ["loop_safe"], diagnostics, "bass", "loopCentricOrHarmonicStatic");
   }
   if (styleIntent.syncopationBias) {
-    candidates = preferTagPresence(candidates, ["syncopated"]);
+    candidates = preferTagPresenceWithDiagnostics(candidates, ["syncopated"], diagnostics, "bass", "syncopationBias");
   }
   if (styleIntent.textureFocus) {
-    candidates = preferTagPresence(candidates, ["default"]);
+    candidates = preferTagPresenceWithDiagnostics(candidates, ["default"], diagnostics, "bass", "textureFocus");
   }
   if (styleIntent.percussiveLayering) {
-    candidates = preferTagPresence(candidates, ["percussive_layer", "four_on_floor"]);
+    candidates = preferTagPresenceWithDiagnostics(candidates, ["percussive_layer", "four_on_floor"], diagnostics, "bass", "percussiveLayering");
   }
   if (styleIntent.percussiveLayering && styleIntent.syncopationBias && styleIntent.breakInsertion) {
-    candidates = preferTagPresence(candidates, ["breakbeat", "variation"], 0.2);
+    candidates = preferTagPresenceWithDiagnostics(candidates, ["breakbeat", "variation"], diagnostics, "bass", "breakbeatFocus", 0.2);
   }
   if (styleIntent.atmosPad && styleIntent.loopCentric) {
-    candidates = preferTagPresence(candidates, ["lofi", "rest_heavy"], 0.25);
+    candidates = preferTagPresenceWithDiagnostics(candidates, ["lofi", "rest_heavy"], diagnostics, "bass", "lofiPad", 0.25);
   }
   if (styleIntent.harmonicStatic) {
     candidates = biasByTagPresence(candidates, ["drone", "static"], rng, 0.65);
+  }
+  const presetBassTags = presetTags(stylePreset, "bass");
+  if (presetBassTags.length) {
+    candidates = preferTagPresenceWithDiagnostics(candidates, presetBassTags, diagnostics, "bass", "preset", 0.25);
   }
   if (requiredTags.length) {
     const tagged = candidates.filter((motif) =>
       requiredTags.every((tag) => (motif.tags ?? []).includes(tag))
     );
+    recordCandidatePool(diagnostics, "bass", "required-tags", requiredTags, candidates.length, tagged.length, tagged.length || candidates.length, tagged.length === 0, tagged.length === 0 ? "empty_match" : undefined);
     if (tagged.length) {
       candidates = tagged;
     }
@@ -1189,8 +1428,10 @@ function maybeGenerateTransition(
   lastTransitionId: string | undefined,
   used: Set<string>,
   styleIntent: StyleIntent,
+  stylePreset: StylePreset | undefined,
   globalMeasureIndex: number,
-  totalMeasures: number
+  totalMeasures: number,
+  diagnostics?: MotifSelectionDiagnostics
 ): { motifId: string; hits: DrumHit[] } | undefined {
   if (!transitionList.length) {
     return undefined;
@@ -1202,6 +1443,7 @@ function maybeGenerateTransition(
   }
 
   let candidates = transitionList.filter((motif) => motif.length_beats <= BEATS_PER_MEASURE);
+  recordCandidatePool(diagnostics, "transitions", "length", ["length<=measure"], transitionList.length, candidates.length, candidates.length || transitionList.length, candidates.length === 0, candidates.length === 0 ? "empty_match" : undefined);
   if (!candidates.length) {
     candidates = transitionList;
   }
@@ -1225,11 +1467,17 @@ function maybeGenerateTransition(
   }
 
   if (priorityTags.length) {
-    candidates = preferTagPresence(candidates, priorityTags, 0.2);
+    candidates = preferTagPresenceWithDiagnostics(candidates, priorityTags, diagnostics, "transitions", "priority-tags", 0.2);
+  }
+
+  const presetTransitionTags = presetTags(stylePreset, "transitions");
+  if (presetTransitionTags.length) {
+    candidates = preferTagPresenceWithDiagnostics(candidates, presetTransitionTags, diagnostics, "transitions", "preset", 0.2);
   }
 
   if (requiredTags.length) {
     const filtered = candidates.filter((motif) => hasAllTags(motif, requiredTags));
+    recordCandidatePool(diagnostics, "transitions", "required-tags", requiredTags, candidates.length, filtered.length, filtered.length || candidates.length, filtered.length === 0, filtered.length === 0 ? "empty_match" : undefined);
     if (filtered.length) {
       candidates = filtered;
     }
@@ -1549,8 +1797,10 @@ interface MotifContext {
   compositionBaseRegister: number;
   sectionById: Map<string, SectionDefinition>;
   styleIntent: StyleIntent;
+  stylePreset: StylePreset | undefined;
   voiceArrangement: StructurePlanResult["voiceArrangement"];
   totalMeasures: number;
+  motifSelectionDiagnostics: MotifSelectionDiagnostics;
 
   // Used motif tracking
   usedMotifs: {
@@ -1692,8 +1942,10 @@ function initializeMotifContext(
     compositionBaseRegister,
     sectionById: new Map(phase1.sections.map((section) => [section.id, section])),
     styleIntent: phase1.styleIntent,
+    stylePreset: options.stylePreset,
     voiceArrangement: phase1.voiceArrangement,
     totalMeasures: options.lengthInMeasures,
+    motifSelectionDiagnostics: createMotifSelectionDiagnostics(),
 
     usedMotifs: {
       rhythms: new Set<string>(),
@@ -1856,7 +2108,8 @@ function createPhraseContext(
         context.lastMotifs.rhythm,
         baseRequiredTags,
         context.rng,
-        context.usedMotifs.rhythms
+        context.usedMotifs.rhythms,
+        context.motifSelectionDiagnostics
       );
       cache.rhythm = baseRhythm.id;
     }
@@ -1873,9 +2126,36 @@ function createPhraseContext(
         baseRequiredTags,
         context.rng,
         context.lastMotifs.melodyFragment,
-        context.usedMotifs.melodies
+        context.usedMotifs.melodies,
+        context.motifSelectionDiagnostics
       );
       cache.melody = baseMelody.id;
+    }
+  }
+
+  // Hook variation fires only when repeatBias < 0.25 (default 0.3 = always exact).
+  // Only the pitch-degree motif (melody.json) is replaced; rhythm and note-duration
+  // motifs are still restored from the cached hook below.
+  const repeatBias = options.sectionRepeatBias ?? 0.3;
+  const shouldVaryReprisedHook =
+    repriseHook(section) &&
+    isFirstPhrase &&
+    Boolean(cachedHook) &&
+    repeatBias < 0.25 &&
+    context.rng() > repeatBias;
+
+  if (shouldVaryReprisedHook) {
+    const variedMelody = selectMelodyFragment(
+      options,
+      context.styleIntent,
+      baseRequiredTags,
+      context.rng,
+      baseMelody,
+      context.usedMotifs.melodies,
+      context.motifSelectionDiagnostics
+    );
+    if (variedMelody.id !== baseMelody.id) {
+      baseMelody = variedMelody;
     }
   }
 
@@ -1898,7 +2178,8 @@ function createPhraseContext(
         baseRequiredTags,
         context.rng,
         undefined,
-        context.usedMotifs.melodyRhythms
+        context.usedMotifs.melodyRhythms,
+        context.motifSelectionDiagnostics
       );
       cache.melodyRhythm = baseMelodyRhythm.id;
     }
@@ -1918,11 +2199,25 @@ function createPhraseContext(
   context.usedMotifs.melodyRhythms.add(baseMelodyRhythm.id);
 
   // Track usage count for diagnostics
+  context.motifUsage.melody[baseMelody.id] =
+    (context.motifUsage.melody[baseMelody.id] ?? 0) + 1;
   context.motifUsage.melodyRhythm[baseMelodyRhythm.id] =
     (context.motifUsage.melodyRhythm[baseMelodyRhythm.id] ?? 0) + 1;
 
   // Record section motif plan on first phrase
   if (isFirstPhrase) {
+    const hookExact =
+      repriseHook(section) && Boolean(cachedHook) &&
+      cachedHook?.rhythmId === baseRhythm.id &&
+      cachedHook?.melodyId === baseMelody.id &&
+      cachedHook?.melodyRhythmId === baseMelodyRhythm.id;
+    const hookVaried =
+      repriseHook(section) && Boolean(cachedHook) && !hookExact;
+    if (hookExact) {
+      context.motifSelectionDiagnostics.hookReuse.exact += 1;
+    } else if (hookVaried) {
+      context.motifSelectionDiagnostics.hookReuse.varied += 1;
+    }
     results.sectionMotifPlan.push({
       sectionId: section.id,
       templateId: section.templateId,
@@ -1930,11 +2225,8 @@ function createPhraseContext(
       primaryRhythm: baseRhythm.id,
       primaryMelody: baseMelody.id,
       primaryMelodyRhythm: baseMelodyRhythm.id,
-      reprisesHook:
-        repriseHook(section) && Boolean(cachedHook) &&
-        cachedHook?.rhythmId === baseRhythm.id &&
-        cachedHook?.melodyId === baseMelody.id &&
-        cachedHook?.melodyRhythmId === baseMelodyRhythm.id
+      reprisesHook: hookExact,
+      hookReuse: hookExact ? "exact" : hookVaried ? "varied" : "none"
     });
   }
 
@@ -2090,7 +2382,8 @@ function createMeasureContext(
       baseRhythm,
       requiredTags,
       context.rng,
-      context.usedMotifs.rhythms
+      context.usedMotifs.rhythms,
+      context.motifSelectionDiagnostics
     );
   }
   
@@ -2184,10 +2477,15 @@ function generateBassForMeasure(
       context.rng,
       context.usedMotifs.bassPatterns,
       context.caches.bassPattern,
-      context.styleIntent
+      context.styleIntent,
+      context.stylePreset,
+      undefined,
+      context.motifSelectionDiagnostics
     );
     context.caches.bassPattern.set(section.id, bassPattern);
   }
+  context.motifUsage.bass[bassPattern.id] = (context.motifUsage.bass[bassPattern.id] ?? 0) + 1;
+  context.usedMotifs.bassPatterns.add(bassPattern.id);
   
   const currentChord = resolveChordAtBeat(phase1, measureStartBeat);
   const nextChord = resolveChordAtBeat(phase1, measureStartBeat + BEATS_PER_MEASURE);
@@ -2260,7 +2558,9 @@ function generateDrumsForMeasure(
       context.usedMotifs.drums,
       shouldForceFill,
       context.styleIntent,
-      context.voiceArrangement.id
+      context.stylePreset,
+      context.voiceArrangement.id,
+      context.motifSelectionDiagnostics
     );
     if (drumPattern) {
       drumCache.drum = drumPattern.id;
@@ -2285,8 +2585,10 @@ function generateDrumsForMeasure(
       context.lastMotifs.transitionId,
       context.usedMotifs.transitions,
       context.styleIntent,
+      context.stylePreset,
       section.startMeasure + measureInSection,
-      context.totalMeasures
+      context.totalMeasures,
+      context.motifSelectionDiagnostics
     );
     
     if (transitionResult) {
@@ -2375,6 +2677,7 @@ function selectMotifsLegacy(options: PipelineCompositionOptions, phase1: Structu
   drums: DrumHit[];
   motifUsage: MotifSelectionResult["motifUsage"];
   sectionMotifPlan: SectionMotifPlan[];
+  motifSelection: MotifSelectionDiagnostics;
 } {
   // Initialize context (P2-1 refactoring: extracted from original implementation)
   const context = initializeMotifContext(options, phase1);
@@ -2404,7 +2707,8 @@ function selectMotifsLegacy(options: PipelineCompositionOptions, phase1: Structu
     accompanimentSeeds: accompanimentMidi,
     drums: results.drums,
     motifUsage: context.motifUsage,
-    sectionMotifPlan: results.sectionMotifPlan
+    sectionMotifPlan: results.sectionMotifPlan,
+    motifSelection: context.motifSelectionDiagnostics
   };
 }
 
@@ -2426,7 +2730,8 @@ export function selectMotifs(options: PipelineCompositionOptions, phase1: Struct
       ],
       drums: legacy.drums,
       motifUsage: legacy.motifUsage,
-      sectionMotifPlan: legacy.sectionMotifPlan
+      sectionMotifPlan: legacy.sectionMotifPlan,
+      motifSelection: legacy.motifSelection
     };
   }
 
@@ -2446,7 +2751,9 @@ export function selectMotifs(options: PipelineCompositionOptions, phase1: Struct
           voice.octaveOffset ?? 0,
           voice.seedOffset ?? 0,
           options,
-          phase1
+          phase1,
+          legacy.motifUsage.bass,
+          legacy.motifSelection
         );
         break;
 
@@ -2523,7 +2830,8 @@ export function selectMotifs(options: PipelineCompositionOptions, phase1: Struct
     tracks,
     drums: legacy.drums,
     motifUsage: legacy.motifUsage,
-    sectionMotifPlan: legacy.sectionMotifPlan
+    sectionMotifPlan: legacy.sectionMotifPlan,
+    motifSelection: legacy.motifSelection
   };
 }
 
@@ -2551,7 +2859,9 @@ function selectDrumPattern(
   used: Set<string>,
   forceFill: boolean,
   styleIntent: StyleIntent,
-  arrangementId: VoiceArrangementPreset
+  stylePreset: StylePreset | undefined,
+  arrangementId: VoiceArrangementPreset,
+  diagnostics?: MotifSelectionDiagnostics
 ) {
   const arrangementRule = ARRANGEMENT_DRUM_RULES[arrangementId];
   if (!forceFill && arrangementRule?.earlySparseMeasures && measureIndex < arrangementRule.earlySparseMeasures) {
@@ -2582,7 +2892,9 @@ function selectDrumPattern(
   let candidates = drumList.filter((pattern) =>
     isFill ? pattern.type === "fill" : pattern.type === "beat"
   );
+  recordCandidatePool(diagnostics, "drums", "type", [isFill ? "fill" : "beat"], drumList.length, candidates.length, candidates.length, candidates.length === 0, candidates.length === 0 ? "empty_match" : undefined);
   const fitsMeasure = candidates.filter((pattern) => pattern.length_beats <= BEATS_PER_MEASURE);
+  recordCandidatePool(diagnostics, "drums", "length", ["length<=measure"], candidates.length, fitsMeasure.length, fitsMeasure.length || candidates.length, fitsMeasure.length === 0, fitsMeasure.length === 0 ? "empty_match" : undefined);
   if (fitsMeasure.length) {
     candidates = fitsMeasure;
   }
@@ -2591,14 +2903,17 @@ function selectDrumPattern(
       const tags = (pattern as any).tags as string[] | undefined;
       return tags ? requiredTags.every((tag) => tags.includes(tag)) : false;
     });
+    recordCandidatePool(diagnostics, "drums", "required-tags", requiredTags, candidates.length, filtered.length, filtered.length || candidates.length, filtered.length === 0, filtered.length === 0 ? "empty_match" : undefined);
     if (filtered.length) {
       candidates = filtered;
     }
   }
   if (!candidates.length) {
+    recordCandidatePool(diagnostics, "drums", "type-fallback", [isFill ? "fill" : "beat"], drumList.length, drumList.filter((pattern) => (isFill ? pattern.type === "fill" : pattern.type === "beat")).length, drumList.filter((pattern) => (isFill ? pattern.type === "fill" : pattern.type === "beat")).length, true, "empty_pool");
     candidates = drumList.filter((pattern) => (isFill ? pattern.type === "fill" : pattern.type === "beat"));
   }
   if (!candidates.length) {
+    recordCandidatePool(diagnostics, "drums", "global-fallback", [], 0, 0, drumList.length, true, "empty_pool");
     candidates = drumList;
   }
   const prefersBreakbeatFocus =
@@ -2617,37 +2932,45 @@ function selectDrumPattern(
 
   if (!isFill) {
     if (styleIntent.loopCentric) {
-      candidates = preferTagPresence(candidates, ["loop_safe"]);
+      candidates = preferTagPresenceWithDiagnostics(candidates, ["loop_safe"], diagnostics, "drums", "loopCentric");
     }
     if (styleIntent.syncopationBias) {
       const syncTags = prefersBreakbeatFocus ? ["breakbeat", "syncopation", "grid16"] : ["syncopation"];
-      candidates = preferTagPresence(candidates, syncTags);
+      candidates = preferTagPresenceWithDiagnostics(candidates, syncTags, diagnostics, "drums", "syncopationBias");
     }
     if (styleIntent.textureFocus) {
-      candidates = preferTagPresence(candidates, ["texture_loop", "straight", "grid16"]);
+      candidates = preferTagPresenceWithDiagnostics(candidates, ["texture_loop", "straight", "grid16"], diagnostics, "drums", "textureFocus");
     }
     if (styleIntent.percussiveLayering) {
       const percussiveTags = prefersBreakbeatFocus
         ? ["breakbeat", "percussive_layer", "grid16"]
         : ["percussive_layer", "four_on_floor"];
-      candidates = preferTagPresence(candidates, percussiveTags);
+      candidates = preferTagPresenceWithDiagnostics(candidates, percussiveTags, diagnostics, "drums", "percussiveLayering");
     }
     if (prefersLofiGroove) {
-      candidates = preferTagPresence(candidates, ["lofi", "rest_heavy", "swing_hint"], 0.3);
+      candidates = preferTagPresenceWithDiagnostics(candidates, ["lofi", "rest_heavy", "swing_hint"], diagnostics, "drums", "lofiGroove", 0.3);
     }
     if (prefersRetroPulse) {
-      candidates = preferTagPresence(candidates, ["loop_safe", "grid16", "texture_loop"], 0.25);
+      candidates = preferTagPresenceWithDiagnostics(candidates, ["loop_safe", "grid16", "texture_loop"], diagnostics, "drums", "retroPulse", 0.25);
     }
     if (arrangementRule?.preferBeatTags?.length) {
-      candidates = preferTagPresence(candidates, arrangementRule.preferBeatTags, 0.25);
+      candidates = preferTagPresenceWithDiagnostics(candidates, arrangementRule.preferBeatTags, diagnostics, "drums", "arrangementBeatTags", 0.25);
+    }
+    const presetBeatTags = presetTags(stylePreset, "drumsBeat");
+    if (presetBeatTags.length) {
+      candidates = preferTagPresenceWithDiagnostics(candidates, presetBeatTags, diagnostics, "drums", "presetBeatTags", 0.25);
     }
   } else {
     if (arrangementRule?.preferFillTags?.length) {
-      candidates = preferTagPresence(candidates, arrangementRule.preferFillTags, 0.25);
+      candidates = preferTagPresenceWithDiagnostics(candidates, arrangementRule.preferFillTags, diagnostics, "drums", "arrangementFillTags", 0.25);
+    }
+    const presetFillTags = presetTags(stylePreset, "drumsFill");
+    if (presetFillTags.length) {
+      candidates = preferTagPresenceWithDiagnostics(candidates, presetFillTags, diagnostics, "drums", "presetFillTags", 0.25);
     }
   }
   if (prefersBreakbeatFocus) {
-    candidates = preferTagPresence(candidates, ["breakbeat", "grid16"], 0.2);
+    candidates = preferTagPresenceWithDiagnostics(candidates, ["breakbeat", "grid16"], diagnostics, "drums", "breakbeatFocus", 0.2);
   }
   if (arrangementRule?.avoidTags?.length) {
     const filtered = candidates.filter((pattern) => {
@@ -2655,6 +2978,7 @@ function selectDrumPattern(
       if (!tags) return true;
       return !arrangementRule.avoidTags!.some((tag) => tags.includes(tag));
     });
+    recordCandidatePool(diagnostics, "drums", "avoid-tags", arrangementRule.avoidTags, candidates.length, filtered.length, filtered.length || candidates.length, filtered.length === 0, filtered.length === 0 ? "empty_match" : undefined);
     if (filtered.length) {
       candidates = filtered;
     }
@@ -2765,7 +3089,9 @@ function generateBassTrackForVoice(
   octaveOffset: number,
   seedOffset: number,
   options: PipelineCompositionOptions,
-  phase1: StructurePlanResult
+  phase1: StructurePlanResult,
+  usage?: Record<string, number>,
+  diagnostics?: MotifSelectionDiagnostics
 ): AbstractNote[] {
   const bassNotes: AbstractNote[] = [];
   const styleIntent = phase1.styleIntent;
@@ -2796,10 +3122,15 @@ function generateBassTrackForVoice(
         usedBassPatterns,
         bassPatternCache,
         styleIntent,
+        options.stylePreset,
         role === "bassAlt"
           ? { enforceDroneStatic: false, preferredTags: ["drone", "accent"] }
-          : undefined
+          : undefined,
+        diagnostics
       );
+      if (usage) {
+        usage[bassPattern.id] = (usage[bassPattern.id] ?? 0) + 1;
+      }
 
       // Build bass notes with adjusted base MIDI
       const chord = resolveChordAtBeat(phase1, measureStartBeat);

@@ -131,12 +131,13 @@ export interface PipelineCompositionOptions {
   styleOverrides?: Partial<StyleIntent>;
   
   /**
-   * Controls section repeatability vs variation balance
-   * 0.0 = Always use variations (maximum diversity)
+   * Controls whether reprised hooks (e.g. A2) repeat exactly or use a varied pitch motif.
+   * 0.0 = Maximum variation (pitch motif always replaced on reprise)
    * 1.0 = Always repeat exactly (maximum coherence)
-   * Default: 0.3 (slight bias toward variation)
-   * 
-   * This affects whether A2 uses the same motifs as A1 or variations
+   * Default: 0.3 — exact repetition (hook variation only fires when value < 0.25)
+   *
+   * When variation fires, only the pitch-degree motif changes; rhythm and
+   * note-duration motifs are preserved from the original hook.
    */
   sectionRepeatBias?: number;
 }
@@ -248,6 +249,7 @@ export interface SectionMotifPlan {
   primaryMelody: string;
   primaryMelodyRhythm: string;
   reprisesHook: boolean;
+  hookReuse: "none" | "exact" | "varied";
 }
 
 export interface TechniqueStrategy {
@@ -281,6 +283,53 @@ export interface PipelineResult {
   };
 }
 
+export type MotifSelectionDiagnosticCategory =
+  | "rhythm"
+  | "melody"
+  | "melodyRhythm"
+  | "bass"
+  | "drums"
+  | "transitions";
+
+export interface MotifCandidatePoolDiagnostic {
+  category: MotifSelectionDiagnosticCategory;
+  stage: string;
+  requestedTags: string[];
+  beforeCount: number;
+  matchedCount: number;
+  afterCount: number;
+  fallback: boolean;
+  fallbackReason?: "empty_match" | "min_ratio" | "empty_pool";
+}
+
+export interface MotifSelectionDiagnostics {
+  candidatePools: MotifCandidatePoolDiagnostic[];
+  fallbackCount: number;
+  hookReuse: {
+    exact: number;
+    varied: number;
+  };
+}
+
+export interface LoopIntegrityDiagnostics {
+  windows: Array<{
+    seconds: number;
+    headEvents: number;
+    tailEvents: number;
+    noiseTailEvents: number;
+  }>;
+  unmatchedNoteOnCount: number;
+  unmatchedNoteOffCount: number;
+  openNotes: Array<{
+    channel: Channel;
+    time: number;
+    midi?: number;
+  }>;
+  lateReleaseCount: number;
+  noiseLateReleaseCount: number;
+  maxReleaseOverhangSeconds: number;
+}
+
 export interface Diagnostics {
   voiceAllocation: Array<{
     time: number;
@@ -291,6 +340,7 @@ export interface Diagnostics {
     head: Event[];
     tail: Event[];
   };
+  loopIntegrity: LoopIntegrityDiagnostics;
   motifUsage: {
     rhythm: Record<string, number>;
     melody: Record<string, number>;
@@ -300,6 +350,7 @@ export interface Diagnostics {
     transitions: Record<string, number>;
   };
   sectionMotifPlan: SectionMotifPlan[];
+  motifSelection: MotifSelectionDiagnostics;
 }
 
 export interface EventRealizationResult {
@@ -335,6 +386,7 @@ export interface MotifSelectionResult {
     transitions: Record<string, number>;
   };
   sectionMotifPlan: SectionMotifPlan[];
+  motifSelection: MotifSelectionDiagnostics;
 }
 
 export interface MelodyRhythmStep {
@@ -425,5 +477,15 @@ export interface TechniqueLibrary {
     param: string;
     measureBoundaryValue: number;
     defaultValue: number;
+  }>;
+  pitchBendOrnaments?: Array<{
+    id: string;
+    channels: Channel[];
+    minDurationBeats: number;
+    intervalSemitones: number;
+    returnAfterBeats: number;
+    rampDurationSeconds: number;
+    everyNthNote: number;
+    styleFlag?: keyof StyleIntent;
   }>;
 }

@@ -44,6 +44,21 @@ async function run() {
     `Found ${simultaneousEvents.length} simultaneous noise events`
   );
 
+  assert.strictEqual(
+    result.diagnostics.loopIntegrity.unmatchedNoteOnCount,
+    0,
+    "Loop integrity should not report dangling noteOn events"
+  );
+  assert.strictEqual(
+    result.diagnostics.loopIntegrity.unmatchedNoteOffCount,
+    0,
+    "Loop integrity should not report unmatched noteOff events"
+  );
+  assert.ok(
+    result.diagnostics.loopIntegrity.windows.some((window) => window.seconds === 0.5),
+    "Loop integrity should include a 0.5s tail window"
+  );
+
   console.log(`Noise collision check passed: ${noiseEvents.length} events, no overlaps (min gap=${(NOISE_STACK_OFFSET_SECONDS * 1000).toFixed(2)}ms)`);
 }
 

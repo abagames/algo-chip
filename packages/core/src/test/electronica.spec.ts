@@ -5,9 +5,16 @@ import type { Event } from "../types.js";
 import { buildTwoAxisOptions, isNoteOnEvent, isSetParamEvent } from "./test-utils.js";
 import rhythmMotifsJson from "../../motifs/rhythm.json" with { type: "json" };
 import drumMotifsJson from "../../motifs/drums.json" with { type: "json" };
+import bassPatternsJson from "../../motifs/bass-patterns.json" with { type: "json" };
 
 const rhythmMeta = new Map(
   (rhythmMotifsJson as any as Array<{ id: string; tags?: string[] }>).map((motif) => [motif.id, motif.tags ?? []])
+);
+const drumMeta = new Map(
+  (drumMotifsJson as any as Array<{ id: string; tags?: string[] }>).map((motif) => [motif.id, motif.tags ?? []])
+);
+const bassMeta = new Map(
+  ((bassPatternsJson as any).patterns as Array<{ id: string; tags?: string[] }>).map((motif) => [motif.id, motif.tags ?? []])
 );
 
 function getChannelsForRoles(result: ReturnType<typeof runPipeline>, roles: string[]): string[] {
@@ -21,7 +28,92 @@ function getChannelsForRoles(result: ReturnType<typeof runPipeline>, roles: stri
 }
 
 describe("Electronica Style Validation", () => {
+  describe("Preset Motif Targeting", () => {
+    it("should route preset-specific bass and drum tags across seed sweeps", () => {
+      const cases = [
+        {
+          preset: "minimal-techno" as const,
+          expectedTags: ["four_on_floor", "percussive_layer", "static"]
+        },
+        {
+          preset: "retro-loopwave" as const,
+          expectedTags: ["retro", "texture_loop", "loop_safe"]
+        },
+        {
+          preset: "breakbeat-jungle" as const,
+          expectedTags: ["breakbeat", "syncopation", "grid16"]
+        },
+        {
+          preset: "lofi-chillhop" as const,
+          expectedTags: ["lofi", "rest_heavy", "swing_hint"]
+        }
+      ];
+
+      for (const testCase of cases) {
+        const observedTags = new Set<string>();
+        for (const seed of [101, 202, 303, 54321]) {
+          const result = runPipeline(buildTwoAxisOptions({
+            lengthInMeasures: 16,
+            seed,
+            preset: testCase.preset
+          }));
+
+          for (const id of Object.keys(result.diagnostics.motifUsage.bass)) {
+            for (const tag of bassMeta.get(id) ?? []) {
+              observedTags.add(tag);
+            }
+          }
+          for (const id of Object.keys(result.diagnostics.motifUsage.drums)) {
+            for (const tag of drumMeta.get(id) ?? []) {
+              observedTags.add(tag);
+            }
+          }
+
+          const bassChannels = new Set(
+            result.meta.voiceArrangement.voices
+              .filter((voice) => voice.role === "bass" || voice.role === "bassAlt")
+              .map((voice) => voice.channel)
+          );
+          const bassVelocities = result.events
+            .filter(isNoteOnEvent)
+            .filter((event: Event<"noteOn">) => bassChannels.has(event.channel))
+            .map((event: Event<"noteOn">) => event.data.velocity)
+            .filter((value): value is number => typeof value === "number");
+          if (bassVelocities.length) {
+            assert.ok(
+              Math.max(...bassVelocities) <= 100,
+              `${testCase.preset} bass velocity should remain capped`
+            );
+          }
+        }
+
+        assert.ok(
+          testCase.expectedTags.some((tag) => observedTags.has(tag)),
+          `${testCase.preset} should reach at least one preset tag; observed=${Array.from(observedTags).join(",")}`
+        );
+      }
+    });
+  });
+
   describe("Minimal Techno", () => {
+    it("should record preset tag filtering diagnostics", () => {
+      const result = runPipeline(buildTwoAxisOptions({
+        lengthInMeasures: 16,
+        seed: 24680,
+        preset: "minimal-techno"
+      }));
+
+      const presetStages = result.diagnostics.motifSelection.candidatePools.filter(
+        (entry) => entry.stage === "preset" || entry.stage.startsWith("preset")
+      );
+
+      assert.ok(presetStages.length > 0, "Preset tag filtering diagnostics should be recorded");
+      assert.ok(
+        presetStages.some((entry) => entry.category === "bass" || entry.category === "drums"),
+        "Preset diagnostics should affect bass or drums"
+      );
+    });
+
     it("should use predominantly four_on_floor bass patterns", () => {
       const options = buildTwoAxisOptions({
         lengthInMeasures: 16,
@@ -226,6 +318,28 @@ describe("Electronica Style Validation", () => {
       assert.ok(
         triangleGain.some((e) => (e.data.value ?? 0) >= 0.6),
         "Progressive house should boost pad gain via progressive automation"
+      );
+    });
+
+    it("should add supported pitch bend ornaments for moving leads", () => {
+      const options = buildTwoAxisOptions({
+        lengthInMeasures: 24,
+        seed: 24680,
+        preset: "progressive-house"
+      });
+
+      const result = runPipeline(options);
+      const pitchBends: Array<Event<"setParam">> = result.events
+        .filter(isSetParamEvent)
+        .filter((e): e is Event<"setParam"> =>
+          (e.channel === "square1" || e.channel === "square2") &&
+          e.data.param === "pitchBend"
+        );
+
+      assert.ok(pitchBends.length > 0, "Progressive house should emit pitch bend ornaments");
+      assert.ok(
+        pitchBends.every((e) => typeof e.data.value === "number" && typeof e.data.rampDuration === "number"),
+        "Pitch bend ornaments should use numeric value and rampDuration"
       );
     });
   });

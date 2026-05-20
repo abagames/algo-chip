@@ -52,6 +52,10 @@ async function run() {
       reprisesHook.every((plan) => plan.reprisesHook),
       "Repeated A sections should mark hook reprise"
     );
+    assert(
+      reprisesHook.every((plan) => plan.hookReuse === "exact"),
+      "Repeated A sections should report exact hook reuse"
+    );
     const melodyRhythmSignature = new Set(aSections.map((plan) => plan.primaryMelodyRhythm));
     assert.strictEqual(
       melodyRhythmSignature.size,
@@ -63,6 +67,7 @@ async function run() {
   const melodyUsageValues = Object.values(result.diagnostics.motifUsage.melody);
   const totalMelodyMotifs = melodyUsageValues.reduce((sum, value) => sum + value, 0);
   const maxMelodyUsage = melodyUsageValues.length ? Math.max(...melodyUsageValues) : 0;
+  assert(totalMelodyMotifs > 0, "Melody motif usage should be recorded");
   if (totalMelodyMotifs > 0 && maxMelodyUsage > 0) {
     const recurrence = maxMelodyUsage / totalMelodyMotifs;
     assert(
@@ -76,6 +81,38 @@ async function run() {
     melodyRhythmUsageValues.some((count) => count >= 2),
     "Melody rhythm motifs should show repeated usage"
   );
+  assert(
+    Object.values(result.diagnostics.motifUsage.bass).some((count) => count > 0),
+    "Bass motif usage should be recorded"
+  );
+
+  const motifSelectionDiagnostics = result.diagnostics.motifSelection;
+  assert(
+    motifSelectionDiagnostics.candidatePools.length > 0,
+    "Motif candidate pool diagnostics should be captured"
+  );
+  assert(
+    motifSelectionDiagnostics.candidatePools.some((entry) => entry.category === "melodyRhythm"),
+    "Melody rhythm candidate diagnostics should be present"
+  );
+  assert(
+    motifSelectionDiagnostics.fallbackCount >= 0,
+    "Motif fallback count should be numeric"
+  );
+  assert(
+    motifSelectionDiagnostics.hookReuse.exact >= 0 && motifSelectionDiagnostics.hookReuse.varied >= 0,
+    "Hook reuse diagnostics should be numeric"
+  );
+
+  const loopIntegrity = result.diagnostics.loopIntegrity;
+  assert.deepEqual(
+    loopIntegrity.windows.map((window) => window.seconds),
+    [0.1, 0.25, 0.5],
+    "Loop integrity should inspect short tail/head windows"
+  );
+  assert.strictEqual(loopIntegrity.unmatchedNoteOnCount, 0, "Loop should not end with dangling noteOn events");
+  assert.strictEqual(loopIntegrity.unmatchedNoteOffCount, 0, "Loop should not contain unmatched noteOff events");
+  assert(loopIntegrity.lateReleaseCount >= 0, "Loop late release count should be numeric");
 
   // Triangle range check for bassLed arrangement (chiptune hardware constraint)
   const triangleRangeResult = await generateComposition(

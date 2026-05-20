@@ -161,13 +161,13 @@ Score generation is performed by sequentially executing the following 5 independ
 - **Processing**:
   1. **Melody Track Generation**:
       a. Select melody note-duration motifs (`melody-rhythm.json`) in phrase units (1-2 measures). Consider functional tags (`start`/`middle`/`end`) and mood-specific tags (`drive`, `legato`, `rest_heavy`, `staccato`, etc.), ensuring ending integrity with `loop_safe`/`cadence` tags. Note-duration motifs include rest information and are validated to total exactly 4 or 8 beats per phrase.
-      b. Per-measure rhythm motifs (`rhythm.json`) continue to be selected for accompaniment/accent purposes, cached per template/section. Selected independently from melody note-duration motifs, phrases that first appear in A-section are saved as hooks and reused with exactly the same rhythm/note-duration combination when reappearing.
+      b. Per-measure rhythm motifs (`rhythm.json`) continue to be selected for accompaniment/accent purposes, cached per template/section. Selected independently from melody note-duration motifs, phrases that first appear in A-section are saved as hooks and reused when reappearing. By default (`sectionRepeatBias` ≥ 0.25) the exact same rhythm, melody, and note-duration motifs are reused. When `sectionRepeatBias` < 0.25 a varied hook may be chosen: the rhythm and note-duration motifs are kept but the pitch-degree motif (`melody.json`) is replaced with a close alternative, producing a recognisably similar but not identical reprise.
       c. Map scale degree motifs (`melody.json`) sequentially to the note schedule expanded from note-duration motifs. Don't advance degree on rest steps; only advance when generating notes to create breathing space.
       d. Retro game BGM motif design guidelines:
          - 16th-note based + rests: Always include rests (or long tones of 2+ beats) within phrases to avoid mechanical repetition.
          - Syncopation: Manage upbeat anticipations and tied notes across 2 beats with `syncopated` tag, prioritizing when mood is `tense`/`upbeat`.
          - Repetition and variation: Reproduce `[A][A][A][A']` 2-beat motif patterns at note-duration level, applying variations like `[A' B][A'' B']` in B-section for call-and-response structure.
-         - Tag-driven cache: Save motif IDs selected by section template/measure function combination to template cache, reusing identical note-duration/rhythm when same template reappears (ensuring A1 and A2 sound identical).
+         - Tag-driven cache: Save motif IDs selected by section template/measure function combination to template cache. When `sectionRepeatBias` ≥ 0.25 (the default), A1 and A2 sound identical. When `sectionRepeatBias` < 0.25, A2 may use a varied pitch motif while preserving the rhythm and note-duration pattern, producing coherent but non-identical repetitions. The `hookReuse` field in `diagnostics.sectionMotifPlan` records `"exact"`, `"varied"`, or `"none"` per section.
 
   2. **Bass Track Generation**:
       a. Carve out 8th notes based on chord progression roots, prioritizing root holding in `loop_safe` sections and 5th→root resolution in `cadence` sections.
@@ -252,11 +252,25 @@ Score generation is performed by sequentially executing the following 5 independ
   2. Decompose each note into `noteOn` and `noteOff` events.
   3. Based on BPM, **accurately calculate** all event times from measures/beats to seconds, setting `time` property.
   4. Flatten all events into single array, outputting as final `eventList`.
-  5. For loop integrity check, include event lists of ending 100ms and beginning 100ms in diagnostic info for reference in subsequent verification loops.
+  5. For loop integrity checks, include beginning/ending event window counts for 0.1/0.25/0.5 seconds plus unmatched note and release-tail counts in diagnostic info for reference in subsequent verification loops.
 
 ---
 
 This pipeline processing allows each phase to focus on its own responsibility. Using high-quality materials, ensuring structural and musical correctness, algorithmically reproducing constraints unique to classic chiptune sound sources and creative techniques that exploit them, consistent high-quality and diverse automatic BGM generation is realized.
+
+#### **Appendix: Motif Editing Guide**
+
+When adding motifs, keep the JSON library deterministic, tag-searchable, and safe for 4-channel retro playback. A motif should extend a clear musical role rather than duplicate an existing pattern with only cosmetic changes.
+
+- **General Schema Discipline**: Preserve existing field names, ID prefixes, and tag vocabulary in each file. Prefer adding one or two specific tags over broad labels, and do not introduce a new tag family unless selection logic or diagnostics will use it.
+- **Melody Note-Duration Motifs (`melody-rhythm.json`)**: Each pattern must total exactly its declared `length` in beats, including rests. Use rests or long tones to create breathing space; avoid uninterrupted 16th-note streams unless the motif is explicitly a texture pattern. Use `pickup` for anticipatory phrase starts, `cadence` for phrase endings that resolve, and `loop_safe` for endings that can wrap to the next loop without a dangling long tone.
+- **Melody Degree Motifs (`melody.json`)**: Keep intervals singable and reusable across keys. Prefer mostly stepwise motion with one or two intentional leaps, and link close variants through `variations` instead of copying near-identical entries. Cadence motifs should land on stable degrees, while tension motifs may delay resolution only if paired with a phrase-ending rhythm.
+- **Bass Motifs (`bass-patterns.json`)**: Keep low-register motion sparse enough to avoid muddy loops. Battle and breakbeat patterns may use octave or approach motion, but `loop_safe` bass should end on or clearly approach the next root. Avoid sustained low notes with long release at the final step.
+- **Drum and Transition Motifs (`drums.json`, `transitions.json`)**: Respect the monophonic `noise` channel. Short hats, kicks, snares, toms, and FX should not require simultaneous noise hits at the same 16th step. Use `fill`, `build`, `break`, `loop_out`, and preset-specific tags to describe placement rather than encoding placement in IDs only.
+- **Technique Motifs (`techniques.json`)**: Emit only parameters supported by the synthesizer/worklet. New ornaments should have a narrow trigger condition (`channels`, duration threshold, `styleFlag`, or cadence/boundary use) so decoration does not become dense across all notes.
+- **Variation Links**: Use `variations` for related alternatives that can replace each other in repeated sections. Variants should preserve phrase length and broad function while changing one musical dimension: rhythm, contour, register, or density.
+- **Patterns to Avoid**: Avoid motifs that rely on more simultaneous voices than available hardware channels, long final releases that overlap loop head, tags that contradict their behavior, very high square-wave lead jumps repeated every beat, and duplicate IDs or near-duplicate musical content.
+- **Required Verification**: After motif edits, run `npm test`, `npm run build:core`, `npm run report:seed-sweep -- --seeds=101,202,303`, and `git diff --check`. For melody-rhythm changes, confirm the duration sanity test covers every new motif. For drums/noise changes, confirm `noise-collision` remains clean. For style-specific motifs, inspect `diagnostics.motifSelection.candidatePools` and `motifUsage` in the seed sweep to confirm the new tags are reachable without excessive fallback.
 
 #### **Appendix: Post-Generation Verification Loop and Checkpoints**
 

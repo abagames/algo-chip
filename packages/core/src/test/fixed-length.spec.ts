@@ -1,6 +1,9 @@
 import { describe, it } from "node:test";
 import assert from "node:assert";
 import { runPipeline } from "../pipeline.js";
+import { planStructure } from "../phase/structure-planning.js";
+import { selectMotifs } from "../phase/motif-selection.js";
+import type { PipelineCompositionOptions } from "../types.js";
 import { buildTwoAxisOptions as buildOptions } from "./test-utils.js";
 
 describe("Fixed Length Generation", () => {
@@ -166,8 +169,81 @@ describe("Fixed Length Generation", () => {
             true,
             "Repeated A sections should mark hook reprise"
           );
+          assert.strictEqual(
+            section.hookReuse,
+            "exact",
+            "Repeated A sections should report exact hook reuse"
+          );
         });
       }
+    });
+
+    it("should vary reprised hooks when sectionRepeatBias is low", () => {
+      const baseOptions: PipelineCompositionOptions = {
+        mood: "tense",
+        tempo: "fast",
+        lengthInMeasures: 32,
+        seed: 12345,
+        styleOverrides: {
+          textureFocus: true,
+          loopCentric: false,
+          gradualBuild: true,
+          harmonicStatic: false,
+          percussiveLayering: true,
+          breakInsertion: true,
+          filterMotion: true,
+          syncopationBias: true,
+          atmosPad: false
+        }
+      };
+
+      const exactOptions: PipelineCompositionOptions = {
+        ...baseOptions,
+        sectionRepeatBias: 1
+      };
+      const variedOptions: PipelineCompositionOptions = {
+        ...baseOptions,
+        sectionRepeatBias: 0
+      };
+
+      const exactPlan = planStructure(exactOptions);
+      const variedPlan = planStructure(variedOptions);
+      const exactMotifs = selectMotifs(exactOptions, exactPlan);
+      const variedMotifs = selectMotifs(variedOptions, variedPlan);
+
+      assert.strictEqual(
+        exactMotifs.motifSelection.hookReuse.exact,
+        1,
+        "High repeat bias should keep reprised A hook exact"
+      );
+      assert.strictEqual(
+        exactMotifs.motifSelection.hookReuse.varied,
+        0,
+        "High repeat bias should not vary reprised hooks"
+      );
+      assert.strictEqual(
+        variedMotifs.motifSelection.hookReuse.exact,
+        0,
+        "Low repeat bias should not keep reprised A hook exact for this seed"
+      );
+      assert.strictEqual(
+        variedMotifs.motifSelection.hookReuse.varied,
+        1,
+        "Low repeat bias should report one varied reprised hook"
+      );
+
+      const variedASections = variedMotifs.sectionMotifPlan.filter((section) => section.templateId === "A");
+      assert.ok(variedASections.length >= 2, "Should have reprised A sections");
+      assert.strictEqual(
+        variedASections[1].primaryRhythm,
+        variedASections[0].primaryRhythm,
+        "Low-bias hook variation should keep rhythm stable"
+      );
+      assert.notStrictEqual(
+        variedASections[1].primaryMelody,
+        variedASections[0].primaryMelody,
+        "Low-bias hook variation should change the pitch motif"
+      );
     });
   });
 

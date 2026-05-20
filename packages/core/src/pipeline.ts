@@ -54,7 +54,8 @@ export function runPipeline(options: CompositionOptions): PipelineResult {
     techniquesApplied.events,
     eventRealization.diagnostics,
     motifSelection.motifUsage,
-    motifSelection.sectionMotifPlan
+    motifSelection.sectionMotifPlan,
+    motifSelection.motifSelection
   );
 
   // Loop info is calculated here (not in Phase 5) because it's metadata about
