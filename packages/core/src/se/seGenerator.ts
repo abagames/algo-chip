@@ -18,7 +18,7 @@
  *
  * ## SE Types and Template Architecture
  *
- * 10 SE types with 2 template variations each (20 templates total):
+ * 10 SE types with 4 template variations each (40 templates total):
  * - **jump**: Rising pitch sweep (exponential curve)
  * - **coin**: 2-3 note ascending arpeggio
  * - **explosion**: Noise burst + descending bass sweep
@@ -60,7 +60,7 @@
 import type { Event, Channel } from "../types.js";
 import type { SEType, SETemplate, SEGenerationOptions, SEGenerationResult } from "./seTypes.js";
 import { loadSETemplates } from "./seTemplates.js";
-import { midiToFrequency, frequencyToSemitones } from "../musicUtils.js";
+import { midiToFrequency, frequencyToSemitones, quantizeMidiToChord } from "../musicUtils.js";
 
 /**
  * Seeded random number generator using Linear Congruential Generator (LCG).
@@ -111,10 +111,17 @@ export class SEGenerator {
     const template = this.selectTemplate(options, rng);
 
     // 2. パラメータ具体化
-    const params = this.concretizeParameters(template, rng, options.baseFrequency);
+    const params = this.concretizeParameters(
+      template,
+      rng,
+      options.baseFrequency,
+      options.quantizeToChord,
+      options.velocityScale ?? 1
+    );
 
     // 3. イベントリスト生成
     const events = this.generateEvents(template, params, options.startTime ?? 0.0);
+    const duration = this.calculateEventDuration(events, options.startTime ?? 0.0, params.duration);
 
     const replayOptions: SEGenerationOptions = {
       type: options.type,
@@ -127,6 +134,15 @@ export class SEGenerator {
     if (options.baseFrequency !== undefined) {
       replayOptions.baseFrequency = options.baseFrequency;
     }
+    if (options.quantizeToChord !== undefined) {
+      replayOptions.quantizeToChord = options.quantizeToChord;
+    }
+    if (options.variantIntent !== undefined) {
+      replayOptions.variantIntent = options.variantIntent;
+    }
+    if (options.velocityScale !== undefined) {
+      replayOptions.velocityScale = options.velocityScale;
+    }
 
     return {
       events,
@@ -134,7 +150,7 @@ export class SEGenerator {
         type: options.type,
         templateId: template.id,
         seed,
-        duration: params.duration,
+        duration,
         channels: template.channels,
         replayOptions
       }
@@ -150,18 +166,33 @@ export class SEGenerator {
     }
 
     // type に合致するテンプレートからランダム選択
-    const candidates = this.templates.filter(t => t.type === options.type);
+    let candidates = this.templates.filter(t => t.type === options.type);
     if (candidates.length === 0) {
       throw new Error(`No templates found for type: ${options.type}`);
     }
-    return candidates[Math.floor(rng() * candidates.length)];
+
+    if (options.variantIntent) {
+      const taggedCandidates = candidates.filter(t => t.tags?.includes(options.variantIntent!));
+      if (taggedCandidates.length > 0) {
+        candidates = taggedCandidates;
+      }
+    }
+
+    return this.weightedTemplateChoice(candidates, rng);
   }
 
-  private concretizeParameters(template: SETemplate, rng: () => number, baseFrequency?: number) {
+  private concretizeParameters(
+    template: SETemplate,
+    rng: () => number,
+    baseFrequency?: number,
+    quantizeToChord?: string,
+    velocityScale = 1
+  ) {
     const [minDur, maxDur] = template.durationRange;
-    const duration = minDur + rng() * (maxDur - minDur);
+    const baseDuration = minDur + rng() * (maxDur - minDur);
 
     const channelParams: Record<Channel, any> = {} as any;
+    let maxStartOffset = 0;
 
     // Calculate pitch shift if baseFrequency is provided
     // Pattern A: Shift all pitches to align the reference pitch with baseFrequency
@@ -179,8 +210,12 @@ export class SEGenerator {
           ? [88, 118]
           : [96, 122];
       const sampledVelocity = Math.round(
-        Math.max(1, Math.min(127, this.sampleFloatRange(baseVelocityRange, rng)))
+        Math.max(1, Math.min(127, this.sampleFloatRange(baseVelocityRange, rng) * velocityScale))
       );
+      const startOffset = tplParams.startOffsetRange
+        ? this.sampleFloatRange(tplParams.startOffsetRange, rng)
+        : 0;
+      maxStartOffset = Math.max(maxStartOffset, startOffset);
 
       // Apply pitch shift to sampled pitches
       const sampledPitchStart = tplParams.pitchStart
@@ -192,10 +227,10 @@ export class SEGenerator {
 
       channelParams[ch] = {
         pitchStart: sampledPitchStart !== undefined
-          ? this.clampMidi(sampledPitchStart + pitchShift)
+          ? this.resolvePitch(sampledPitchStart, pitchShift, quantizeToChord)
           : undefined,
         pitchEnd: sampledPitchEnd !== undefined
-          ? this.clampMidi(sampledPitchEnd + pitchShift)
+          ? this.resolvePitch(sampledPitchEnd, pitchShift, quantizeToChord)
           : undefined,
         dutyCycle: tplParams.dutyCycleRange
           ? this.sampleFloatRange([tplParams.dutyCycleRange.min, tplParams.dutyCycleRange.max], rng)
@@ -205,6 +240,7 @@ export class SEGenerator {
         noiseMode: tplParams.noiseMode,
         envelope: tplParams.envelope,
         velocity: sampledVelocity,
+        startOffset,
         releaseSeconds: tplParams.releaseRange
           ? this.sampleFloatRange(tplParams.releaseRange, rng)
           : undefined
@@ -227,7 +263,7 @@ export class SEGenerator {
       }
     }
 
-    return { duration, channelParams };
+    return { duration: baseDuration + maxStartOffset, baseDuration, channelParams };
   }
 
   private samplePitchRange(range: { min: number; max: number }, rng: () => number): number {
@@ -267,6 +303,27 @@ export class SEGenerator {
     return options[options.length - 1];
   }
 
+  private weightedTemplateChoice(templates: SETemplate[], rng: () => number): SETemplate {
+    const totalWeight = templates.reduce((sum, template) => sum + (template.weight ?? 1), 0);
+    let random = rng() * totalWeight;
+
+    for (const template of templates) {
+      const weight = template.weight ?? 1;
+      if (random < weight) return template;
+      random -= weight;
+    }
+
+    return templates[templates.length - 1];
+  }
+
+  private calculateEventDuration(events: Event[], startTime: number, fallbackDuration: number): number {
+    if (events.length === 0) {
+      return fallbackDuration;
+    }
+    const lastEventTime = events.reduce((maxTime, event) => Math.max(maxTime, event.time), startTime);
+    return Math.max(0, lastEventTime - startTime);
+  }
+
   private generateEvents(
     template: SETemplate,
     params: any,
@@ -281,7 +338,7 @@ export class SEGenerator {
         template,
         chParams,
         params,
-        startTime
+        startTime + (chParams.startOffset ?? 0)
       );
       events.push(...channelEvents);
     }
@@ -344,7 +401,7 @@ export class SEGenerator {
     }
     // 単純なノート
     else if (chParams.pitchStart !== undefined) {
-      events.push(...this.generateSimpleNote(channel, chParams, globalParams.duration, startTime));
+      events.push(...this.generateSimpleNote(channel, chParams, globalParams.baseDuration, startTime));
     }
 
     return events;
@@ -368,7 +425,7 @@ export class SEGenerator {
     } else if (template.pitchSweep?.enabled) {
       events.push(...this.generatePitchSweep(channel, template, chParams, globalParams, startTime));
     } else if (chParams.pitchStart !== undefined) {
-      events.push(...this.generateSimpleNote(channel, chParams, globalParams.duration, startTime));
+      events.push(...this.generateSimpleNote(channel, chParams, globalParams.baseDuration, startTime));
     }
 
     return events;
@@ -397,7 +454,7 @@ export class SEGenerator {
     }
 
     const velocity = chParams.velocity ?? 110;
-    const releaseSeconds = chParams.releaseSeconds ?? globalParams.duration * 0.3;
+    const releaseSeconds = chParams.releaseSeconds ?? globalParams.baseDuration * 0.3;
     const noiseData: any = { velocity };
 
     // noiseMode を設定
@@ -405,13 +462,10 @@ export class SEGenerator {
       noiseData.noiseMode = chParams.noiseMode;
     }
 
-    // エンベロープが percussive の場合、duration に基づいて decay/release を設定
-    if (chParams.envelope === "percussive") {
-      noiseData.decaySeconds = globalParams.duration * 0.7;
-      noiseData.releaseSeconds = releaseSeconds;
-    } else if (chParams.releaseSeconds) {
-      noiseData.releaseSeconds = releaseSeconds;
-    }
+    Object.assign(
+      noiseData,
+      this.resolveEnvelopeData(chParams, globalParams.baseDuration, releaseSeconds)
+    );
 
     events.push({
       time: startTime,
@@ -421,7 +475,7 @@ export class SEGenerator {
     });
 
     events.push({
-      time: startTime + globalParams.duration,
+      time: startTime + globalParams.baseDuration,
       channel,
       command: "noteOff",
       data: {}
@@ -462,7 +516,7 @@ export class SEGenerator {
         time: currentTime + noteDur,
         channel,
         command: "noteOff",
-        data: {}
+        data: this.resolveNoteOffData(chParams, noteDur)
       });
 
       currentTime += noteDur;
@@ -485,7 +539,7 @@ export class SEGenerator {
 
     if (!template.pitchSweep?.enabled) return events;
 
-    const sweepDuration = chParams.sweepDuration ?? globalParams.duration;
+    const sweepDuration = chParams.sweepDuration ?? globalParams.baseDuration;
     const curve = chParams.sweepCurve ?? template.pitchSweep.curveType ?? "exponential";
     const velocity = chParams.velocity ?? 110;
 
@@ -513,7 +567,7 @@ export class SEGenerator {
       time: startTime + sweepDuration,
       channel,
       command: "noteOff",
-      data: {}
+      data: this.resolveNoteOffData(chParams, sweepDuration)
     });
 
     return events;
@@ -530,7 +584,6 @@ export class SEGenerator {
   ): Event[] {
     const events: Event[] = [];
     const velocity = chParams.velocity ?? 110;
-    const releaseSeconds = chParams.releaseSeconds;
 
     events.push({
       time: startTime,
@@ -543,7 +596,7 @@ export class SEGenerator {
       time: startTime + duration,
       channel,
       command: "noteOff",
-      data: releaseSeconds ? { releaseSeconds } : {}
+      data: this.resolveNoteOffData(chParams, duration)
     });
 
     return events;
@@ -597,5 +650,55 @@ export class SEGenerator {
    */
   private clampMidi(midi: number): number {
     return Math.max(0, Math.min(127, Math.round(midi)));
+  }
+
+  private resolvePitch(midi: number, pitchShift: number, quantizeToChord?: string): number {
+    const shiftedMidi = this.clampMidi(midi + pitchShift);
+    if (!quantizeToChord) {
+      return shiftedMidi;
+    }
+    return this.clampMidi(quantizeMidiToChord(shiftedMidi, quantizeToChord));
+  }
+
+  private resolveNoteOffData(chParams: any, duration: number): { releaseSeconds?: number } {
+    const releaseSeconds = this.resolveReleaseSeconds(chParams, duration);
+    return releaseSeconds ? { releaseSeconds } : {};
+  }
+
+  private resolveEnvelopeData(
+    chParams: any,
+    duration: number,
+    fallbackReleaseSeconds: number
+  ): { decaySeconds?: number; releaseSeconds?: number } {
+    switch (chParams.envelope) {
+      case "percussive":
+        return { decaySeconds: duration * 0.7, releaseSeconds: fallbackReleaseSeconds };
+      case "pluck":
+        return { decaySeconds: Math.min(0.08, duration * 0.45), releaseSeconds: fallbackReleaseSeconds };
+      case "snap":
+        return { decaySeconds: Math.min(0.025, duration * 0.35), releaseSeconds: fallbackReleaseSeconds };
+      case "fade":
+        return { decaySeconds: duration, releaseSeconds: fallbackReleaseSeconds };
+      default:
+        return chParams.releaseSeconds ? { releaseSeconds: fallbackReleaseSeconds } : {};
+    }
+  }
+
+  private resolveReleaseSeconds(chParams: any, duration: number): number | undefined {
+    if (chParams.releaseSeconds) {
+      return chParams.releaseSeconds;
+    }
+    switch (chParams.envelope) {
+      case "pluck":
+        return Math.min(0.045, duration * 0.35);
+      case "snap":
+        return Math.min(0.018, duration * 0.25);
+      case "fade":
+        return Math.min(0.18, duration * 0.6);
+      case "percussive":
+        return Math.min(0.06, duration * 0.3);
+      default:
+        return undefined;
+    }
   }
 }

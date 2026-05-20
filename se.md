@@ -6,7 +6,7 @@ English | [日本語](./se_ja.md)
 
 Sound Effects (SE) are short audio elements corresponding to specific game events such as "jump", "coin collection", and "explosion". This system follows a **motif-based architecture** with the following characteristics:
 
-- **Template-Based Generation**: Select from 20 template variations defined in `packages/core/motifs/se-templates.json` based on SEType
+- **Template-Based Generation**: Select from 40 template variations defined in `packages/core/motifs/se-templates.json` based on SEType
 - **Seed-Driven RNG**: Regenerate identical SE with same seed value. Achieve natural variation through parameter randomization
 - **BGM Integration**: Share `Event[]` type for seamless integration with BGM pipeline
 - **4-Channel Chiptune Sound Source**: Authentic chiptune sound using square1/square2/triangle/noise channels
@@ -20,7 +20,7 @@ Sound Effects (SE) are short audio elements corresponding to specific game event
 ```
 packages/core/
 ├── motifs/
-│   └── se-templates.json           # SE template definitions (20 templates)
+│   └── se-templates.json           # SE template definitions (40 templates)
 └── src/
     ├── se/
     │   ├── seGenerator.ts          # SEGenerator class
@@ -72,6 +72,8 @@ export interface SETemplate {
   id: string;                    // "SE_JUMP_01"
   type: SEType;                  // "jump"
   description: string;           // "Light ascending jump sound"
+  tags?: SETemplateTag[];        // ["bright", "short", "retro"]
+  weight?: number;               // Relative selection weight (default: 1)
   channels: Channel[];           // ["square1"]
   durationRange: [number, number]; // [0.10, 0.15] (seconds)
 
@@ -82,9 +84,10 @@ export interface SETemplate {
       pitchEnd?: PitchRange;
       dutyCycle?: number[];      // Random selection from [0.25, 0.5]
       noiseMode?: "short" | "long"; // noise channel only
-      envelope?: "percussive" | "sustained";
+      envelope?: "percussive" | "sustained" | "pluck" | "snap" | "fade";
       velocityRange?: [number, number];
       releaseRange?: [number, number];
+      startOffsetRange?: [number, number]; // Layer timing offset in seconds
     };
   };
 
@@ -109,6 +112,10 @@ export interface SEGenerationOptions {
   seed?: number;                 // Random if unspecified
   templateId?: string;           // Force specific template selection
   startTime?: number;            // Event time offset (default: 0.0)
+  baseFrequency?: number;        // Optional pitch retargeting in Hz
+  quantizeToChord?: string;      // Snap pitched notes to chord tones, e.g. "C" or "Am"
+  variantIntent?: SETemplateTag; // Prefer templates tagged with this flavor
+  velocityScale?: number;        // Scale generated velocities for mix context
 }
 
 /** SE Generation Result */
@@ -305,7 +312,8 @@ Sample from `packages/core/motifs/se-templates.json`:
 - `pitchStart.min/max` are MIDI note numbers (60 = C4)
 - `durationRange` sampled by seed-driven RNG
 - Each template assigned `id` for future statistical analysis and verification
-- **Implementation Status**: All 10 types, total 20 templates implemented (2 per type)
+- Optional `tags` and `weight` support flavor-based selection and relative frequency control
+- **Implementation Status**: All 10 types, total 40 templates implemented (4 per type)
 
 #### **D. Usage Example**
 
@@ -345,7 +353,7 @@ const allEvents = [...bgm.events, ...jump.events].sort((a, b) => a.time - b.time
 
 ### **5. SE Type Characteristics**
 
-This system supports 10 SE types, with 2 template variations prepared for each type:
+This system supports 10 SE types, with 4 template variations prepared for each type:
 
 | SEType | Description | Channels | Main Features |
 |--------|-------------|----------|---------------|
@@ -367,13 +375,43 @@ This system supports 10 SE types, with 2 template variations prepared for each t
 The SE generator dynamically samples the following parameters from templates:
 
 - **Pitch Sweep**: Interpolate start pitch to end pitch with linear/exponential curve
+- **Chord Quantization**: Optionally snap pitched SEs to nearest chord tones with `quantizeToChord`
 - **Duty Cycle**: Square wave shape (12.5%, 25%, 50%)
 - **Note Sequence**: Arpeggio pattern intervals and note lengths
 - **Noise Mode**: short (high-frequency) / long (low-frequency) selection
 - **Duration**: Random sampling within template-defined range
 - **Velocity**: Volume range specification
+- **Velocity Scale**: Caller-side loudness scaling while preserving template shape
+- **Envelope**: `percussive`, `sustained`, `pluck`, `snap`, and `fade` shapes mapped to existing event decay/release data
+- **Start Offset**: Per-channel timing offsets for layered effects
+- **Template Tags / Weights**: Prefer variants with `variantIntent` and bias template frequency with `weight`
 
 All parameters selected by deterministic RNG based on `seed`, ensuring complete reproducibility.
+
+**Current quality budgets**:
+
+| SEType | Max duration | Max velocity |
+|--------|--------------|--------------|
+| **jump** | 0.42s | 124 |
+| **coin** | 0.32s | 124 |
+| **explosion** | 1.25s | 124 |
+| **hit** | 0.22s | 126 |
+| **powerup** | 0.48s | 124 |
+| **select** | 0.14s | 122 |
+| **laser** | 0.36s | 122 |
+| **click** | 0.05s | 122 |
+| **synth** | 0.42s | 122 |
+| **tone** | 0.38s | 122 |
+
+### **6.1 Template Authoring Rules**
+
+- Keep `durationRange` within the family budget above; if a family needs a longer tail, update the budget and tests together.
+- Keep `velocityRange` within the family max velocity. Use `velocityScale` for runtime mix context instead of duplicating louder/quieter templates.
+- Use `noteSequence` for discrete pickups, UI confirms, and fanfare-like sounds; use `pitchSweep` for jumps, lasers, charge cues, and impacts.
+- Use `quantizeToChord` only when an SE should sit harmonically inside a BGM cue. Leave noise-heavy, UI, and alert sounds unquantized when recognizability matters more than harmony.
+- Use `snap` for tiny clicks/noise ticks, `pluck` for short tonal pickups, `fade` for soft sustained tones, and `percussive` for noise impacts.
+- Use `startOffsetRange` only for layered templates and keep offsets under 0.05s so trigger timing remains responsive.
+- Prefer `tags` for caller-facing flavor selection and reserve `templateId` for debugging, snapshots, and deliberate art direction.
 
 ---
 
@@ -404,7 +442,7 @@ This SE automatic generation system has the following characteristics:
 - Output in same `Event[]` format as BGM pipeline
 
 **Implementation Features**:
-- 10 SE types, total 20 templates
+- 10 SE types, total 40 templates
 - Diverse acoustic techniques including pitch sweeps, arpeggios, noise synthesis
 - Type safety through TypeScript type system
 

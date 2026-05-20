@@ -99,6 +99,9 @@ const generator = new SEGenerator();
 const se = generator.generateSE({
   type: "jump",
   seed: 42,
+  quantizeToChord: "C",
+  variantIntent: "bright",
+  velocityScale: 0.8,
 });
 
 // se.events - SEイベントタイムライン

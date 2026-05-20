@@ -48,6 +48,24 @@ import type { Event, Channel } from "../types.js";
 export type SEType = "jump" | "coin" | "explosion" | "hit" | "powerup" | "select" | "laser" | "click" | "synth" | "tone";
 
 /**
+ * Optional tags used to select a flavor within an SE type.
+ *
+ * Tags intentionally describe audible/use-case qualities rather than exact
+ * synthesis details, so template authors can change implementation without
+ * breaking caller intent.
+ */
+export type SETemplateTag =
+  | "bright"
+  | "soft"
+  | "heavy"
+  | "short"
+  | "long"
+  | "ui"
+  | "combat"
+  | "pickup"
+  | "retro";
+
+/**
  * Pitch range specification for sweeps and sustained tones.
  *
  * Uses MIDI note numbers (0-127) for:
@@ -86,6 +104,8 @@ export interface SETemplate {
   id: string;                    // Unique identifier: "SE_JUMP_01"
   type: SEType;                  // Category: "jump"
   description: string;           // Human-readable description (for UI/debugging)
+  tags?: SETemplateTag[];        // Optional selection tags (bright, soft, heavy, etc.)
+  weight?: number;               // Optional relative selection weight (default: 1)
   channels: Channel[];           // Channels to use: ["square1"] or ["noise", "triangle"]
   durationRange: [number, number]; // [min, max] in seconds (e.g., [0.10, 0.15])
 
@@ -108,11 +128,13 @@ export interface SETemplate {
       /** Noise mode (only for noise channel) */
       noiseMode?: "short" | "long"; // short = high-frequency, long = low-frequency
       /** Envelope shape */
-      envelope?: "percussive" | "sustained";
+      envelope?: "percussive" | "sustained" | "pluck" | "snap" | "fade";
       /** Velocity (volume) range */
       velocityRange?: [number, number];
       /** Release time range (envelope decay duration) */
       releaseRange?: [number, number];
+      /** Optional channel start offset range for layered SEs */
+      startOffsetRange?: [number, number];
     };
   };
 
@@ -162,6 +184,9 @@ export interface SEGenerationOptions {
   templateId?: string;           // Optional: Force specific template (undefined = random from type)
   startTime?: number;            // Optional: Event time offset in seconds (default: 0.0)
   baseFrequency?: number;        // Optional: Base frequency in Hz (e.g., 440.0 = A4) to shift all pitches to
+  quantizeToChord?: string;      // Optional: Quantize pitched SE notes to nearest chord tones (e.g., "C", "Am")
+  variantIntent?: SETemplateTag;  // Optional: Prefer templates with this flavor/use-case tag
+  velocityScale?: number;        // Optional: Scale note velocities for context mixing (default: 1.0)
 }
 
 /**

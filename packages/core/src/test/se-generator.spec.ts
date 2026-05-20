@@ -1,10 +1,10 @@
 import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
 import { SEGenerator } from "../se/seGenerator.js";
-import type { SEGenerationResult } from "../se/seTypes.js";
-import type { Event } from "../types.js";
+import { loadSETemplates } from "../se/seTemplates.js";
+import type { SEGenerationResult, SETemplate, SETemplateTag, SEType } from "../se/seTypes.js";
+import type { Channel, Event } from "../types.js";
 import { isNoteOnEvent } from "./test-utils.js";
-import { midiToFrequency } from "../musicUtils.js";
 
 function hashEvents(result: SEGenerationResult): string {
   return createHash("sha256")
@@ -12,29 +12,249 @@ function hashEvents(result: SEGenerationResult): string {
     .digest("hex");
 }
 
+const SE_TYPES: SEType[] = [
+  "jump",
+  "coin",
+  "explosion",
+  "hit",
+  "powerup",
+  "select",
+  "laser",
+  "click",
+  "synth",
+  "tone"
+];
+
+const CHANNELS = new Set<Channel>(["square1", "square2", "triangle", "noise"]);
+const SE_TEMPLATE_TAGS = new Set<SETemplateTag>([
+  "bright",
+  "soft",
+  "heavy",
+  "short",
+  "long",
+  "ui",
+  "combat",
+  "pickup",
+  "retro"
+]);
+const SE_ENVELOPES = new Set(["percussive", "sustained", "pluck", "snap", "fade"]);
+
+const TYPE_SNAPSHOT_HASHES: Record<SEType, string> = {
+  jump: "68579c2b144ff9a08f68475a992cdf89a080222a7e255b09d0c5d81ad6dc514f",
+  coin: "e22c1e2c7ee0ed82d6dfff5ddfccd93eba39db01900796ae68421b6ef09d0c8c",
+  explosion: "f10039a232401ab79479493089b81933a2771f3d73e6e4ffe084ffa3eea54778",
+  hit: "7da0a25d2faf9f00703375cb743a6587a6484f5e23632535759d060ddbbf2c17",
+  powerup: "9ab3d8f993e2978d838b2e4b83ac6d6ce1455e27e1ffd5b722d0ae095196fc3a",
+  select: "c01ad06514219a869e2267fd2b64c9b2c8200f83919fa094aea34bb5fa0efad5",
+  laser: "29b69a61bb1f010209652d7926761e6d71e66e84b33867bb5c6c970a74a0184f",
+  click: "b7545a0caa0e908681935389fdc23df7d50a74ab118ae08fdad3b5edd17a745b",
+  synth: "925295126c15c9b33dde5f6541fa1144d2f15aade115212c764f4cac0d4d0018",
+  tone: "24f05ccdca22706e877273306db26dd1f91274ffb1a60c09965a0c4df6b49d22"
+};
+
+const SE_TYPE_BUDGETS: Record<SEType, { maxDuration: number; maxVelocity: number }> = {
+  jump: { maxDuration: 0.42, maxVelocity: 124 },
+  coin: { maxDuration: 0.32, maxVelocity: 124 },
+  explosion: { maxDuration: 1.25, maxVelocity: 124 },
+  hit: { maxDuration: 0.22, maxVelocity: 126 },
+  powerup: { maxDuration: 0.48, maxVelocity: 124 },
+  select: { maxDuration: 0.14, maxVelocity: 122 },
+  laser: { maxDuration: 0.36, maxVelocity: 122 },
+  click: { maxDuration: 0.05, maxVelocity: 122 },
+  synth: { maxDuration: 0.42, maxVelocity: 122 },
+  tone: { maxDuration: 0.38, maxVelocity: 122 }
+};
+
+function assertTemplateSchema(templates: SETemplate[]) {
+  const ids = new Set<string>();
+  const countsByType = new Map<SEType, number>();
+
+  for (const template of templates) {
+    assert.match(template.id, /^SE_[A-Z]+_[0-9]{2}$/, `Invalid SE template id: ${template.id}`);
+    assert(!ids.has(template.id), `Duplicate SE template id: ${template.id}`);
+    ids.add(template.id);
+
+    assert(SE_TYPES.includes(template.type), `Unknown SE type for ${template.id}: ${template.type}`);
+    countsByType.set(template.type, (countsByType.get(template.type) ?? 0) + 1);
+    if (template.tags) {
+      assert(template.tags.length > 0, `${template.id} tags should not be empty when present`);
+      for (const tag of template.tags) {
+        assert(SE_TEMPLATE_TAGS.has(tag), `${template.id} has unknown tag: ${tag}`);
+      }
+    }
+    if (template.weight !== undefined) {
+      assert(template.weight > 0, `${template.id} weight should be positive`);
+      assert(Number.isFinite(template.weight), `${template.id} weight should be finite`);
+    }
+
+    assert(template.channels.length > 0, `${template.id} should define at least one channel`);
+    assert.strictEqual(
+      new Set(template.channels).size,
+      template.channels.length,
+      `${template.id} should not list duplicate channels`
+    );
+
+    for (const channel of template.channels) {
+      assert(CHANNELS.has(channel), `${template.id} has invalid channel: ${channel}`);
+      assert(template.channelParams[channel], `${template.id} is missing channelParams.${channel}`);
+    }
+
+    const [minDuration, maxDuration] = template.durationRange;
+    assert(
+      Number.isFinite(minDuration) && Number.isFinite(maxDuration),
+      `${template.id} durationRange should be finite`
+    );
+    assert(minDuration > 0, `${template.id} durationRange minimum should be positive`);
+    assert(maxDuration >= minDuration, `${template.id} durationRange should be ordered`);
+    assert(maxDuration <= 2, `${template.id} durationRange should stay within one-shot SE bounds`);
+
+    for (const [channel, params] of Object.entries(template.channelParams)) {
+      assert(CHANNELS.has(channel as Channel), `${template.id} has invalid channelParams key: ${channel}`);
+      for (const pitchKey of ["pitchStart", "pitchEnd"] as const) {
+        const range = params[pitchKey];
+        if (!range) continue;
+        assert(range.min >= 0 && range.max <= 127, `${template.id}.${channel}.${pitchKey} should be MIDI 0-127`);
+        assert(range.max >= range.min, `${template.id}.${channel}.${pitchKey} should be ordered`);
+      }
+      if (params.velocityRange) {
+        const [minVelocity, maxVelocity] = params.velocityRange;
+        assert(minVelocity >= 1 && maxVelocity <= 127, `${template.id}.${channel}.velocityRange should be 1-127`);
+        assert(maxVelocity >= minVelocity, `${template.id}.${channel}.velocityRange should be ordered`);
+      }
+      if (params.releaseRange) {
+        const [minRelease, maxRelease] = params.releaseRange;
+        assert(minRelease >= 0, `${template.id}.${channel}.releaseRange minimum should be non-negative`);
+        assert(maxRelease >= minRelease, `${template.id}.${channel}.releaseRange should be ordered`);
+      }
+      if (params.startOffsetRange) {
+        const [minOffset, maxOffset] = params.startOffsetRange;
+        assert(minOffset >= 0, `${template.id}.${channel}.startOffsetRange minimum should be non-negative`);
+        assert(maxOffset >= minOffset, `${template.id}.${channel}.startOffsetRange should be ordered`);
+        assert(maxOffset <= 0.05, `${template.id}.${channel}.startOffsetRange should stay tight`);
+      }
+      if (params.envelope) {
+        assert(SE_ENVELOPES.has(params.envelope), `${template.id}.${channel}.envelope should be known`);
+      }
+    }
+
+    if (template.noteSequence) {
+      assert.strictEqual(
+        template.noteSequence.intervals.length,
+        template.noteSequence.noteDurations.length,
+        `${template.id} noteSequence intervals and durations should have equal length`
+      );
+      assert(template.noteSequence.intervals.length > 0, `${template.id} noteSequence should not be empty`);
+      for (const noteDuration of template.noteSequence.noteDurations) {
+        assert(noteDuration > 0, `${template.id} note durations should be positive`);
+      }
+      const totalNoteDuration = template.noteSequence.noteDurations.reduce((sum, duration) => sum + duration, 0);
+      assert(
+        totalNoteDuration <= maxDuration + 1e-9,
+        `${template.id} noteSequence should fit within durationRange maximum`
+      );
+    }
+
+    if (template.pitchSweep?.durationRange) {
+      const [minSweep, maxSweep] = template.pitchSweep.durationRange;
+      assert(minSweep > 0, `${template.id} pitchSweep duration minimum should be positive`);
+      assert(maxSweep >= minSweep, `${template.id} pitchSweep durationRange should be ordered`);
+    }
+  }
+
+  for (const type of SE_TYPES) {
+    assert(
+      (countsByType.get(type) ?? 0) >= 2,
+      `${type} should have at least two SE templates`
+    );
+  }
+}
+
+function assertGeneratedSEInvariants(result: SEGenerationResult, label: string) {
+  const budget = SE_TYPE_BUDGETS[result.meta.type];
+  assert(result.meta.duration > 0, `${label}: duration should be positive`);
+  assert(Number.isFinite(result.meta.duration), `${label}: duration should be finite`);
+  assert(result.meta.duration <= budget.maxDuration, `${label}: duration should fit family tail budget`);
+  assert(SE_TYPES.includes(result.meta.type), `${label}: meta type should be known`);
+  assert(result.meta.channels.length > 0, `${label}: channels should not be empty`);
+  assert(result.events.length > 0, `${label}: events should not be empty`);
+
+  let previousTime = -Infinity;
+  const activeNoteStarts = new Map<Channel, number[]>();
+  for (const channel of CHANNELS) {
+    activeNoteStarts.set(channel, []);
+  }
+
+  for (const event of result.events) {
+    assert(event.time >= previousTime, `${label}: events should be sorted by time`);
+    previousTime = event.time;
+    assert(Number.isFinite(event.time), `${label}: event time should be finite`);
+    assert(event.time >= 0, `${label}: event time should be non-negative`);
+    assert(CHANNELS.has(event.channel), `${label}: event channel should be valid`);
+
+    if (event.command === "noteOn") {
+      const velocity = event.data.velocity;
+      if (typeof velocity === "number") {
+        assert(Number.isFinite(velocity), `${label}: noteOn velocity should be finite`);
+        assert(velocity >= 1 && velocity <= 127, `${label}: noteOn velocity should be 1-127`);
+        assert(velocity <= budget.maxVelocity, `${label}: noteOn velocity should fit family loudness budget`);
+      }
+      const midi = event.data.midi;
+      if (typeof midi === "number") {
+        assert(Number.isFinite(midi), `${label}: noteOn MIDI should be finite`);
+        assert(midi >= 0 && midi <= 127, `${label}: noteOn MIDI should be 0-127`);
+      }
+      activeNoteStarts.get(event.channel)!.push(event.time);
+    } else if (event.command === "noteOff") {
+      const starts = activeNoteStarts.get(event.channel)!;
+      assert(starts.length > 0, `${label}: noteOff without active note on ${event.channel}`);
+      const noteStart = starts.shift()!;
+      assert(event.time > noteStart, `${label}: note duration should be positive on ${event.channel}`);
+      if (typeof event.data.releaseSeconds === "number") {
+        assert(event.data.releaseSeconds >= 0, `${label}: noteOff releaseSeconds should be non-negative`);
+        assert(event.data.releaseSeconds <= 0.8, `${label}: noteOff releaseSeconds should stay bounded`);
+      }
+    } else if (event.command === "setParam") {
+      if (typeof event.data.value === "number") {
+        assert(Number.isFinite(event.data.value), `${label}: setParam value should be finite`);
+      }
+      if (typeof event.data.rampDuration === "number") {
+        assert(event.data.rampDuration > 0, `${label}: setParam rampDuration should be positive`);
+      }
+    }
+  }
+
+  for (const [channel, starts] of activeNoteStarts) {
+    assert.strictEqual(starts.length, 0, `${label}: unclosed noteOn events on ${channel}`);
+  }
+}
+
 async function run() {
   const generator = new SEGenerator();
+  const templates = loadSETemplates();
+
+  assertTemplateSchema(templates);
+  console.log("SE template schema validated");
 
   const scenarios = [
     {
       name: "jump-seed-314",
       options: { type: "jump" as const, seed: 314, startTime: 0 },
-      expectedHash: "3ea1ea87b3fa536bb045528a78e3cf4c1c2f30d402ab740a985e185693e0ee57"
+      expectedHash: "cbbff84606ba0e95846dd06616375c742fa0bd586f26427bb22c09c182c16d42"
     },
     {
       name: "coin-template-forced",
       options: { type: "coin" as const, seed: 7, templateId: "SE_COIN_01", startTime: 0.25 },
-      expectedHash: "ec892b315b23c1de6b6690f865b7a9d21121908da8caeb0fe7822fdc4afa2d4a"
+      expectedHash: "029626e5776c95e3b3346014222fccaecc3d8fd0fb9a907a7c0e0c087ed1509f"
     },
     {
       name: "jump-baseFrequency-440Hz",
       options: { type: "jump" as const, seed: 314, baseFrequency: 440.0 },
-      expectedHash: "0703a5f88dcd14f1b95eb7fd24ce9aa7967e196ac797b6553e7b4f54b49a7559"
+      expectedHash: "5ebc23bf054bd2e7c8978d59bfdac4ae988202f3ce8793461b308b181e231639"
     },
     {
       name: "coin-baseFrequency-523.25Hz",
       options: { type: "coin" as const, seed: 7, templateId: "SE_COIN_01", baseFrequency: 523.25 },
-      expectedHash: "3dcaf686862a59329bdd13a24c0d74909bd656804b93e339c9b02b4ccbed1a3f"
+      expectedHash: "7aa887a3ed7990a3854cda7f570fe4eedd28cf33f709dd6d82de39eac035ee36"
     }
   ];
 
@@ -63,6 +283,94 @@ async function run() {
   }
 
   console.log("SE generator scenarios validated");
+
+  for (const type of SE_TYPES) {
+    for (const seed of [1, 7, 123, 999, 2024]) {
+      const result = generator.generateSE({ type, seed });
+      assertGeneratedSEInvariants(result, `${type}-seed-${seed}`);
+      const replay = generator.generateSE(result.meta.replayOptions);
+      assert.deepEqual(replay, result, `${type}-seed-${seed}: replay should be deterministic`);
+      if (seed === 2024) {
+        assert.strictEqual(
+          hashEvents(result),
+          TYPE_SNAPSHOT_HASHES[type],
+          `${type}-seed-${seed}: representative snapshot changed`
+        );
+      }
+    }
+  }
+
+  for (const template of templates) {
+    const result = generator.generateSE({
+      type: template.type,
+      seed: 4242,
+      templateId: template.id
+    });
+    assertGeneratedSEInvariants(result, `${template.id}-forced`);
+  }
+
+  const brightCoin = generator.generateSE({ type: "coin", seed: 7, variantIntent: "bright" });
+  assert(
+    templates
+      .find((template) => template.id === brightCoin.meta.templateId)
+      ?.tags?.includes("bright"),
+    "variantIntent should prefer matching tags"
+  );
+  const replayBrightCoin = generator.generateSE(brightCoin.meta.replayOptions);
+  assert.deepEqual(replayBrightCoin, brightCoin, "variantIntent should be included in replay options");
+
+  const layeredExplosion = generator.generateSE({
+    type: "explosion",
+    seed: 2025,
+    templateId: "SE_EXPLOSION_01"
+  });
+  const noteOnTimes = layeredExplosion.events
+    .filter(isNoteOnEvent)
+    .map((event) => event.time);
+  assert(noteOnTimes.some((time) => time > 0), "layered templates should support non-zero channel start offsets");
+  assert(layeredExplosion.meta.duration > layeredExplosion.events[0].time, "start offsets should extend meta duration");
+
+  const normalLaser = generator.generateSE({ type: "laser", seed: 77, templateId: "SE_LASER_01" });
+  const quietLaser = generator.generateSE({
+    type: "laser",
+    seed: 77,
+    templateId: "SE_LASER_01",
+    velocityScale: 0.5
+  });
+  const firstNormalVelocity = normalLaser.events.find(isNoteOnEvent)?.data.velocity;
+  const firstQuietVelocity = quietLaser.events.find(isNoteOnEvent)?.data.velocity;
+  assert.strictEqual(typeof firstNormalVelocity, "number", "normal laser should include velocity");
+  assert.strictEqual(typeof firstQuietVelocity, "number", "quiet laser should include velocity");
+  assert(
+    firstQuietVelocity! < firstNormalVelocity!,
+    "velocityScale should reduce generated note velocities"
+  );
+  const replayQuietLaser = generator.generateSE(quietLaser.meta.replayOptions);
+  assert.deepEqual(replayQuietLaser, quietLaser, "velocityScale should be included in replay options");
+
+  const quantizedSynth = generator.generateSE({
+    type: "synth",
+    seed: 515,
+    templateId: "SE_SYNTH_01",
+    quantizeToChord: "C"
+  });
+  const chordPitchClasses = new Set([0, 4, 7]);
+  for (const event of quantizedSynth.events.filter(isNoteOnEvent)) {
+    if (typeof event.data.midi === "number") {
+      assert(
+        chordPitchClasses.has(event.data.midi % 12),
+        `quantizeToChord should snap MIDI ${event.data.midi} to a C chord tone`
+      );
+    }
+  }
+  const replayQuantizedSynth = generator.generateSE(quantizedSynth.meta.replayOptions);
+  assert.deepEqual(
+    replayQuantizedSynth,
+    quantizedSynth,
+    "quantizeToChord should be included in replay options"
+  );
+
+  console.log("SE seed sweep and forced-template audit validated");
 
   // Test baseFrequency pitch shifting
   console.log("\nTesting baseFrequency pitch shifting...");

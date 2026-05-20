@@ -6,7 +6,7 @@
 
 効果音（SE: Sound Effect）は「ジャンプ」「コイン取得」「爆発」といった特定のゲームイベントに対応する短い音響です。本システムは**モチーフベースアーキテクチャ**に従い、以下の特徴を持ちます：
 
-- **テンプレートベース生成**: `packages/core/motifs/se-templates.json` に定義された20種類のテンプレートから、SETypeに基づいて選択
+- **テンプレートベース生成**: `packages/core/motifs/se-templates.json` に定義された40種類のテンプレートから、SETypeに基づいて選択
 - **シードドリブンRNG**: 同じシード値で同じSEを再生成可能。パラメータのランダム化により自然なバリエーションを実現
 - **BGMとの統合**: `Event[]` 型を共有し、BGMパイプラインとシームレスに統合
 - **4チャンネルチップチューン音源**: square1/square2/triangle/noiseチャンネルを使用した本格的なチップチューンサウンド
@@ -20,7 +20,7 @@
 ```
 packages/core/
 ├── motifs/
-│   └── se-templates.json           # SE テンプレート定義（20種類）
+│   └── se-templates.json           # SE テンプレート定義（40種類）
 └── src/
     ├── se/
     │   ├── seGenerator.ts          # SEGenerator クラス
@@ -70,6 +70,8 @@ export interface SETemplate {
   id: string;                    // "SE_JUMP_01"
   type: SEType;                  // "jump"
   description: string;           // "軽快な上昇ジャンプ音"
+  tags?: SETemplateTag[];        // ["bright", "short", "retro"]
+  weight?: number;               // 相対選択ウェイト（default: 1）
   channels: Channel[];           // ["square1"]
   durationRange: [number, number]; // [0.10, 0.15] (秒)
 
@@ -80,9 +82,10 @@ export interface SETemplate {
       pitchEnd?: PitchRange;
       dutyCycle?: number[];      // [0.25, 0.5] からランダム選択
       noiseMode?: "short" | "long"; // noise チャンネル専用
-      envelope?: "percussive" | "sustained";
+      envelope?: "percussive" | "sustained" | "pluck" | "snap" | "fade";
       velocityRange?: [number, number];
       releaseRange?: [number, number];
+      startOffsetRange?: [number, number]; // レイヤーのタイミングオフセット（秒）
     };
   };
 
@@ -107,6 +110,10 @@ export interface SEGenerationOptions {
   seed?: number;                 // 未指定時はランダム
   templateId?: string;           // 特定のテンプレートを強制選択
   startTime?: number;            // イベント時刻のオフセット（デフォルト: 0.0）
+  baseFrequency?: number;        // Hz指定による任意のピッチ再ターゲット
+  quantizeToChord?: string;      // "C" や "Am" などのコード構成音へスナップ
+  variantIntent?: SETemplateTag; // このフレーバータグを持つテンプレートを優先
+  velocityScale?: number;        // ミックス文脈に応じて生成ベロシティをスケール
 }
 
 /** SE 生成結果 */
@@ -303,7 +310,8 @@ export interface SEGenerationResult {
 - `pitchStart.min/max` は MIDI ノート番号（60 = C4）
 - `durationRange` はシードドリブン RNG でサンプリング
 - 各テンプレートに `id` を付与し、将来的な統計解析や検証に利用
-- **実装状況**: 全10タイプ、計20テンプレート実装済み（各タイプ2個ずつ）
+- 任意の `tags` と `weight` により、フレーバー指定と出現頻度制御に対応
+- **実装状況**: 全10タイプ、計40テンプレート実装済み（各タイプ4個ずつ）
 
 #### **D. 使用例**
 
@@ -343,7 +351,7 @@ const allEvents = [...bgm.events, ...jump.events].sort((a, b) => a.time - b.time
 
 ### **5. SEタイプ別の特性**
 
-本システムは10種類のSEタイプをサポートし、各タイプに2つのテンプレートバリエーションが用意されています：
+本システムは10種類のSEタイプをサポートし、各タイプに4つのテンプレートバリエーションが用意されています：
 
 | SEType | 説明 | チャンネル | 主な特徴 |
 |--------|------|----------|----------|
@@ -365,13 +373,43 @@ const allEvents = [...bgm.events, ...jump.events].sort((a, b) => a.time - b.time
 SEジェネレーターは以下のパラメータをテンプレートから動的にサンプリングします：
 
 - **ピッチスイープ**: 開始ピッチ～終了ピッチをlinear/exponentialカーブで補間
+- **コード量子化**: `quantizeToChord` により、ピッチを持つSEを最寄りのコード構成音へ任意にスナップ
 - **デューティサイクル**: square1/square2の波形形状（12.5%, 25%, 50%）
 - **ノートシーケンス**: アルペジオパターンの音程間隔と音符長
 - **ノイズモード**: short（高周波）/long（低周波）の選択
 - **デュレーション**: テンプレート定義の範囲内でランダムサンプリング
 - **ベロシティ**: 音量の範囲指定
+- **ベロシティスケール**: テンプレートの形を保ったまま呼び出し側で音量を調整
+- **エンベロープ**: `percussive`, `sustained`, `pluck`, `snap`, `fade` を既存イベントのdecay/releaseデータへ変換
+- **開始オフセット**: レイヤー型SEのチャンネルごとのタイミングずらし
+- **テンプレートタグ / ウェイト**: `variantIntent` でバリエーションを優先し、`weight` で出現頻度を調整
 
 すべてのパラメータは`seed`に基づく決定論的RNGで選択されるため、完全な再現性が保証されます。
+
+**現在の品質予算**:
+
+| SEType | 最大duration | 最大velocity |
+|--------|--------------|--------------|
+| **jump** | 0.42秒 | 124 |
+| **coin** | 0.32秒 | 124 |
+| **explosion** | 1.25秒 | 124 |
+| **hit** | 0.22秒 | 126 |
+| **powerup** | 0.48秒 | 124 |
+| **select** | 0.14秒 | 122 |
+| **laser** | 0.36秒 | 122 |
+| **click** | 0.05秒 | 122 |
+| **synth** | 0.42秒 | 122 |
+| **tone** | 0.38秒 | 122 |
+
+### **6.1 テンプレート作成ルール**
+
+- `durationRange` は上記のタイプ別予算内に収める。より長いテールが必要な場合は、予算とテストを同時に更新する。
+- `velocityRange` はタイプ別の最大velocity内に収める。実行時のミックス調整には、より大きい/小さいテンプレートを増やすのではなく `velocityScale` を使う。
+- 離散的なピックアップ音、UI確認音、ファンファーレ系には `noteSequence` を使い、ジャンプ、レーザー、チャージ、インパクト系には `pitchSweep` を使う。
+- BGMの和声に馴染ませたいSEだけ `quantizeToChord` を使う。ノイズ主体、UI、警告音は、認識しやすさを優先して非量子化のままにする。
+- 極短クリックやノイズtickには `snap`、短い音程付きピックアップには `pluck`、柔らかい持続音には `fade`、ノイズインパクトには `percussive` を使う。
+- `startOffsetRange` はレイヤー型テンプレートに限定し、入力応答感を保つため0.05秒未満にする。
+- 呼び出し側のフレーバー指定には `tags` を優先し、`templateId` はデバッグ、スナップショット、明示的な演出指定に使う。
 
 ---
 
@@ -402,7 +440,7 @@ BGMとSEは同じ`Event[]`形式を共有しているため、同じWeb Audioシ
 - BGMパイプラインと同じ`Event[]`形式での出力
 
 **実装の特徴**:
-- 10種類のSEタイプ、計20テンプレート
+- 10種類のSEタイプ、計40テンプレート
 - ピッチスイープ、アルペジオ、ノイズ合成など多彩な音響技法
 - TypeScript型システムによる型安全性
 

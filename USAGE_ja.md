@@ -33,6 +33,9 @@ const generator = new SEGenerator();
 const jumpEffect = generator.generateSE({
   type: "jump",
   seed: 4242,
+  quantizeToChord: "C",
+  variantIntent: "bright",
+  velocityScale: 0.8,
 });
 
 console.log(`Template used: ${jumpEffect.meta.templateId}`);

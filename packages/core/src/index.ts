@@ -17,5 +17,6 @@ export type {
 export type {
   SEGenerationOptions,
   SEGenerationResult,
+  SETemplateTag,
   SEType
 } from "./se/seTypes.js";
