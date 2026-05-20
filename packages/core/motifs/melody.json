@@ -2760,5 +2760,274 @@
       "loop_safe",
       "extended"
     ]
+  },
+  {
+    "id": "MF157",
+    "pattern": [
+      1,
+      3,
+      5,
+      6,
+      5,
+      3,
+      2,
+      1
+    ],
+    "tags": [
+      "bright",
+      "ascending",
+      "arch",
+      "loop_safe",
+      "extended"
+    ]
+  },
+  {
+    "id": "MF158",
+    "pattern": [
+      5,
+      6,
+      5,
+      3,
+      4,
+      3,
+      2,
+      1
+    ],
+    "tags": [
+      "bright",
+      "sequence",
+      "stepwise",
+      "loop_safe",
+      "variation"
+    ]
+  },
+  {
+    "id": "MF159",
+    "pattern": [
+      1,
+      5,
+      4,
+      2,
+      6,
+      5,
+      3,
+      1
+    ],
+    "tags": [
+      "dark",
+      "leaping",
+      "tense",
+      "loop_safe",
+      "extended"
+    ]
+  },
+  {
+    "id": "MF160",
+    "pattern": [
+      6,
+      5,
+      3,
+      2,
+      4,
+      3,
+      2,
+      1
+    ],
+    "tags": [
+      "dark",
+      "descending",
+      "cadence",
+      "loop_safe",
+      "long"
+    ]
+  },
+  {
+    "id": "MF161",
+    "pattern": [
+      1,
+      2,
+      3,
+      5,
+      3,
+      2,
+      1
+    ],
+    "tags": [
+      "simple",
+      "bright",
+      "stepwise",
+      "peaceful",
+      "loop_safe"
+    ]
+  },
+  {
+    "id": "MF162",
+    "pattern": [
+      3,
+      2,
+      1,
+      2,
+      4,
+      3,
+      1
+    ],
+    "tags": [
+      "simple",
+      "arch",
+      "peaceful",
+      "texture_loop",
+      "short"
+    ]
+  },
+  {
+    "id": "MF163",
+    "pattern": [
+      1,
+      4,
+      7,
+      6,
+      4,
+      5,
+      3,
+      1
+    ],
+    "tags": [
+      "complex",
+      "leaping",
+      "dark",
+      "breakbeat",
+      "loop_safe"
+    ]
+  },
+  {
+    "id": "MF164",
+    "pattern": [
+      1,
+      1,
+      3,
+      5,
+      4,
+      3,
+      1
+    ],
+    "tags": [
+      "ostinato",
+      "bright",
+      "texture_loop",
+      "loop_safe",
+      "short"
+    ]
+  },
+  {
+    "id": "MF165",
+    "pattern": [
+      5,
+      4,
+      3,
+      2,
+      1
+    ],
+    "tags": [
+      "descending",
+      "simple",
+      "cadence",
+      "loop_safe",
+      "peaceful",
+      "short"
+    ]
+  },
+  {
+    "id": "MF166",
+    "pattern": [
+      1,
+      3,
+      1,
+      2,
+      1
+    ],
+    "tags": [
+      "ostinato",
+      "lofi",
+      "rest_heavy",
+      "texture_loop",
+      "loop_safe",
+      "short"
+    ]
+  },
+  {
+    "id": "MF167",
+    "pattern": [
+      1,
+      5,
+      6,
+      5,
+      3,
+      1
+    ],
+    "tags": [
+      "leaping",
+      "retro",
+      "bright",
+      "loop_safe",
+      "hook",
+      "short"
+    ]
+  },
+  {
+    "id": "MF168",
+    "pattern": [
+      1,
+      6,
+      5,
+      2,
+      1,
+      -1,
+      1
+    ],
+    "tags": [
+      "leaping",
+      "dark",
+      "tense",
+      "battle",
+      "syncopated",
+      "loop_safe"
+    ]
+  },
+  {
+    "id": "MF169",
+    "pattern": [
+      3,
+      2,
+      1,
+      1,
+      2,
+      1
+    ],
+    "tags": [
+      "simple",
+      "peaceful",
+      "cadence",
+      "legato",
+      "loop_safe"
+    ]
+  },
+  {
+    "id": "MF170",
+    "pattern": [
+      1,
+      4,
+      2,
+      6,
+      4,
+      1
+    ],
+    "tags": [
+      "complex",
+      "breakbeat",
+      "dark",
+      "syncopated",
+      "variation",
+      "short"
+    ]
   }
 ]

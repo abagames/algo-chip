@@ -48,6 +48,69 @@
       "length_beats": 4,
       "tags": ["transition", "section_end", "lofi", "noise_fx", "rest_heavy"],
       "channel": "noise"
+    },
+    {
+      "id": "TR_RETRO_TOM_LIFT",
+      "pattern": "T---H---T---S---",
+      "length_beats": 4,
+      "tags": ["transition", "section_end", "drum_fill", "retro", "loop_out"],
+      "channel": "noise"
+    },
+    {
+      "id": "TR_BREAKBEAT_CRUSH_FILL",
+      "pattern": "K-SHSHKTSH-SHSH-",
+      "length_beats": 4,
+      "tags": ["transition", "section_end", "breakbeat", "drum_fill", "grid16"],
+      "channel": "noise"
+    },
+    {
+      "id": "TR_BUILD_NOISE_GATE",
+      "pattern": "N---N-H-N-S-N-H-",
+      "length_beats": 4,
+      "tags": ["transition", "build", "noise_fx", "drum_fill"],
+      "channel": "noise"
+    },
+    {
+      "id": "TR_LOFI_DUST_DROP",
+      "pattern": "N-------S---H---",
+      "length_beats": 4,
+      "tags": ["transition", "section_end", "lofi", "noise_fx", "rest_heavy", "loop_out"],
+      "channel": "noise"
+    },
+    {
+      "id": "TR_RETRO_LOOP_BLIP",
+      "pattern": "K---H---T---H---",
+      "length_beats": 4,
+      "tags": ["transition", "section_end", "retro", "texture_loop", "loop_out", "drum_fill"],
+      "channel": "noise"
+    },
+    {
+      "id": "TR_LOFI_ROOM_BREATH",
+      "pattern": "N-------H---S---",
+      "length_beats": 4,
+      "tags": ["transition", "section_end", "lofi", "noise_fx", "rest_heavy", "loop_out"],
+      "channel": "noise"
+    },
+    {
+      "id": "TR_BREAKBEAT_GRID_THROW",
+      "pattern": "S-HSK-HSS-HSK-H-",
+      "length_beats": 4,
+      "tags": ["transition", "section_end", "breakbeat", "drum_fill", "grid16", "break"],
+      "channel": "noise"
+    },
+    {
+      "id": "TR_BATTLE_GATE_RUSH",
+      "pattern": "K-S-N-S-K-S-N-S-",
+      "length_beats": 4,
+      "tags": ["transition", "section_end", "noise_fx", "drum_fill", "tense", "build"],
+      "channel": "noise"
+    },
+    {
+      "id": "TR_PEACEFUL_DUST_TURN",
+      "pattern": "N-------S-------",
+      "length_beats": 4,
+      "tags": ["transition", "section_end", "lofi", "peaceful", "noise_fx", "rest_heavy"],
+      "channel": "noise"
     }
   ]
 }

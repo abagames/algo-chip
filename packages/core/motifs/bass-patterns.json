@@ -257,6 +257,78 @@
       "texture": "broken",
       "steps": ["root", "root", "root", "octave", "root", "root", "root", "octave"],
       "tags": ["loop_safe", "four_on_floor", "percussive_layer", "default"]
+    },
+    {
+      "id": "BP_OVERWORLD_EIGHTH_LIFT",
+      "texture": "steady",
+      "steps": ["root", "fifth", "root", "octave", "root", "fifth", "octave", "approach"],
+      "tags": ["loop_safe", "bright", "overworld", "variation"]
+    },
+    {
+      "id": "BP_OVERWORLD_ROOT_SKIP",
+      "texture": "broken",
+      "steps": ["root", "rest", "fifth", "root", "octave", "rest", "fifth", "approach"],
+      "tags": ["loop_safe", "bright", "syncopated", "overworld"]
+    },
+    {
+      "id": "BP_BATTLE_OCTAVE_CHARGE",
+      "texture": "broken",
+      "steps": ["root", "octave", "root", "octave", "lowFifth", "octave", "fifth", "approach"],
+      "tags": ["loop_safe", "tense", "energetic", "syncopated", "variation"]
+    },
+    {
+      "id": "BP_BATTLE_LOW_GRIND",
+      "texture": "steady",
+      "steps": ["root", "lowFifth", "root", "rest", "root", "lowFifth", "fifth", "approach"],
+      "tags": ["loop_safe", "tense", "percussive_layer", "breakbeat"]
+    },
+    {
+      "id": "BP_PEACEFUL_PEDAL_AIR",
+      "texture": "steady",
+      "steps": ["root", "rest", "rest", "fifth", "root", "rest", "rest", "root"],
+      "tags": ["loop_safe", "drone", "static", "rest_heavy", "peaceful"]
+    },
+    {
+      "id": "BP_BREAKBEAT_OFFGRID_SUB",
+      "texture": "broken",
+      "steps": ["rest", "root", "lowFifth", "rest", "octave", "root", "rest", "approach"],
+      "tags": ["loop_safe", "breakbeat", "syncopated", "percussive_layer", "variation", "pickup", "section_end"]
+    },
+    {
+      "id": "BP_LOFI_DUST_PEDAL",
+      "texture": "steady",
+      "steps": ["root", "rest", "rest", "root", "rest", "fifth", "rest", "root"],
+      "tags": ["loop_safe", "lofi", "rest_heavy", "swing_hint", "drone", "static"]
+    },
+    {
+      "id": "BP_LOFI_STATIC_SKIP",
+      "texture": "broken",
+      "steps": ["root", "rest", "fifth", "rest", "root", "rest", "rest", "approach"],
+      "tags": ["loop_safe", "lofi", "rest_heavy", "swing_hint", "variation"]
+    },
+    {
+      "id": "BP_DRONE_SECTION_END",
+      "texture": "steady",
+      "steps": ["root", "rest", "root", "rest", "fifth", "rest", "root", "root"],
+      "tags": ["loop_safe", "section_end", "drone", "static", "rest_heavy", "lofi"]
+    },
+    {
+      "id": "BP_PICKUP_ROOT_SLIDE",
+      "texture": "broken",
+      "steps": ["rest", "approach", "root", "fifth", "rest", "octave", "fifth", "approach"],
+      "tags": ["loop_safe", "pickup", "syncopated", "variation"]
+    },
+    {
+      "id": "BP_BATTLE_SECTION_END",
+      "texture": "broken",
+      "steps": ["root", "octave", "lowFifth", "root", "fifth", "approach", "lowFifth", "root"],
+      "tags": ["loop_safe", "section_end", "tense", "breakbeat", "percussive_layer"]
+    },
+    {
+      "id": "BP_BREAKBEAT_PICKUP_CHOP",
+      "texture": "broken",
+      "steps": ["rest", "root", "rest", "octave", "lowFifth", "rest", "fifth", "approach"],
+      "tags": ["loop_safe", "pickup", "breakbeat", "syncopated", "variation", "section_end"]
     }
   ]
 }

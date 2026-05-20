@@ -3360,5 +3360,137 @@
       "lofi",
       "variation"
     ]
+  },
+  {
+    "id": "RM120",
+    "length": 4,
+    "pattern": [
+      { "value": 16, "accent": true },
+      { "value": 16 },
+      { "value": 16, "rest": true },
+      { "value": 16 },
+      { "value": 8, "accent": true },
+      { "value": 8 },
+      { "value": 16 },
+      { "value": 16, "rest": true },
+      { "value": 8 },
+      { "value": 8 }
+    ],
+    "tags": [
+      "middle",
+      "loop_safe",
+      "grid16",
+      "percussive_layer",
+      "syncopation"
+    ],
+    "variations": ["RM121", "RM122"]
+  },
+  {
+    "id": "RM121",
+    "length": 4,
+    "pattern": [
+      { "value": 8, "accent": true },
+      { "value": 16 },
+      { "value": 16, "rest": true },
+      { "value": 8 },
+      { "value": 8, "accent": true },
+      { "value": 16 },
+      { "value": 16 },
+      { "value": 8, "rest": true },
+      { "value": 8 }
+    ],
+    "tags": [
+      "middle",
+      "loop_safe",
+      "grid16",
+      "percussive_layer",
+      "variation",
+      "syncopation"
+    ],
+    "variations": ["RM120", "RM123"]
+  },
+  {
+    "id": "RM122",
+    "length": 4,
+    "pattern": [
+      { "value": 4, "accent": true },
+      { "value": 8 },
+      { "value": 8 },
+      { "value": 4 },
+      { "value": 2, "accent": true }
+    ],
+    "tags": [
+      "end",
+      "cadence",
+      "loop_safe",
+      "grid16",
+      "percussive_layer",
+      "syncopation"
+    ],
+    "variations": ["RM123"]
+  },
+  {
+    "id": "RM123",
+    "length": 4,
+    "pattern": [
+      { "value": 8, "accent": true },
+      { "value": 8 },
+      { "value": 4 },
+      { "value": 8 },
+      { "value": 8, "rest": true },
+      { "value": 2, "accent": true }
+    ],
+    "tags": [
+      "end",
+      "cadence",
+      "loop_safe",
+      "simple",
+      "straight",
+      "syncopation"
+    ],
+    "variations": ["RM122"]
+  },
+  {
+    "id": "RM124",
+    "length": 4,
+    "pattern": [
+      { "value": 8, "rest": true },
+      { "value": 16, "accent": true },
+      { "value": 16 },
+      { "value": 8 },
+      { "value": 4 },
+      { "value": 8, "rest": true },
+      { "value": 8 },
+      { "value": 4 }
+    ],
+    "tags": [
+      "pickup",
+      "start",
+      "grid16",
+      "percussive_layer",
+      "syncopation"
+    ],
+    "variations": ["RM125"]
+  },
+  {
+    "id": "RM125",
+    "length": 4,
+    "pattern": [
+      { "value": 4, "rest": true },
+      { "value": 8, "accent": true },
+      { "value": 8 },
+      { "value": 8 },
+      { "value": 8, "rest": true },
+      { "value": 4 },
+      { "value": 4 }
+    ],
+    "tags": [
+      "pickup",
+      "start",
+      "loop_safe",
+      "rest_heavy",
+      "lofi"
+    ],
+    "variations": ["RM124"]
   }
 ]

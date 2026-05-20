@@ -95,6 +95,42 @@ describe("Motif Constraint Validation", () => {
   });
 
   describe("Melody motif constraints (4 or 8 beats)", () => {
+    it("should have melody-rhythm patterns that sum to their declared length", () => {
+      const melodyRhythmPath = join(motifsPath, "melody-rhythm.json");
+      const melodyRhythmData = JSON.parse(readFileSync(melodyRhythmPath, "utf-8"));
+
+      const toBeats = (value: number) => {
+        switch (value) {
+          case 2:
+            return 2;
+          case 4:
+            return 1;
+          case 8:
+            return 0.5;
+          case 16:
+            return 0.25;
+          default:
+            return NaN;
+        }
+      };
+      const invalidMotifs: any[] = [];
+
+      melodyRhythmData.forEach((motif: any) => {
+        const total = Array.isArray(motif.pattern)
+          ? motif.pattern.reduce((sum: number, step: any) => sum + toBeats(step.value), 0)
+          : NaN;
+        if (!Number.isFinite(total) || Math.abs(total - motif.length) > 1e-6) {
+          invalidMotifs.push({ id: motif.id, length: motif.length, total });
+        }
+      });
+
+      assert.strictEqual(
+        invalidMotifs.length,
+        0,
+        `Melody-rhythm patterns must sum to their declared length. Invalid motifs: ${JSON.stringify(invalidMotifs)}`
+      );
+    });
+
     it("should have non-empty melody patterns", () => {
       const melodyPath = join(motifsPath, "melody.json");
       const melodyData = JSON.parse(readFileSync(melodyPath, "utf-8"));

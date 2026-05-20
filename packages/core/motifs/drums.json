@@ -965,5 +965,227 @@
       "syncopation",
       "variation"
     ]
+  },
+  {
+    "id": "DP090",
+    "length_beats": 4,
+    "type": "beat",
+    "pattern": "K--HSHK--H-SH-K-",
+    "tags": [
+      "loop_safe",
+      "grid16",
+      "breakbeat",
+      "syncopation",
+      "percussive_layer"
+    ]
+  },
+  {
+    "id": "DP091",
+    "length_beats": 4,
+    "type": "beat",
+    "pattern": "KH--S-HK--HSH--O",
+    "tags": [
+      "loop_safe",
+      "grid16",
+      "breakbeat",
+      "syncopation",
+      "variation"
+    ]
+  },
+  {
+    "id": "DP092",
+    "length_beats": 4,
+    "type": "beat",
+    "pattern": "K---H---S---H---",
+    "tags": [
+      "loop_safe",
+      "texture_loop",
+      "straight",
+      "retro",
+      "simple"
+    ]
+  },
+  {
+    "id": "DP093",
+    "length_beats": 4,
+    "type": "beat",
+    "pattern": "K-H-K-H-S-H-K-H-",
+    "tags": [
+      "loop_safe",
+      "four_on_floor",
+      "percussive_layer",
+      "retro",
+      "grid16"
+    ]
+  },
+  {
+    "id": "DP094",
+    "length_beats": 4,
+    "type": "beat",
+    "pattern": "K---H-----S-H---",
+    "tags": [
+      "loop_safe",
+      "lofi",
+      "rest_heavy",
+      "swing_hint",
+      "texture_loop"
+    ]
+  },
+  {
+    "id": "DP095",
+    "length_beats": 4,
+    "type": "beat",
+    "pattern": "K--H---S--H---H-",
+    "tags": [
+      "loop_safe",
+      "lofi",
+      "rest_heavy",
+      "swing_hint",
+      "variation"
+    ]
+  },
+  {
+    "id": "DP096",
+    "length_beats": 4,
+    "type": "fill",
+    "pattern": "K-S-H-S-KTS-H-S-",
+    "tags": [
+      "drum_fill",
+      "build",
+      "grid16",
+      "transition"
+    ]
+  },
+  {
+    "id": "DP097",
+    "length_beats": 4,
+    "type": "fill",
+    "pattern": "N---S-H-N---S-H-",
+    "tags": [
+      "drum_fill",
+      "noise_fx",
+      "section_end",
+      "loop_safe"
+    ]
+  },
+  {
+    "id": "DP098",
+    "length_beats": 4,
+    "type": "fill",
+    "pattern": "S-HSK-HSS-HSK-HO",
+    "tags": [
+      "break",
+      "breakbeat",
+      "drum_fill",
+      "grid16",
+      "syncopation",
+      "variation"
+    ]
+  },
+  {
+    "id": "DP099",
+    "length_beats": 4,
+    "type": "beat",
+    "pattern": "K---H---S-----H-",
+    "tags": [
+      "loop_safe",
+      "lofi",
+      "rest_heavy",
+      "swing_hint",
+      "simple",
+      "open"
+    ]
+  },
+  {
+    "id": "DP100",
+    "length_beats": 4,
+    "type": "beat",
+    "pattern": "K--H---S--H-----",
+    "tags": [
+      "loop_safe",
+      "lofi",
+      "rest_heavy",
+      "swing_hint",
+      "variation"
+    ]
+  },
+  {
+    "id": "DP101",
+    "length_beats": 4,
+    "type": "fill",
+    "pattern": "N-------S---H---",
+    "tags": [
+      "drum_fill",
+      "noise_fx",
+      "lofi",
+      "rest_heavy",
+      "section_end"
+    ]
+  },
+  {
+    "id": "DP102",
+    "length_beats": 4,
+    "type": "fill",
+    "pattern": "N---H---N---S---",
+    "tags": [
+      "drum_fill",
+      "noise_fx",
+      "lofi",
+      "transition",
+      "rest_heavy"
+    ]
+  },
+  {
+    "id": "DP103",
+    "length_beats": 4,
+    "type": "beat",
+    "pattern": "KH-HS-H-KH-HS-H-",
+    "tags": [
+      "loop_safe",
+      "grid16",
+      "percussive_layer",
+      "four_on_floor",
+      "drive"
+    ]
+  },
+  {
+    "id": "DP104",
+    "length_beats": 4,
+    "type": "beat",
+    "pattern": "KHH-S-H-K-HHS-H-",
+    "tags": [
+      "loop_safe",
+      "grid16",
+      "percussive_layer",
+      "breakbeat",
+      "syncopation"
+    ]
+  },
+  {
+    "id": "DP105",
+    "length_beats": 4,
+    "type": "fill",
+    "pattern": "S-HSK-HSS-HSK-H-",
+    "tags": [
+      "break",
+      "breakbeat",
+      "drum_fill",
+      "grid16",
+      "syncopation",
+      "percussive_layer"
+    ]
+  },
+  {
+    "id": "DP106",
+    "length_beats": 4,
+    "type": "beat",
+    "pattern": "K---H---S---H-H-",
+    "tags": [
+      "loop_safe",
+      "retro",
+      "texture_loop",
+      "grid16",
+      "simple"
+    ]
   }
 ]

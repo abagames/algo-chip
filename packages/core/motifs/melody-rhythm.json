@@ -2969,5 +2969,325 @@
       "percussive_layer",
       "loop_safe"
     ]
+  },
+  {
+    "id": "MR065",
+    "length": 4,
+    "pattern": [
+      { "value": 8, "rest": true },
+      { "value": 8, "accent": true },
+      { "value": 4 },
+      { "value": 8 },
+      { "value": 8, "rest": true },
+      { "value": 4 }
+    ],
+    "tags": [
+      "start",
+      "simple",
+      "drive",
+      "loop_safe",
+      "bright"
+    ]
+  },
+  {
+    "id": "MR066",
+    "length": 4,
+    "pattern": [
+      { "value": 8, "accent": true },
+      { "value": 16 },
+      { "value": 16 },
+      { "value": 8, "rest": true },
+      { "value": 8 },
+      { "value": 4, "accent": true },
+      { "value": 8 },
+      { "value": 8 }
+    ],
+    "tags": [
+      "middle",
+      "syncopated",
+      "drive",
+      "staccato",
+      "variation"
+    ]
+  },
+  {
+    "id": "MR067",
+    "length": 4,
+    "pattern": [
+      { "value": 4 },
+      { "value": 8 },
+      { "value": 8 },
+      { "value": 2, "accent": true }
+    ],
+    "tags": [
+      "end",
+      "legato",
+      "cadence",
+      "loop_safe",
+      "simple"
+    ]
+  },
+  {
+    "id": "MR068",
+    "length": 4,
+    "pattern": [
+      { "value": 4, "rest": true },
+      { "value": 8 },
+      { "value": 8 },
+      { "value": 4 },
+      { "value": 4 }
+    ],
+    "tags": [
+      "middle",
+      "rest_heavy",
+      "legato",
+      "texture_loop",
+      "simple"
+    ]
+  },
+  {
+    "id": "MR069",
+    "length": 8,
+    "pattern": [
+      { "value": 4, "accent": true },
+      { "value": 8 },
+      { "value": 8 },
+      { "value": 4 },
+      { "value": 8, "rest": true },
+      { "value": 8 },
+      { "value": 4, "accent": true },
+      { "value": 8 },
+      { "value": 8 },
+      { "value": 4 },
+      { "value": 4 }
+    ],
+    "tags": [
+      "start",
+      "drive",
+      "syncopated",
+      "heroic",
+      "loop_safe"
+    ]
+  },
+  {
+    "id": "MR070",
+    "length": 8,
+    "pattern": [
+      { "value": 4, "accent": true },
+      { "value": 8 },
+      { "value": 8 },
+      { "value": 4 },
+      { "value": 4, "rest": true },
+      { "value": 8 },
+      { "value": 8 },
+      { "value": 4, "accent": true },
+      { "value": 8 },
+      { "value": 8 },
+      { "value": 4 }
+    ],
+    "tags": [
+      "middle",
+      "syncopated",
+      "drive",
+      "call_response",
+      "variation"
+    ]
+  },
+  {
+    "id": "MR071",
+    "length": 8,
+    "pattern": [
+      { "value": 4 },
+      { "value": 4 },
+      { "value": 8 },
+      { "value": 8 },
+      { "value": 4 },
+      { "value": 4 },
+      { "value": 2, "accent": true },
+      { "value": 4 }
+    ],
+    "tags": [
+      "end",
+      "cadence",
+      "loop_safe",
+      "legato",
+      "rest_heavy"
+    ]
+  },
+  {
+    "id": "MR072",
+    "length": 8,
+    "pattern": [
+      { "value": 8, "accent": true },
+      { "value": 16 },
+      { "value": 16 },
+      { "value": 8, "rest": true },
+      { "value": 8 },
+      { "value": 8 },
+      { "value": 16 },
+      { "value": 16, "accent": true },
+      { "value": 4 },
+      { "value": 8, "rest": true },
+      { "value": 8 },
+      { "value": 4 },
+      { "value": 2, "accent": true }
+    ],
+    "tags": [
+      "middle",
+      "syncopated",
+      "staccato",
+      "percussive_layer",
+      "breakbeat"
+    ]
+  },
+  {
+    "id": "MR073",
+    "length": 4,
+    "pattern": [
+      { "value": 8, "rest": true },
+      { "value": 8 },
+      { "value": 8 },
+      { "value": 8 },
+      { "value": 4, "accent": true },
+      { "value": 4 }
+    ],
+    "tags": [
+      "middle",
+      "loop_safe",
+      "texture_loop",
+      "grid16",
+      "simple",
+      "syncopated"
+    ]
+  },
+  {
+    "id": "MR074",
+    "length": 4,
+    "pattern": [
+      { "value": 4 },
+      { "value": 8 },
+      { "value": 8 },
+      { "value": 2, "accent": true }
+    ],
+    "tags": [
+      "end",
+      "cadence",
+      "loop_safe",
+      "legato",
+      "peaceful",
+      "simple"
+    ]
+  },
+  {
+    "id": "MR075",
+    "length": 4,
+    "pattern": [
+      { "value": 8, "rest": true },
+      { "value": 16, "accent": true },
+      { "value": 16 },
+      { "value": 8 },
+      { "value": 4 },
+      { "value": 8 },
+      { "value": 8, "rest": true },
+      { "value": 8 }
+    ],
+    "tags": [
+      "pickup",
+      "start",
+      "syncopated",
+      "drive",
+      "staccato"
+    ]
+  },
+  {
+    "id": "MR076",
+    "length": 8,
+    "pattern": [
+      { "value": 4 },
+      { "value": 8, "rest": true },
+      { "value": 8 },
+      { "value": 4, "rest": true },
+      { "value": 4 },
+      { "value": 8 },
+      { "value": 8, "rest": true },
+      { "value": 4 },
+      { "value": 2, "accent": true }
+    ],
+    "tags": [
+      "middle",
+      "rest_heavy",
+      "lofi",
+      "swing_hint",
+      "loop_safe"
+    ]
+  },
+  {
+    "id": "MR077",
+    "length": 8,
+    "pattern": [
+      { "value": 8, "accent": true },
+      { "value": 8 },
+      { "value": 8, "rest": true },
+      { "value": 8 },
+      { "value": 8, "accent": true },
+      { "value": 8 },
+      { "value": 8 },
+      { "value": 8, "rest": true },
+      { "value": 8 },
+      { "value": 8 },
+      { "value": 8, "accent": true },
+      { "value": 8 },
+      { "value": 8, "rest": true },
+      { "value": 8 },
+      { "value": 8 },
+      { "value": 8 }
+    ],
+    "tags": [
+      "middle",
+      "syncopated",
+      "breakbeat",
+      "grid16",
+      "percussive_layer",
+      "variation"
+    ]
+  },
+  {
+    "id": "MR078",
+    "length": 4,
+    "pattern": [
+      { "value": 8 },
+      { "value": 8 },
+      { "value": 8 },
+      { "value": 8 },
+      { "value": 4, "accent": true },
+      { "value": 4 }
+    ],
+    "tags": [
+      "start",
+      "texture_loop",
+      "retro",
+      "loop_safe",
+      "simple"
+    ]
+  },
+  {
+    "id": "MR079",
+    "length": 4,
+    "pattern": [
+      { "value": 8, "accent": true },
+      { "value": 8 },
+      { "value": 4 },
+      { "value": 8, "rest": true },
+      { "value": 8 },
+      { "value": 4, "accent": true }
+    ],
+    "tags": [
+      "end",
+      "cadence",
+      "loop_safe",
+      "syncopated",
+      "staccato",
+      "drive"
+    ]
   }
 ]
