@@ -78,5 +78,37 @@
       "measureBoundaryValue": 0.8,
       "defaultValue": 0.66
     }
+  ],
+  "pitchBendOrnaments": [
+    {
+      "id": "PB_RETRO_LEAD_SCOOP",
+      "channels": ["square1", "square2"],
+      "minDurationBeats": 0.5,
+      "intervalSemitones": 0.35,
+      "returnAfterBeats": 0.125,
+      "rampDurationSeconds": 0.035,
+      "everyNthNote": 7,
+      "styleFlag": "filterMotion"
+    },
+    {
+      "id": "PB_BREAKBEAT_STING",
+      "channels": ["square1", "square2"],
+      "minDurationBeats": 0.25,
+      "intervalSemitones": -0.45,
+      "returnAfterBeats": 0.0625,
+      "rampDurationSeconds": 0.025,
+      "everyNthNote": 11,
+      "styleFlag": "syncopationBias"
+    },
+    {
+      "id": "PB_PAD_DRIFT",
+      "channels": ["square1", "square2"],
+      "minDurationBeats": 1,
+      "intervalSemitones": 0.22,
+      "returnAfterBeats": 0.25,
+      "rampDurationSeconds": 0.08,
+      "everyNthNote": 9,
+      "styleFlag": "atmosPad"
+    }
   ]
 }

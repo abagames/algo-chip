@@ -31,6 +31,10 @@ export function applyTechniques(phase3: EventRealizationResult, styleIntent: Sty
 
   const dutySweeps = [...(techniqueLibrary.dutySweeps ?? [])];
   const gainProfiles = [...(techniqueLibrary.gainProfiles ?? [])];
+  const pitchBendOrnaments = (techniqueLibrary.pitchBendOrnaments ?? []).filter((ornament) =>
+    ornament.styleFlag ? styleIntent[ornament.styleFlag] : true
+  );
+  const ornamentCounters: Partial<Record<TimedEvent["channel"], number>> = {};
 
   if (styleIntent.filterMotion) {
     dutySweeps.push({
@@ -135,6 +139,47 @@ export function applyTechniques(phase3: EventRealizationResult, styleIntent: Sty
         channel: event.channel,
         command: "setParam",
         data: { param: profile.param, value }
+      });
+    }
+
+    for (const ornament of pitchBendOrnaments) {
+      if (!ornament.channels.includes(event.channel)) continue;
+      if (!offEvent) continue;
+      if (duration < ornament.minDurationBeats) continue;
+      const midi = event.data.midi;
+      if (typeof midi !== "number") continue;
+      const nextCount = (ornamentCounters[event.channel] ?? 0) + 1;
+      ornamentCounters[event.channel] = nextCount;
+      if (nextCount % Math.max(1, ornament.everyNthNote) !== 0) continue;
+
+      const bendBeat = event.beatTime + Math.min(0.0625, duration / 4);
+      const returnBeat = Math.min(
+        event.beatTime + duration - 0.03125,
+        bendBeat + ornament.returnAfterBeats
+      );
+      if (returnBeat <= bendBeat) continue;
+
+      additionalEvents.push({
+        beatTime: bendBeat,
+        channel: event.channel,
+        command: "setParam",
+        data: {
+          param: "pitchBend",
+          value: midi + ornament.intervalSemitones,
+          rampDuration: ornament.rampDurationSeconds,
+          curve: "linear"
+        }
+      });
+      additionalEvents.push({
+        beatTime: returnBeat,
+        channel: event.channel,
+        command: "setParam",
+        data: {
+          param: "pitchBend",
+          value: midi,
+          rampDuration: ornament.rampDurationSeconds,
+          curve: "linear"
+        }
       });
     }
 
