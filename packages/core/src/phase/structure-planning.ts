@@ -31,11 +31,7 @@ const TEMPO_BASE: Record<PipelineCompositionOptions["tempo"], number> = {
 };
 
 /**
- * Maps moods to motif tags for filtering chord progressions and melodies.
- * Tags are ordered by priority (first = preferred). This allows Phase 2 to select
- * motifs that match the emotional intent. For example, "upbeat" music prefers
- * "overworld_bright" progressions but can fall back to "heroic" if needed.
- * Tags come from the motif JSON library and were manually curated for each mood.
+ * Maps moods to motif tags — kept as a fallback when no axis coordinates are available.
  */
 const MOOD_TAG_MAP: Record<PipelineCompositionOptions["mood"], string[]> = {
   upbeat: ["overworld_bright", "heroic"],
@@ -45,18 +41,74 @@ const MOOD_TAG_MAP: Record<PipelineCompositionOptions["mood"], string[]> = {
 };
 
 /**
- * Default musical keys for each mood.
- * These key choices are based on common music theory associations and retro game music conventions:
- * - upbeat → G Major: Bright, cheerful (common in overworld themes)
- * - sad/tense → E Minor: Darker, more emotional (used in dramatic scenes)
- * - peaceful → C Major: Neutral, calm (simplest key, no accidentals)
- * These defaults can be overridden by seed-based selection if the preferred key lacks motifs.
+ * 2-axis positions for each chord-progression tag in chords.json.
+ * Used by selectChordTagsFromAxis to pick the best-matching tags without
+ * relying on mood strings that only match a subset of keys.
+ * Axes: calm (calmEnergetic) and melodic (percussiveMelodic), same sign convention.
  */
-const DEFAULT_KEY_PER_MOOD: Record<PipelineCompositionOptions["mood"], string> = {
-  upbeat: "G_Major",
-  sad: "E_Minor",
-  tense: "E_Minor",
-  peaceful: "C_Major"
+const TAG_AXIS_POSITION: Record<string, { calm: number; melodic: number }> = {
+  // major-energetic
+  heroic:             { calm:  0.5, melodic:  0.0 },
+  overworld_bright:   { calm:  0.4, melodic:  0.2 },
+  triumph:            { calm:  0.4, melodic:  0.0 },
+  adventure:          { calm:  0.3, melodic:  0.0 },
+  adventure_bright:   { calm:  0.5, melodic:  0.1 },
+  upbeat_dance:       { calm:  0.4, melodic: -0.2 },
+  heroic_fanfare:     { calm:  0.3, melodic:  0.0 },
+  playful:            { calm:  0.0, melodic:  0.2 },
+  // major-calm
+  town_peaceful:      { calm: -0.3, melodic:  0.1 },
+  simple:             { calm: -0.2, melodic:  0.0 },
+  warm_bright:        { calm: -0.3, melodic:  0.2 },
+  peaceful_flow:      { calm: -0.4, melodic:  0.2 },
+  // minor-percussive
+  final_battle_tense: { calm:  0.3, melodic: -0.5 },
+  castle_majestic:    { calm:  0.0, melodic: -0.4 },
+  tense_dark:         { calm:  0.1, melodic: -0.4 },
+  dramatic_tension:   { calm:  0.2, melodic: -0.5 },
+  dark_industrial:    { calm:  0.0, melodic: -0.5 },
+  brooding_drama:     { calm: -0.2, melodic: -0.3 },
+  dark:               { calm: -0.1, melodic: -0.2 },
+  // minor-melodic
+  ending_sorrowful:   { calm: -0.2, melodic:  0.2 },
+  melancholy:         { calm: -0.3, melodic:  0.2 },
+  wistful_journey:    { calm: -0.2, melodic:  0.3 },
+  sorrowful_deep:     { calm: -0.3, melodic:  0.2 },
+  minor_ballad:       { calm: -0.2, melodic:  0.3 },
+  mysterious:         { calm: -0.1, melodic:  0.1 },
+  epic_adventure:     { calm:  0.2, melodic:  0.0 },
+};
+
+/**
+ * Selects the two chord-progression tags from keyData whose axis positions
+ * are closest to the given axis. This replaces MOOD_TAG_MAP and guarantees
+ * that the selected tags always exist in the current key, eliminating fallback.
+ */
+function selectChordTagsFromAxis(
+  keyData: Record<string, string[][]>,
+  axis: { calmEnergetic: number; percussiveMelodic: number }
+): string[] {
+  const availableTags = Object.keys(keyData).filter((t) => TAG_AXIS_POSITION[t]);
+  if (!availableTags.length) return Object.keys(keyData);
+
+  return availableTags
+    .sort((a, b) => {
+      const pa = TAG_AXIS_POSITION[a];
+      const pb = TAG_AXIS_POSITION[b];
+      const da = Math.hypot(pa.calm - axis.calmEnergetic, pa.melodic - axis.percussiveMelodic);
+      const db = Math.hypot(pb.calm - axis.calmEnergetic, pb.melodic - axis.percussiveMelodic);
+      return da - db;
+    })
+    .slice(0, 2);
+}
+
+/**
+ * Key candidates for explicit major/minor mode.
+ * Replaces KEY_CANDIDATES_PER_MOOD for key selection to decouple key from mood.
+ */
+const KEY_CANDIDATES_PER_MODE: Record<"major" | "minor", string[]> = {
+  major: ["G_Major", "C_Major", "D_Major", "F_Major"],
+  minor: ["E_Minor", "A_Minor", "D_Minor", "B_Minor", "C_Minor"]
 };
 
 const AVAILABLE_CHORD_KEYS = Object.keys(chords);
@@ -64,7 +116,13 @@ const AVAILABLE_CHORD_KEYS = Object.keys(chords);
 const SCALE_DEGREES: Record<string, number[]> = {
   G_Major: [0, 2, 4, 5, 7, 9, 11],
   E_Minor: [0, 2, 3, 5, 7, 8, 10],
-  C_Major: [0, 2, 4, 5, 7, 9, 11]
+  C_Major: [0, 2, 4, 5, 7, 9, 11],
+  D_Major: [0, 2, 4, 5, 7, 9, 11],
+  F_Major: [0, 2, 4, 5, 7, 9, 11],
+  A_Minor: [0, 2, 3, 5, 7, 8, 10],
+  D_Minor: [0, 2, 3, 5, 7, 8, 10],
+  B_Minor: [0, 2, 3, 5, 7, 8, 10],
+  C_Minor: [0, 2, 3, 5, 7, 8, 10],
 };
 
 const SECTION_TEMPLATE_POOL: Array<Array<{ id: string; measures: number }>> = [
@@ -102,84 +160,81 @@ const TEMPLATE_INDEX_BY_MOOD: Partial<Record<PipelineCompositionOptions["mood"],
 
 /**
  * Length-optimized section templates for specific measure counts (16, 32, 64).
- * These templates provide better structure for common composition lengths.
+ * Each (length, mood) entry holds multiple template candidates selected by seed.
  */
 const SECTION_TEMPLATES_BY_LENGTH: Record<
   number,
-  Record<PipelineCompositionOptions["mood"], Array<{ id: string; measures: number }>>
+  Record<PipelineCompositionOptions["mood"], Array<Array<{ id: string; measures: number }>>>
 > = {
-  // 16 measures: Simple AB structure
+  // 16 measures
   16: {
     upbeat: [
-      { id: "A", measures: 8 },   // Intro/Verse
-      { id: "B", measures: 8 }    // Chorus/Outro
+      [ { id: "A", measures: 8 }, { id: "B", measures: 8 } ],
+      [ { id: "A", measures: 6 }, { id: "B", measures: 6 }, { id: "A", measures: 4 } ],
+      [ { id: "Intro", measures: 4 }, { id: "A", measures: 8 }, { id: "Outro", measures: 4 } ],
     ],
     peaceful: [
-      { id: "A", measures: 8 },
-      { id: "B", measures: 8 }
+      [ { id: "A", measures: 8 }, { id: "B", measures: 8 } ],
+      [ { id: "A", measures: 12 }, { id: "B", measures: 4 } ],
+      [ { id: "Intro", measures: 4 }, { id: "A", measures: 12 } ],
     ],
     tense: [
-      { id: "A", measures: 8 },
-      { id: "B", measures: 8 }
+      [ { id: "A", measures: 8 }, { id: "B", measures: 8 } ],
+      [ { id: "A", measures: 4 }, { id: "B", measures: 8 }, { id: "C", measures: 4 } ],
+      [ { id: "A", measures: 10 }, { id: "B", measures: 6 } ],
     ],
     sad: [
-      { id: "A", measures: 8 },
-      { id: "B", measures: 8 }
-    ]
+      [ { id: "A", measures: 8 }, { id: "B", measures: 8 } ],
+      [ { id: "Intro", measures: 4 }, { id: "A", measures: 12 } ],
+      [ { id: "A", measures: 6 }, { id: "B", measures: 6 }, { id: "A", measures: 4 } ],
+    ],
   },
-  // 32 measures: Balanced ABCD or AA-BB structure
+  // 32 measures
   32: {
     upbeat: [
-      { id: "A", measures: 8 },   // Intro/Verse A
-      { id: "B", measures: 8 },   // Chorus A
-      { id: "C", measures: 8 },   // Verse B/Bridge
-      { id: "D", measures: 8 }    // Chorus B/Outro
+      [ { id: "A", measures: 8 }, { id: "B", measures: 8 }, { id: "C", measures: 8 }, { id: "D", measures: 8 } ],
+      [ { id: "A", measures: 8 }, { id: "A", measures: 8 }, { id: "B", measures: 16 } ],
+      [ { id: "Intro", measures: 4 }, { id: "A", measures: 10 }, { id: "B", measures: 10 }, { id: "A", measures: 8 } ],
     ],
     peaceful: [
-      { id: "A", measures: 16 },  // Long section A
-      { id: "B", measures: 16 }   // Long section B
+      [ { id: "A", measures: 16 }, { id: "B", measures: 16 } ],
+      [ { id: "A", measures: 12 }, { id: "B", measures: 12 }, { id: "A", measures: 8 } ],
+      [ { id: "Intro", measures: 8 }, { id: "A", measures: 16 }, { id: "Outro", measures: 8 } ],
     ],
     tense: [
-      { id: "A", measures: 8 },
-      { id: "B", measures: 8 },
-      { id: "A", measures: 8 },
-      { id: "C", measures: 8 }
+      [ { id: "A", measures: 8 }, { id: "B", measures: 8 }, { id: "A", measures: 8 }, { id: "C", measures: 8 } ],
+      [ { id: "A", measures: 12 }, { id: "B", measures: 12 }, { id: "C", measures: 8 } ],
+      [ { id: "Intro", measures: 4 }, { id: "A", measures: 14 }, { id: "B", measures: 14 } ],
     ],
     sad: [
-      { id: "Intro", measures: 4 },
-      { id: "A", measures: 12 },
-      { id: "B", measures: 8 },
-      { id: "A", measures: 8 }
-    ]
+      [ { id: "Intro", measures: 4 }, { id: "A", measures: 12 }, { id: "B", measures: 8 }, { id: "A", measures: 8 } ],
+      [ { id: "A", measures: 16 }, { id: "B", measures: 16 } ],
+      [ { id: "Intro", measures: 8 }, { id: "A", measures: 12 }, { id: "B", measures: 12 } ],
+    ],
   },
-  // 64 measures: Complex development with longer sections
+  // 64 measures
   64: {
     upbeat: [
-      { id: "A", measures: 16 },  // Intro/Verse A
-      { id: "B", measures: 16 },  // Chorus A
-      { id: "C", measures: 16 },  // Verse B/Bridge
-      { id: "D", measures: 16 }   // Chorus B/Outro
+      [ { id: "A", measures: 16 }, { id: "B", measures: 16 }, { id: "C", measures: 16 }, { id: "D", measures: 16 } ],
+      [ { id: "A", measures: 16 }, { id: "A", measures: 16 }, { id: "B", measures: 32 } ],
+      [ { id: "Intro", measures: 8 }, { id: "A", measures: 20 }, { id: "B", measures: 20 }, { id: "A", measures: 16 } ],
     ],
     peaceful: [
-      { id: "A", measures: 16 },
-      { id: "B", measures: 16 },
-      { id: "A", measures: 16 },
-      { id: "C", measures: 16 }
+      [ { id: "A", measures: 16 }, { id: "B", measures: 16 }, { id: "A", measures: 16 }, { id: "C", measures: 16 } ],
+      [ { id: "A", measures: 32 }, { id: "B", measures: 32 } ],
+      [ { id: "Intro", measures: 8 }, { id: "A", measures: 24 }, { id: "B", measures: 24 }, { id: "Outro", measures: 8 } ],
     ],
     tense: [
-      { id: "Intro", measures: 8 },
-      { id: "A", measures: 16 },
-      { id: "B", measures: 16 },
-      { id: "C", measures: 12 },
-      { id: "A", measures: 12 }
+      [ { id: "Intro", measures: 8 }, { id: "A", measures: 16 }, { id: "B", measures: 16 }, { id: "C", measures: 12 }, { id: "A", measures: 12 } ],
+      [ { id: "A", measures: 20 }, { id: "B", measures: 20 }, { id: "C", measures: 24 } ],
+      [ { id: "Intro", measures: 8 }, { id: "A", measures: 28 }, { id: "B", measures: 28 } ],
     ],
     sad: [
-      { id: "Intro", measures: 8 },
-      { id: "A", measures: 20 },
-      { id: "B", measures: 16 },
-      { id: "A", measures: 20 }
-    ]
-  }
+      [ { id: "Intro", measures: 8 }, { id: "A", measures: 20 }, { id: "B", measures: 16 }, { id: "A", measures: 20 } ],
+      [ { id: "A", measures: 32 }, { id: "B", measures: 32 } ],
+      [ { id: "Intro", measures: 12 }, { id: "A", measures: 24 }, { id: "B", measures: 16 }, { id: "Outro", measures: 12 } ],
+    ],
+  },
 };
 
 const HOOK_TEMPLATES = new Set(["A"]);
@@ -196,7 +251,8 @@ const STYLE_INTENT_BASE: StyleIntent = {
   breakInsertion: false,
   filterMotion: false,
   syncopationBias: false,
-  atmosPad: false
+  atmosPad: false,
+  lofiFeel: false
 };
 
 const STYLE_PRESET_MAP: Record<StylePreset, Partial<StyleIntent>> = {
@@ -268,7 +324,12 @@ function mergeStyleIntent(base: StyleIntent, patch: Partial<StyleIntent> | undef
 function precomputeStyleIntent(options: PipelineCompositionOptions): Partial<StyleIntent> {
   let intent: Partial<StyleIntent> = {};
 
-  // Apply preset first
+  // Apply axis-derived overrides first (lower priority)
+  if (options.styleOverrides) {
+    intent = { ...intent, ...options.styleOverrides };
+  }
+
+  // Apply preset last: preset wins over axis-mapping for pre-section decisions (e.g. harmonicStatic)
   if (options.stylePreset) {
     const presetPatch = STYLE_PRESET_MAP[options.stylePreset];
     if (presetPatch) {
@@ -276,22 +337,13 @@ function precomputeStyleIntent(options: PipelineCompositionOptions): Partial<Sty
     }
   }
 
-  // Apply user overrides
-  if (options.styleOverrides) {
-    intent = { ...intent, ...options.styleOverrides };
-  }
-
   return intent;
 }
 
 function resolveStyleIntent(options: PipelineCompositionOptions, sections: SectionDefinition[]): StyleIntent {
   let intent = createStyleIntent();
-  if (options.stylePreset) {
-    const presetPatch = STYLE_PRESET_MAP[options.stylePreset];
-    if (presetPatch) {
-      intent = mergeStyleIntent(intent, presetPatch);
-    }
-  }
+  // Preset is applied at the end (after structure inference and styleOverrides) so its
+  // intent flags take priority over axis-mapping and structural auto-derivation.
 
   const totalMeasures = sections.reduce((sum, section) => sum + section.measures, 0);
   const sectionTemplateCounts = sections.reduce<Map<string, number>>((acc, section) => {
@@ -355,10 +407,19 @@ function resolveStyleIntent(options: PipelineCompositionOptions, sections: Secti
   const inferredHarmonicStatic = intent.harmonicStatic;
   intent = mergeStyleIntent(intent, options.styleOverrides);
 
-  // Only override harmonicStatic if it wasn't explicitly provided in styleOverrides
+  // Only reset harmonicStatic when it was neither inferred nor explicitly provided via styleOverrides
   const wasExplicitlyProvided = options.styleOverrides && typeof options.styleOverrides.harmonicStatic === "boolean";
   if (!inferredHarmonicStatic && !wasExplicitlyProvided) {
     intent.harmonicStatic = false;
+  }
+
+  // Preset applied last: wins over axis-mapping and structure inference.
+  // This must come after the harmonicStatic guard so the guard cannot reset a preset flag.
+  if (options.stylePreset) {
+    const presetPatch = STYLE_PRESET_MAP[options.stylePreset];
+    if (presetPatch) {
+      intent = mergeStyleIntent(intent, presetPatch);
+    }
   }
 
   return intent;
@@ -496,8 +557,9 @@ function buildSections(
   let baseTemplate: Array<{ id: string; measures: number }>;
 
   if (targetMeasures in SECTION_TEMPLATES_BY_LENGTH) {
-    // Use optimized template for 16, 32, or 64 measures
-    baseTemplate = SECTION_TEMPLATES_BY_LENGTH[targetMeasures][options.mood].map(s => ({ ...s }));
+    const templates = SECTION_TEMPLATES_BY_LENGTH[targetMeasures][options.mood];
+    const templateIndex = Math.floor(randomFromSeed(seed, 0x5EED) * templates.length) % templates.length;
+    baseTemplate = templates[templateIndex].map(s => ({ ...s }));
   } else {
     // Fall back to existing logic for custom lengths
     baseTemplate = pickTemplateForMood(options.mood, seed);
@@ -570,9 +632,10 @@ function buildSections(
     if (useSingleChord && randomizedProgressions.length > 0) {
       // Original behavior: single static chord
       progression = [randomizedProgressions[0][0]];
-    } else if (useHarmonicStatic && randomizedProgressions.length > 0) {
-      // New behavior: limited progression with occasional related chords
-      const baseChord = randomizedProgressions[chordIndex % randomizedProgressions.length][0];
+    } else if (useHarmonicStatic && chordsPool.length > 0) {
+      // Use the tonic chord from the unshuffled pool so harmonicStatic sections
+      // drone on the key's tonic rather than a randomly selected chord.
+      const baseChord = chordsPool[0][0];
       progression = buildLimitedProgression(baseChord, rng);
     } else {
       // Normal progression
@@ -955,15 +1018,17 @@ export function planStructure(options: PipelineCompositionOptions): StructurePla
   const baseBpm = TEMPO_BASE[options.tempo];
   const bpmOffset = Math.round((randomFromSeed(options.seed, 1) - 0.5) * 30);
   const bpm = baseBpm + Math.max(-15, Math.min(15, bpmOffset));
-  const moodTags = MOOD_TAG_MAP[options.mood];
-  const key = resolveKey(options.mood, options.seed);
+  const key = resolveKey(options.mood, options.seed, options.mode);
   const scaleDegrees = SCALE_DEGREES[key];
 
   if (!scaleDegrees) {
     throw new Error(`Scale not defined for key ${key}`);
   }
 
-  const chordsPool = selectChordProgressions(key, moodTags, options.seed);
+  const chordTags = options.axis
+    ? selectChordTagsFromAxis((chords as any)[key] as Record<string, string[][]>, options.axis)
+    : MOOD_TAG_MAP[options.mood];
+  const chordsPool = selectChordProgressions(key, chordTags, options.seed);
   const precomputedIntent = precomputeStyleIntent(options);
   const sections = buildSections(options, chordsPool, options.seed, precomputedIntent);
   const styleIntent = resolveStyleIntent(options, sections);
@@ -1001,10 +1066,20 @@ function shuffleArray<T>(items: T[], seed: number | undefined, salt: number): T[
   return copy;
 }
 
-function resolveKey(mood: PipelineCompositionOptions["mood"], seed: number | undefined): string {
-  const preferred = DEFAULT_KEY_PER_MOOD[mood];
-  if (preferred && AVAILABLE_CHORD_KEYS.includes(preferred)) {
-    return preferred;
+function resolveKey(
+  mood: PipelineCompositionOptions["mood"],
+  seed: number | undefined,
+  mode?: "major" | "minor"
+): string {
+  const pool = mode
+    ? KEY_CANDIDATES_PER_MODE[mode]
+    : (mood === "upbeat" || mood === "peaceful"
+        ? KEY_CANDIDATES_PER_MODE.major
+        : KEY_CANDIDATES_PER_MODE.minor);
+  const candidates = pool.filter((k) => AVAILABLE_CHORD_KEYS.includes(k));
+  if (candidates.length) {
+    const index = Math.floor(randomFromSeed(seed, 0x1234) * candidates.length) % candidates.length;
+    return candidates[index];
   }
   if (!AVAILABLE_CHORD_KEYS.length) {
     throw new Error("Chord library is empty");

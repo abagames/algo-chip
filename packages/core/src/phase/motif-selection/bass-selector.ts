@@ -39,6 +39,9 @@ export function selectBassPattern(
   if (styleIntent.atmosPad && styleIntent.loopCentric) {
     candidates = preferTagPresence(candidates, ["lofi", "rest_heavy"], 0.25);
   }
+  if (styleIntent.lofiFeel) {
+    candidates = preferTagPresence(candidates, ["lofi", "rest_heavy", "drone", "static"], 0.25);
+  }
   if (styleIntent.harmonicStatic) {
     candidates = biasByTagPresence(candidates, ["drone", "static"], rng, 0.65);
   }

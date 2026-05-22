@@ -24,12 +24,14 @@ export function convertToBeats(value: number): number {
 }
 
 /**
- * Expand rhythm motif pattern into timestamped steps
+ * Expand rhythm motif pattern into timestamped steps.
+ * Pattern entries may be plain numbers or {value, accent?, rest?} objects.
  */
 export function expandRhythmPattern(motif: RhythmMotif): ExpandedRhythmStep[] {
-  const steps: ExpandedRhythmStep[] = motif.pattern.map((value) => ({
-    durationBeats: convertToBeats(value)
-  }));
+  const steps: ExpandedRhythmStep[] = motif.pattern.map((entry) => {
+    const noteValue = typeof entry === "number" ? entry : (entry as { value: number }).value;
+    return { durationBeats: convertToBeats(noteValue) };
+  });
 
   // Validate that pattern sum matches declared length
   const total = steps.reduce((sum, step) => sum + step.durationBeats, 0);

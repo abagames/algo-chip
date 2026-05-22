@@ -171,7 +171,9 @@ export function selectMelodyRhythmMotif(
   if (!filtered.length) {
     filtered = candidates;
   }
-  let moodFiltered = filtered.filter((motif) => moodTags.some((tag) => motif.tags.includes(tag)));
+  const lofiMoodTags = styleIntent.lofiFeel ? ["lofi", "rest_heavy", "swing_hint"] : [];
+  const effectiveMoodTags = [...moodTags, ...lofiMoodTags];
+  let moodFiltered = filtered.filter((motif) => effectiveMoodTags.some((tag) => motif.tags.includes(tag)));
   if (!moodFiltered.length) {
     moodFiltered = filtered;
   }
@@ -186,6 +188,10 @@ export function selectMelodyRhythmMotif(
 
   if (styleIntent.syncopationBias) {
     moodFiltered = preferTagPresence(moodFiltered, ["syncopated", "drive"]);
+  }
+
+  if (styleIntent.lofiFeel) {
+    moodFiltered = preferTagPresence(moodFiltered, ["lofi", "rest_heavy", "legato"], 0.25);
   }
 
   if (requiredTags.length) {

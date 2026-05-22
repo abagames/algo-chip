@@ -64,6 +64,10 @@ export function runPipeline(options: CompositionOptions): PipelineResult {
   const totalBeats = pipeline.lengthInMeasures * BEATS_PER_MEASURE;
   const totalDuration = (totalBeats / structurePlan.bpm) * 60;
 
+  const sectionPattern = structurePlan.sections
+    .map(s => `${s.templateId}${s.measures}`)
+    .join("-");
+
   return {
     events: finalTimeline.events,
     diagnostics: finalTimeline.diagnostics,
@@ -78,6 +82,7 @@ export function runPipeline(options: CompositionOptions): PipelineResult {
       voiceArrangement: structurePlan.voiceArrangement,
       profile,
       replayOptions,
+      sectionPattern,
       loopInfo: {
         loopStartBeat: 0,
         loopEndBeat: totalBeats,

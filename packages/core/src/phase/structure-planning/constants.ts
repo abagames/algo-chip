@@ -30,9 +30,15 @@ export const DEFAULT_KEY_PER_MOOD: Record<PipelineCompositionOptions["mood"], st
 export const AVAILABLE_CHORD_KEYS = Object.keys(chords);
 
 export const SCALE_DEGREES: Record<string, number[]> = {
+  C_Major: [0, 2, 4, 5, 7, 9, 11],
+  D_Major: [0, 2, 4, 5, 7, 9, 11],
+  F_Major: [0, 2, 4, 5, 7, 9, 11],
   G_Major: [0, 2, 4, 5, 7, 9, 11],
+  A_Minor: [0, 2, 3, 5, 7, 8, 10],
+  B_Minor: [0, 2, 3, 5, 7, 8, 10],
+  C_Minor: [0, 2, 3, 5, 7, 8, 10],
+  D_Minor: [0, 2, 3, 5, 7, 8, 10],
   E_Minor: [0, 2, 3, 5, 7, 8, 10],
-  C_Major: [0, 2, 4, 5, 7, 9, 11]
 };
 
 export const HOOK_TEMPLATES = new Set(["A"]);
@@ -49,7 +55,8 @@ export const STYLE_INTENT_BASE: StyleIntent = {
   breakInsertion: false,
   filterMotion: false,
   syncopationBias: false,
-  atmosPad: false
+  atmosPad: false,
+  lofiFeel: false
 };
 
 export const STYLE_PRESET_MAP: Record<StylePreset, Partial<StyleIntent>> = {
@@ -93,6 +100,7 @@ export const STYLE_PRESET_MAP: Record<StylePreset, Partial<StyleIntent>> = {
     atmosPad: true,
     loopCentric: true,
     harmonicStatic: true,
+    lofiFeel: true,
     textureFocus: false,
     gradualBuild: false,
     percussiveLayering: false,

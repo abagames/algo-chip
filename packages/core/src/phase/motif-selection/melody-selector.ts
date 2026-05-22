@@ -57,6 +57,10 @@ export function selectMelodyFragment(
     candidates = preferTagPresence(candidates, ["ascending"]);
   }
 
+  if (styleIntent.lofiFeel) {
+    candidates = preferTagPresence(candidates, ["lofi", "simple", "peaceful"], 0.25);
+  }
+
   const pool = preferUnused(candidates, used);
   return pickWithAvoid(pool, rng, lastFragment?.id);
 }

@@ -202,9 +202,9 @@ const FALLBACK_BASS_PATTERN: BassPatternMotif = {
  */
 const RHYTHM_PROPERTY_TAGS: Record<PipelineCompositionOptions["mood"], string[]> = {
   upbeat: ["straight", "syncopation"],
-  sad: ["straight", "simple"],
+  sad: ["simple", "rest_heavy"],    // "straight" removed: was shared with peaceful (79% overlap)
   tense: ["syncopation", "accented"],
-  peaceful: ["straight", "open"]
+  peaceful: ["open", "rest_heavy"]  // "straight" removed: was shared with sad
 };
 
 /**
@@ -220,8 +220,8 @@ const RHYTHM_PROPERTY_TAGS: Record<PipelineCompositionOptions["mood"], string[]>
  */
 const MELODY_MOOD_TAGS: Record<PipelineCompositionOptions["mood"], string[]> = {
   upbeat: ["bright", "ascending"],
-  sad: ["dark", "descending"],
-  tense: ["dark", "complex", "leaping"],
+  sad: ["descending", "legato"],          // "dark" removed: was shared with tense (95% overlap)
+  tense: ["leaping", "complex"],          // "dark" removed: was shared with sad
   peaceful: ["simple", "arch", "bright"]
 };
 
@@ -703,7 +703,10 @@ function hasAllTags(source: { tags: string[] }, tags: string[]): boolean {
 
 function isStrongBeat(beat: number): boolean {
   const epsilon = 1e-6;
-  return Math.abs(beat % 1) < epsilon;
+  // Only beats 1 and 3 (0.0 and 2.0 within a 4-beat measure) are strong beats.
+  // Beats 2 and 4 are backbeats and should allow passing tones via ensureConsonantPitch.
+  const beatInMeasure = beat % BEATS_PER_MEASURE;
+  return Math.abs(beatInMeasure % 2) < epsilon;
 }
 
 function findMelodyReference(
@@ -739,7 +742,8 @@ function selectRhythmMotif(
   diagnostics?: MotifSelectionDiagnostics
 ) {
   const safeRhythms = rhythmList.filter(isRhythmMotifConsistent);
-  const propertyTags = RHYTHM_PROPERTY_TAGS[options.mood] ?? [];
+  const basePropTags = RHYTHM_PROPERTY_TAGS[options.mood] ?? [];
+  const propertyTags = styleIntent.lofiFeel ? [...basePropTags, "lofi", "swing_hint", "rest_heavy"] : basePropTags;
   const filterByTags = (source: typeof rhythmList, tags: string[]) =>
     source.filter((motif) => tags.some((tag) => motif.tags.includes(tag)));
 
@@ -777,8 +781,16 @@ function selectRhythmMotif(
     }
   }
 
+  if (styleIntent.lofiFeel) {
+    candidates = preferTagPresenceWithDiagnostics(candidates, ["lofi", "swing_hint", "rest_heavy"], diagnostics, "rhythm", "lofiFeel", 0.25);
+  }
+
   if (styleIntent.loopCentric) {
     candidates = preferTagPresenceWithDiagnostics(candidates, ["loop_safe", "texture_loop"], diagnostics, "rhythm", "loopCentric");
+  }
+
+  if (styleIntent.syncopationBias) {
+    candidates = preferTagPresenceWithDiagnostics(candidates, ["syncopation"], diagnostics, "rhythm", "syncopationBias");
   }
 
   if (styleIntent.textureFocus) {
@@ -787,10 +799,6 @@ function selectRhythmMotif(
 
   if (styleIntent.percussiveLayering) {
     candidates = preferTagPresenceWithDiagnostics(candidates, ["grid16", "percussive_layer"], diagnostics, "rhythm", "percussiveLayering");
-  }
-
-  if (styleIntent.syncopationBias) {
-    candidates = preferTagPresenceWithDiagnostics(candidates, ["syncopation"], diagnostics, "rhythm", "syncopationBias");
   }
 
   const presetRhythmTags = presetTags(options.stylePreset, "rhythm");
@@ -887,6 +895,10 @@ function selectMelodyFragment(
     candidates = preferTagPresenceWithDiagnostics(candidates, ["ascending"], diagnostics, "melody", "gradualBuild");
   }
 
+  if (styleIntent.lofiFeel) {
+    candidates = preferTagPresenceWithDiagnostics(candidates, ["lofi", "simple", "peaceful"], diagnostics, "melody", "lofiFeel", 0.25);
+  }
+
   const presetMelodyTags = presetTags(options.stylePreset, "melody");
   if (presetMelodyTags.length) {
     candidates = preferTagPresenceWithDiagnostics(candidates, presetMelodyTags, diagnostics, "melody", "preset", 0.25);
@@ -908,7 +920,8 @@ function selectMelodyRhythmMotif(
   diagnostics?: MotifSelectionDiagnostics
 ): MelodyRhythmMotif {
   const tolerance = 1e-6;
-  const moodTags = MELODY_RHYTHM_TAGS[options.mood] ?? [];
+  const baseMoodTags = MELODY_RHYTHM_TAGS[options.mood] ?? [];
+  const moodTags = styleIntent.lofiFeel ? [...baseMoodTags, "lofi", "rest_heavy", "swing_hint"] : baseMoodTags;
   let candidates = melodyRhythmList.filter((motif) => Math.abs(motif.length - totalBeats) < tolerance);
   recordCandidatePool(diagnostics, "melodyRhythm", "length", [`length:${totalBeats}`], melodyRhythmList.length, candidates.length, candidates.length, candidates.length === 0, candidates.length === 0 ? "empty_match" : undefined);
   if (!candidates.length) {
@@ -925,16 +938,20 @@ function selectMelodyRhythmMotif(
     moodFiltered = filtered;
   }
 
+  if (styleIntent.lofiFeel) {
+    moodFiltered = preferTagPresenceWithDiagnostics(moodFiltered, ["lofi", "swing_hint"], diagnostics, "melodyRhythm", "lofiFeel", 0.25);
+  }
+
   if (styleIntent.loopCentric) {
     moodFiltered = preferTagPresenceWithDiagnostics(moodFiltered, ["loop_safe", "texture_loop"], diagnostics, "melodyRhythm", "loopCentric");
   }
 
-  if (styleIntent.textureFocus) {
-    moodFiltered = preferTagPresenceWithDiagnostics(moodFiltered, ["texture_loop", "grid16", "simple"], diagnostics, "melodyRhythm", "textureFocus");
-  }
-
   if (styleIntent.syncopationBias) {
     moodFiltered = preferTagPresenceWithDiagnostics(moodFiltered, ["syncopated", "drive"], diagnostics, "melodyRhythm", "syncopationBias");
+  }
+
+  if (styleIntent.textureFocus) {
+    moodFiltered = preferTagPresenceWithDiagnostics(moodFiltered, ["texture_loop", "grid16", "simple"], diagnostics, "melodyRhythm", "textureFocus");
   }
 
   const presetMelodyRhythmTags = presetTags(options.stylePreset, "melodyRhythm");
@@ -997,16 +1014,30 @@ function resolveMelodyVelocity(
  * @param mood - The mood setting (upbeat, peaceful, tense, sad)
  * @param tempo - The tempo setting (slow, medium, fast)
  * @param seed - Random seed for deterministic variation
- * @returns Base MIDI register for the composition (typically 63-78, Eb4-F#5)
+ * @returns Base MIDI register for the composition (clamped 62-82, D4-Bb5), anchored to key tonic
  */
+const KEY_TONIC_MIDI: Record<string, number> = {
+  C_Major: 60,
+  D_Major: 62,
+  E_Minor: 64,
+  F_Major: 65,
+  G_Major: 67,
+  A_Minor: 69,
+  B_Minor: 71,
+  C_Minor: 60,
+  D_Minor: 62,
+};
+
 function resolveBaseRegisterForComposition(
+  key: string,
   mood: MoodSetting,
   tempo: TempoSetting,
   stylePreset: StylePreset | undefined,
   styleIntent: StyleIntent,
   seed: number
 ): number {
-  const DEFAULT_REGISTER = 72; // C5
+  // Anchor to key tonic one octave up (e.g. E4+12=E5) so degree-1 aligns with the tonic
+  const tonicBase = (KEY_TONIC_MIDI[key] ?? 60) + 12;
 
   // Mood-based offsets: different moods naturally sit in different registers
   const moodBaseOffsets: Record<MoodSetting, number> = {
@@ -1047,15 +1078,15 @@ function resolveBaseRegisterForComposition(
   const randomVariation = Math.floor(rng() * 7) - 3; // -3 to +3
 
   const baseRegister =
-    DEFAULT_REGISTER +
+    tonicBase +
     moodOffset +
     tempoOffset +
     presetOffset +
     intentAdjustments +
     randomVariation;
 
-  // Clamp to practical chiptune melody range: MIDI 63-78 (Eb4-F#5)
-  return Math.max(63, Math.min(78, baseRegister));
+  // Clamp to practical chiptune melody range: MIDI 62-82 (D4-Bb5)
+  return Math.max(62, Math.min(82, baseRegister));
 }
 
 function resolveMelodyRegister(
@@ -1355,7 +1386,7 @@ function selectBassPattern(
   if (styleIntent.percussiveLayering && styleIntent.syncopationBias && styleIntent.breakInsertion) {
     candidates = preferTagPresenceWithDiagnostics(candidates, ["breakbeat", "variation"], diagnostics, "bass", "breakbeatFocus", 0.2);
   }
-  if (styleIntent.atmosPad && styleIntent.loopCentric) {
+  if (styleIntent.lofiFeel || (styleIntent.atmosPad && styleIntent.loopCentric)) {
     candidates = preferTagPresenceWithDiagnostics(candidates, ["lofi", "rest_heavy"], diagnostics, "bass", "lofiPad", 0.25);
   }
   if (styleIntent.harmonicStatic) {
@@ -1544,9 +1575,10 @@ interface ExpandedRhythmStep {
 }
 
 function expandRhythmPattern(motif: RhythmMotif): ExpandedRhythmStep[] {
-  const steps: ExpandedRhythmStep[] = motif.pattern.map((value) => ({
-    durationBeats: convertToBeats(value)
-  }));
+  const steps: ExpandedRhythmStep[] = motif.pattern.map((entry) => {
+    const noteValue = typeof entry === "number" ? entry : (entry as { value: number }).value;
+    return { durationBeats: convertToBeats(noteValue) };
+  });
 
   // Validate that pattern sum matches declared length
   const total = steps.reduce((sum, step) => sum + step.durationBeats, 0);
@@ -1930,6 +1962,7 @@ function initializeMotifContext(
   const rng = createRng(options.seed);
   const compositionSeed = options.seed ?? Date.now();
   const compositionBaseRegister = resolveBaseRegisterForComposition(
+    phase1.key,
     options.mood,
     options.tempo,
     options.stylePreset,
@@ -2634,14 +2667,18 @@ function convertMelodyToMidi(
 /**
  * Convert accompaniment AbstractNotes to MidiNotes with consonant pitch adjustment.
  * Part of P2-1 refactoring: extracted from selectMotifsLegacy.
+ * compositionBaseRegister is used to position accompaniment below the melody (voice-crossing fix).
  */
 function convertAccompanimentToMidi(
   accompanimentSeeds: AbstractNote[],
   phase1: StructurePlanResult,
-  melodyMidi: MidiNote[]
+  melodyMidi: MidiNote[],
+  compositionBaseRegister: number
 ): MidiNote[] {
+  // Place accompaniment a perfect 4th below the melody base register to avoid voice crossing.
+  const accompBaseMidi = compositionBaseRegister - 5;
   return accompanimentSeeds.map((note) => {
-    const baseMidi = scaleDegreeToMidi(note.degree, phase1.scaleDegrees, 67);
+    const baseMidi = scaleDegreeToMidi(note.degree, phase1.scaleDegrees, accompBaseMidi);
     const chord = resolveChordAtBeat(phase1, note.startBeat);
     const reference = findMelodyReference(note.startBeat, melodyMidi);
     const midi = ensureConsonantPitch(baseMidi, chord, reference?.midi);
@@ -2699,7 +2736,7 @@ function selectMotifsLegacy(options: PipelineCompositionOptions, phase1: Structu
   // Convert AbstractNotes to MidiNotes (P2-1 refactoring: extracted conversion logic)
   const melodyMidi = convertMelodyToMidi(results.melody, phase1, context);
   const bassMidi = convertBassToMidi(results.bass, phase1);
-  const accompanimentMidi = convertAccompanimentToMidi(results.accompanimentSeeds, phase1, melodyMidi);
+  const accompanimentMidi = convertAccompanimentToMidi(results.accompanimentSeeds, phase1, melodyMidi, context.compositionBaseRegister);
 
   return {
     melody: melodyMidi,

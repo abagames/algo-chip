@@ -30,13 +30,15 @@ export function selectRhythmMotif(
   const filterByTags = (source: RhythmMotif[], tags: string[]) =>
     source.filter((motif) => tags.some((tag) => motif.tags.includes(tag)));
 
+  const lofiTags = ["lofi", "swing_hint", "rest_heavy"];
+  const effectivePropertyTags = styleIntent.lofiFeel ? [...propertyTags, ...lofiTags] : propertyTags;
   const requiredPool = safeRhythms.filter((motif) => hasAllTags(motif, requiredTags));
   let candidates = safeRhythms.filter((motif) => motif.tags.includes(functionTag));
-  const propertyFiltered = filterByTags(candidates, propertyTags);
+  const propertyFiltered = filterByTags(candidates, effectivePropertyTags);
   if (propertyFiltered.length) {
     candidates = propertyFiltered;
   } else {
-    const fallback = filterByTags(safeRhythms, propertyTags);
+    const fallback = filterByTags(safeRhythms, effectivePropertyTags);
     if (fallback.length) {
       candidates = fallback;
     }
@@ -57,6 +59,11 @@ export function selectRhythmMotif(
   if (styleIntent.syncopationBias) {
     candidates = preferTagPresence(candidates, ["syncopation"]);
   }
+
+  if (styleIntent.lofiFeel) {
+    candidates = preferTagPresence(candidates, ["lofi", "swing_hint", "rest_heavy"], 0.25);
+  }
+
   if (!candidates.length) {
     candidates = safeRhythms;
   }

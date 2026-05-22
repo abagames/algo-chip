@@ -81,6 +81,7 @@ export interface StyleIntent {
   filterMotion: boolean;
   syncopationBias: boolean;
   atmosPad: boolean;
+  lofiFeel: boolean;
 }
 
 export interface StyleTags {
@@ -120,10 +121,25 @@ export interface CompositionOptions {
   twoAxisStyle?: TwoAxisStyle;
   /** Optional style overrides applied after two-axis resolution. */
   overrides?: StyleOverrides;
+  /**
+   * Explicit style preset. When specified, preset intent flags take priority
+   * over axis-mapping and structure inference. Omit to rely purely on two-axis
+   * coordinates without preset snapping.
+   */
+  preset?: StylePreset;
+  /**
+   * Explicit major/minor mode controlling key selection.
+   * When omitted, derived automatically from two-axis coordinates.
+   */
+  mode?: "major" | "minor";
 }
 
 export interface PipelineCompositionOptions {
   mood: MoodSetting;
+  /** Explicit major/minor mode, used for key selection (takes priority over mood-derived pool). */
+  mode?: "major" | "minor";
+  /** Raw two-axis coordinates forwarded for chord-tag selection. */
+  axis?: TwoAxisStyle;
   tempo: TempoSetting;
   lengthInMeasures: number;
   seed: number;
@@ -272,6 +288,7 @@ export interface PipelineResult {
     voiceArrangement: VoiceArrangement;
     profile: ResolvedStyleProfile;
     replayOptions: CompositionOptions;
+    sectionPattern: string;
     loopInfo: {
       loopStartBeat: number;
       loopEndBeat: number;

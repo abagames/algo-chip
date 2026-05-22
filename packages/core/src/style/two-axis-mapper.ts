@@ -112,6 +112,13 @@ export function mapTwoAxisToStyleIntent(axis: TwoAxisStyle): StyleIntent {
      *          Adds duty cycle build sweeps
      */
     gradualBuild: energyStrength > 0.4,
+
+    /**
+     * lofiFeel: Activates in the calm+melodic quadrant (calmStrength > 0.5 && melodicStrength > 0.3)
+     * Effects: Prefers "lofi", "swing_hint", "rest_heavy" motifs in all selectors
+     *          Applies independently of stylePreset; lofiChillhop preset also sets this true
+     */
+    lofiFeel: calmStrength > 0.5 && melodicStrength > 0.3,
   };
 }
 
@@ -125,6 +132,30 @@ export function deriveTwoAxisTempo(axis: TwoAxisStyle): "slow" | "medium" | "fas
   if (axis.calmEnergetic < -0.4) return "slow";
   if (axis.calmEnergetic > 0.4) return "fast";
   return "medium";
+}
+
+/**
+ * Derives major/minor mode from two-axis coordinates.
+ *
+ * Rules (checked in order):
+ * 1. Calm+melodic quadrant (lofi/ambient) → minor
+ * 2. Strongly percussive + not strongly energetic → dark/tense minor
+ * 3. Energetic (high positive calmEnergetic) → major
+ * 4. Default → major
+ *
+ * Rule 2 threshold: calmEnergetic ≤ 0.3 keeps "percussive+high-energy" (e.g. progressive house
+ * at calmEnergetic=0.6) in major while "percussive+moderate-energy" stays minor.
+ */
+export function deriveModeFromAxis(axis: TwoAxisStyle): "major" | "minor" {
+  const { percussiveMelodic, calmEnergetic } = axis;
+  // Calm+melodic quadrant (lofi/ambient) → minor
+  if (calmEnergetic <= -0.3 && percussiveMelodic >= 0.2) return "minor";
+  // Strongly percussive → dark/tense minor regardless of energy level
+  // (consistent with old mood inference: percussiveMelodic ≤ -0.4 mapped to "tense")
+  if (percussiveMelodic <= -0.4) return "minor";
+  // Positive calmEnergetic with non-percussive axis → major
+  if (calmEnergetic >= 0.3) return "major";
+  return "major";
 }
 
 /**

@@ -78,10 +78,9 @@ import {
   validateTwoAxisStyle,
   mapTwoAxisToStyleIntent,
   deriveTwoAxisTempo,
-  inferTagsFromAxis
+  inferTagsFromAxis,
+  deriveModeFromAxis
 } from "./two-axis-mapper.js";
-import { PRESET_TO_TWO_AXIS } from "./preset-to-axis.js";
-
 /**
  * Resolution result containing pipeline format, resolved profile, and replay options.
  */
@@ -102,7 +101,8 @@ const INTENT_KEYS: IntentKey[] = [
   "breakInsertion",
   "filterMotion",
   "syncopationBias",
-  "atmosPad"
+  "atmosPad",
+  "lofiFeel"
 ];
 
 const DEFAULT_INTENT: StyleIntent = {
@@ -114,24 +114,15 @@ const DEFAULT_INTENT: StyleIntent = {
   breakInsertion: false,
   filterMotion: false,
   syncopationBias: false,
-  atmosPad: false
+  atmosPad: false,
+  lofiFeel: false
 };
 
 const DEFAULT_PROFILE: StyleProfile = {
   tempo: "medium",
   intent: { ...DEFAULT_INTENT },
-  randomizeUnsetIntent: false
+  randomizeUnsetIntent: true
 };
-
-const PRESET_SLUG_TO_ENUM: Record<string, StylePreset> = {
-  "minimal-techno": "minimalTechno",
-  "progressive-house": "progressiveHouse",
-  "retro-loopwave": "retroLoopwave",
-  "breakbeat-jungle": "breakbeatJungle",
-  "lofi-chillhop": "lofiChillhop"
-};
-
-const PRESET_MATCH_THRESHOLD = 0.35;
 
 const DEFAULT_AXIS: TwoAxisStyle = {
   percussiveMelodic: 0,
@@ -145,6 +136,15 @@ function seedRandom(seed: number): () => number {
     state = (state * 1664525 + 1013904223) >>> 0;
     return state / 0xffffffff;
   };
+}
+
+function applyBaselineIntentVariety(intent: StyleIntent, seed: number): StyleIntent {
+  const allFalse = Object.values(intent).every(v => !v);
+  if (!allFalse) return intent;
+  const rng = seedRandom(seed ^ 0xABCD);
+  const candidates: (keyof StyleIntent)[] = ["loopCentric", "filterMotion", "atmosPad", "gradualBuild"];
+  const picked = candidates[Math.floor(rng() * candidates.length)];
+  return { ...intent, [picked]: true };
 }
 
 function ensureIntent(partial: Partial<StyleIntent>, rng: (() => number) | null, randomize: boolean): StyleIntent {
@@ -178,28 +178,6 @@ function mergeProfile(base: StyleProfile, patch: StyleOverrides): StyleProfile {
     intent,
     randomizeUnsetIntent: patch.randomizeUnsetIntent ?? base.randomizeUnsetIntent
   };
-}
-
-function inferPresetFromAxis(axis: TwoAxisStyle): StylePreset | undefined {
-  let bestKey: string | undefined;
-  let bestDistance = Number.POSITIVE_INFINITY;
-
-  for (const [slug, presetAxis] of Object.entries(PRESET_TO_TWO_AXIS)) {
-    const distance = Math.hypot(
-      axis.percussiveMelodic - presetAxis.percussiveMelodic,
-      axis.calmEnergetic - presetAxis.calmEnergetic
-    );
-    if (distance < bestDistance) {
-      bestDistance = distance;
-      bestKey = slug;
-    }
-  }
-
-  if (!bestKey || bestDistance > PRESET_MATCH_THRESHOLD) {
-    return undefined;
-  }
-
-  return PRESET_SLUG_TO_ENUM[bestKey] ?? undefined;
 }
 
 /**
@@ -250,6 +228,7 @@ export function resolveGenerationContext(options: CompositionOptions): ResolveRe
   const axis = validateTwoAxisStyle(axisInput);
 
   let intent = mapTwoAxisToStyleIntent(axis);
+  intent = applyBaselineIntentVariety(intent, resolvedSeed);
 
   if (options.overrides?.intent) {
     for (const key of INTENT_KEYS) {
@@ -267,7 +246,7 @@ export function resolveGenerationContext(options: CompositionOptions): ResolveRe
   let profile: StyleProfile = {
     tempo,
     intent,
-    randomizeUnsetIntent: false
+    randomizeUnsetIntent: true
   };
 
   if (options.overrides) {
@@ -284,13 +263,33 @@ export function resolveGenerationContext(options: CompositionOptions): ResolveRe
     randomizeUnsetIntent: shouldRandomizeIntent
   };
 
+  // styleOverrides carries only axis-derived flags + user-explicit overrides.
+  // Random fills from ensureIntent are excluded so that explicit preset flags
+  // (applied later in resolveStyleIntent) are not overwritten by random values.
+  // applyBaselineIntentVariety is retained so the center of the 2D space still
+  // exhibits variety when no axis threshold is exceeded.
+  let axisStyleOverrides: StyleIntent = { ...mapTwoAxisToStyleIntent(axis) };
+  axisStyleOverrides = applyBaselineIntentVariety(axisStyleOverrides, resolvedSeed);
+  if (options.overrides?.intent) {
+    for (const key of INTENT_KEYS) {
+      const value = options.overrides.intent[key];
+      if (typeof value === "boolean") {
+        axisStyleOverrides[key] = value;
+      }
+    }
+  }
+
+  const resolvedMode = options.mode ?? deriveModeFromAxis(axis);
+
   const pipelineOptions: PipelineCompositionOptions = {
     mood,
+    mode: resolvedMode,
+    axis: { ...axis },
     tempo: profile.tempo ?? "medium",
     lengthInMeasures: resolvedLength,
     seed: resolvedSeed,
-    stylePreset: inferPresetFromAxis(axis),
-    styleOverrides: finalizedIntent
+    stylePreset: options.preset ?? undefined,
+    styleOverrides: axisStyleOverrides
   };
 
   const resolvedProfile: ResolvedStyleProfile = {
@@ -310,6 +309,14 @@ export function resolveGenerationContext(options: CompositionOptions): ResolveRe
 
   if (options.overrides) {
     replayOptions.overrides = JSON.parse(JSON.stringify(options.overrides));
+  }
+
+  if (options.preset) {
+    replayOptions.preset = options.preset;
+  }
+
+  if (options.mode) {
+    replayOptions.mode = options.mode;
   }
 
   return {
