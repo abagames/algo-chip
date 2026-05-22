@@ -173,7 +173,7 @@ describe("Two-Axis Corner Cases", () => {
   });
 
   describe("Center: Balanced (0, 0)", () => {
-    it("should have mostly false flags for balanced setting", () => {
+    it("should apply baseline variety and remain tempo/energy neutral", () => {
       const result = runPipeline({
         lengthInMeasures: 8,
         seed: SEED,
@@ -188,16 +188,16 @@ describe("Two-Axis Corner Cases", () => {
       console.log("(0, 0) Tempo:", result.meta.tempo);
       console.log("(0, 0) BPM:", result.meta.bpm);
 
-      // All strengths are 0, so all flags should be false
-      assert.strictEqual(intent.percussiveLayering, false, "percussiveLayering should be false");
-      assert.strictEqual(intent.syncopationBias, false, "syncopationBias should be false");
-      assert.strictEqual(intent.breakInsertion, false, "breakInsertion should be false");
-      assert.strictEqual(intent.harmonicStatic, false, "harmonicStatic should be false");
-      assert.strictEqual(intent.atmosPad, false, "atmosPad should be false");
-      assert.strictEqual(intent.filterMotion, false, "filterMotion should be false");
-      assert.strictEqual(intent.loopCentric, false, "loopCentric should be false");
-      assert.strictEqual(intent.textureFocus, false, "textureFocus should be false");
-      assert.strictEqual(intent.gradualBuild, false, "gradualBuild should be false");
+      // Baseline variety ensures at least one of the safe candidates is true
+      const baselineCandidates: (keyof typeof intent)[] = ["loopCentric", "filterMotion", "atmosPad", "gradualBuild"];
+      const atLeastOneActive = baselineCandidates.some(k => intent[k]);
+      assert.ok(atLeastOneActive, "at least one baseline candidate flag should be true at origin");
+
+      // Axis-driven flags that require non-zero strength must stay false
+      assert.strictEqual(intent.percussiveLayering, false, "percussiveLayering should be false (needs percussive strength)");
+      assert.strictEqual(intent.syncopationBias, false, "syncopationBias should be false (needs percussive strength)");
+      assert.strictEqual(intent.breakInsertion, false, "breakInsertion should be false (needs percussive+energetic strength)");
+      assert.strictEqual(intent.harmonicStatic, false, "harmonicStatic should be false (needs melodic+calm strength)");
 
       // Tempo & energy tags should be neutral
       assert.strictEqual(result.meta.tempo, "medium", "tempo should be medium");

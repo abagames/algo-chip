@@ -1,8 +1,16 @@
-import type { CompositionOptions, Event, StyleIntent, StyleOverrides, TwoAxisStyle } from "../types.js";
+import type { CompositionOptions, Event, StyleIntent, StyleOverrides, StylePreset, TwoAxisStyle } from "../types.js";
 import { presetToTwoAxis } from "../style/preset-to-axis.js";
 
 type IntentKey = keyof StyleIntent;
 type PresetSlug = "minimal-techno" | "progressive-house" | "retro-loopwave" | "breakbeat-jungle" | "lofi-chillhop";
+
+const PRESET_SLUG_TO_ENUM: Record<PresetSlug, StylePreset> = {
+  "minimal-techno": "minimalTechno",
+  "progressive-house": "progressiveHouse",
+  "retro-loopwave": "retroLoopwave",
+  "breakbeat-jungle": "breakbeatJungle",
+  "lofi-chillhop": "lofiChillhop"
+};
 
 export function buildTwoAxisOptions(params: {
   lengthInMeasures: number;
@@ -29,7 +37,8 @@ export function buildTwoAxisOptions(params: {
     lengthInMeasures: params.lengthInMeasures,
     seed: params.seed,
     twoAxisStyle: axis,
-    overrides
+    overrides,
+    preset: params.preset ? PRESET_SLUG_TO_ENUM[params.preset] : undefined
   };
 }
 

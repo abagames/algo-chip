@@ -59,4 +59,23 @@ describe("mapTwoAxisToStyleIntent - Direct Test", () => {
     const result = mapTwoAxisToStyleIntent({ percussiveMelodic: pm, calmEnergetic: ce });
     assert.strictEqual(result.harmonicStatic, true, "harmonicStatic should match manual calculation");
   });
+
+  it("lofiFeel activates in calm+melodic quadrant", () => {
+    // lofi-leaning: percussiveMelodic=0.45, calmEnergetic=-0.75
+    // calmStrength=0.75 > 0.5, melodicStrength=0.45 > 0.3 → lofiFeel=true
+    const lofi = mapTwoAxisToStyleIntent({ percussiveMelodic: 0.45, calmEnergetic: -0.75 });
+    assert.strictEqual(lofi.lofiFeel, true, "lofi-leaning should activate lofiFeel");
+
+    // percussive-energetic: no calm, no melodic → lofiFeel=false
+    const perc = mapTwoAxisToStyleIntent({ percussiveMelodic: -0.65, calmEnergetic: 0.65 });
+    assert.strictEqual(perc.lofiFeel, false, "percussive-energetic should not activate lofiFeel");
+
+    // calm but not melodic: melodicStrength=0 → lofiFeel=false
+    const calmPerc = mapTwoAxisToStyleIntent({ percussiveMelodic: -0.3, calmEnergetic: -0.8 });
+    assert.strictEqual(calmPerc.lofiFeel, false, "calm+percussive should not activate lofiFeel");
+
+    // neutral: both axes near 0 → lofiFeel=false
+    const neutral = mapTwoAxisToStyleIntent({ percussiveMelodic: 0, calmEnergetic: 0 });
+    assert.strictEqual(neutral.lofiFeel, false, "neutral should not activate lofiFeel");
+  });
 });
