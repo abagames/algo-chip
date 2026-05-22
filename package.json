@@ -63,6 +63,7 @@
     "test:core": "node --loader ts-node/esm --test \"packages/core/src/test/**/*.spec.ts\"",
     "test:util": "npm run test -w packages/util",
     "report:seed-sweep": "node --loader ts-node/esm scripts/seed-sweep-report.ts",
+    "verify:lofi": "node --loader ts-node/esm scripts/verify-lofi.ts",
     "dev": "npm run dev -w packages/demo",
     "preview": "npm run preview -w packages/demo",
     "docs:api": "typedoc --options typedoc.json",

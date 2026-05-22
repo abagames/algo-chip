@@ -33,7 +33,16 @@
     filterMotion: boolean;        // フィルター変調
     syncopationBias: boolean;     // シンコペーション傾向
     atmosPad: boolean;            // アトモスフェリックパッド
+    lofiFeel: boolean;            // ローファイ美学（calm+melodic象限）
   }
+
+  // スタイルプリセット - ジャンル固有の意図バンドル（明示的に指定する必要あり）
+  type StylePreset =
+    | "minimalTechno"
+    | "progressiveHouse"
+    | "retroLoopwave"
+    | "breakbeatJungle"
+    | "lofiChillhop";
 
   // スタイルプロファイル上書き
   type StyleOverrides = Partial<{
@@ -47,6 +56,8 @@
     lengthInMeasures?: number;    // 小節数（デフォルト: 32）
     seed?: number;                 // 乱数シード（未指定時は自動生成）
     twoAxisStyle?: TwoAxisStyle;   // 2軸スタイル（デフォルト: {0, 0}）
+    preset?: StylePreset;          // ジャンルプリセット（明示的に設定必須; 軸座標から自動推定しない）
+    mode?: "major" | "minor";      // 調性モード上書き（未設定時は軸から導出）
     overrides?: StyleOverrides;    // スタイルプロファイル上書き
   }
   ```
@@ -117,21 +128,27 @@
 1. **2軸スタイルの解釈**:
    - `percussiveMelodic`軸: -1.0（打楽器的）～ +1.0（旋律的）
    - `calmEnergetic`軸: -1.0（穏やか）～ +1.0（激しい）
-   - 座標からムード（upbeat/sad/tense/peaceful）とテンポ（slow/medium/fast）を推定
-   - `StyleIntent`の9つのフラグを座標に基づいて設定
+   - `deriveModeFromAxis()` により調性モード（`major`/`minor`）を導出:
+     - calm+melodic象限（`calmEnergetic ≤ -0.3` かつ `percussiveMelodic ≥ 0.2`） → minor
+     - 強くパーカッシブ（`percussiveMelodic ≤ -0.4`）→ エネルギー軸に関わらず minor
+     - それ以外 → major
+   - `CompositionOptions.mode` が指定されている場合はそれで上書き
+   - テンプレート選択・テクニック戦略用にレガシームード文字列（upbeat/sad/tense/peaceful）を推定
+   - `calmEnergetic` からテンポ（slow/medium/fast）を導出
+   - 10個の `StyleIntent` フラグを軸座標から設定; `lofiFeel` は `calmStrength > 0.5 && melodicStrength > 0.3` で有効化
 
 2. **楽曲パラメータ決定**:
    - テンポ基準値: `slow=90BPM`, `medium=120BPM`, `fast=150BPM`
    - 2軸座標とシードに基づき±15BPMの範囲で微調整
-   - ムードに応じたキー選択（upbeat→G Major, sad→E Minor, etc.）
+   - 導出モードに基づくキー選択 — モード別候補プール:
+     - major: G Major, C Major, D Major, F Major
+     - minor: E Minor, A Minor, D Minor, B Minor, C Minor
+   - `(seed + salt) % pool.length` により候補から最終キーを決定
 
-3. **ムードタグ正規化**:
-   | ムード | 優先モチーフタグ候補 |
-   |---------|---------------------|
-   | upbeat | overworld_bright → heroic |
-   | sad | ending_sorrowful → dark |
-   | tense | final_battle_tense → castle_majestic |
-   | peaceful | town_peaceful → simple |
+3. **軸ベースのコードタグ選択**:
+   - 各コードタグには `TAG_AXIS_POSITION` によって (melodic, calm) 2次元空間上の正規位置が割り当てられている
+   - `selectChordTagsFromAxis()` が現在の軸から各タグ位置までのユークリッド距離を計算し、選択中のキーのコードデータに存在する最も近い2タグを選択する
+   - フォールバック: 軸情報がない場合（レガシーパス）は `MOOD_TAG_MAP` でムード文字列をタグ候補にマッピング
 
 4. **楽曲構成選択**:
    - 小節数（16/32/64など）に最適化されたセクションテンプレートを選択
@@ -174,7 +191,7 @@
       d. モチーフ選択は `seed` ドリブンの RNG で行い、タグ条件を満たす候補の中から確率的に選択する。直前と同一モチーフが続いた場合は最大 3 回まで再抽選し、意図しない繰り返しを抑止する。
       e. **タグフィルタリングの過剰抑制防止**: `preferTagPresence`によるタグ優先フィルタリングが候補を40%未満に削減する場合、フォールバックして元の候補プールを維持する。これにより、複数のstyleIntentフラグが重複適用された際の候補枯渇と極端なモチーフ繰り返しを防止する。
   4.  **ハーモニー整合処理**:
-      生成されたメロディ・伴奏・ベースをスケール度数から MIDI へ変換する際、強拍ではコードトーンへ量子化し、弱拍ではコード内で最も滑らかに接続する音を選択する。伴奏については同時発音するメロディ音に対して協和度を評価し、必要ならオクターブ移動を行う。
+      生成されたメロディ・伴奏・ベースをスケール度数から MIDI へ変換する際、**強拍**（4拍小節内の拍1・拍3、すなわち `beat % 2 === 0` となる拍位置）ではコードトーンへ量子化し、弱拍ではコード内で最も滑らかに接続する音を選択する。伴奏については同時発音するメロディ音に対して協和度を評価し、必要ならオクターブ移動を行う。伴奏のベースレジスタはメロディベースの完全4度下に設定し、ボイスクロッシングを防止する。
 
 ##### **フェーズ 3: チャンネル・マッピングと奏法の実装 (Channel Mapping & Technique Implementation)**
 
@@ -194,7 +211,7 @@
         - `priority`: 0.0-1.0の生成確率。1.0=常に生成、0.7=70%の小節で生成（スパースな表現用）
         - `octaveOffset`: -1/0/+1のオクターブ移動。bassAlt(octave -1)でサブベース（D1-E2域）生成
         - `seedOffset`: 同role内でパターンを変えるためのseed加算値
-      - **選択ロジック**: フェーズ1で`seed`と`stylePreset`に基づき重み付き抽選。minimalTechnoはminimal/bassLed優先、progressiveHouseはlayeredBass優先、retroLoopwaveはretroPulse優先、breakbeatJungleはbreakLayered/dualBassを重視、lofiChillhopはlofiPadLead/minimalを優先するなど、ジャンル特性を反映。
+      - **選択ロジック**: フェーズ1で`seed`と`stylePreset`に基づき重み付き抽選。`stylePreset`は `CompositionOptions.preset` で明示的に指定する必要があり、軸座標から自動推定されることはない。minimalTechnoはminimal/bassLed優先、progressiveHouseはlayeredBass優先、retroLoopwaveはretroPulse優先、breakbeatJungleはbreakLayered/dualBassを重視、lofiChillhopはlofiPadLead/minimalを優先するなど、ジャンル特性を反映。
       - **velocity調整**: `adjustVelocityForChannel()` がロールとチャンネルに応じたスケーリングを実施。ベース系ロールは70%に抑え、さらにMIDI 52未満では0.85を乗算して超低域を制御。`triangle`は基準値の75%（非ベース時には追加で0.9倍）に減衰し、ベースを担当する`square`は0.82倍を掛けることでチャンネル間の音圧バランスを維持する。
       - **後方互換性**: `standard`/`swapped` arrangementではフェーズ2の従来ロジック（`selectMotifsLegacy`）を呼び出し、既存の楽曲生成動作を保証。
 2.  **リズムトラックの特殊変換**:
@@ -255,7 +272,7 @@
 - **テクニックモチーフ (`techniques.json`)**: synthesizer / worklet が対応している param だけを出力する。新しい装飾は `channels`、持続時間しきい値、`styleFlag`、cadence / boundary 用途など狭い発火条件を持たせ、全ノートに過密適用されないようにする。
 - **Variation リンク**: 繰り返しセクションで置換可能な近縁案は `variations` で結ぶ。変形はフレーズ長と大まかな機能を保ちつつ、リズム、輪郭、音域、密度のどれか 1 要素を変える。
 - **避けるべきパターン**: 使用可能なハードウェアチャンネル数を超える同時発音を前提にしたモチーフ、ループ頭へ重なる長い終端 release、実態と矛盾するタグ、毎拍反復される極端な高音跳躍、重複 ID、音楽的にほぼ同じ重複項目は避ける。
-- **必須検証**: モチーフ編集後は `npm test`、`npm run build:core`、`npm run report:seed-sweep -- --seeds=101,202,303`、`git diff --check` を実行する。melody-rhythm 変更時は duration sanity テストが全新規モチーフを対象にしていることを確認する。drums/noise 変更時は `noise-collision` が clean であることを確認する。スタイル固有モチーフを追加した場合は seed sweep の `diagnostics.motifSelection.candidatePools` と `motifUsage` を見て、新タグが過剰 fallback なしで到達可能か確認する。
+- **必須検証**: モチーフ編集後は `npm test`、`npm run build:core`、`npm run report:seed-sweep -- --seeds=101,202,303 --assert`、`git diff --check` を実行する。`--assert` フラグは自動閾値チェックを有効にし（fallback 率 ≤ 0.40/実行、melody モチーフ種類数 ≥ 2/実行、ユニークなアレンジメント数 ≥ 3/全実行、ループ・ノイズテール問題 = 0）、違反があれば終了コード 1 を返す。閾値は `--max-fallback-rate=`、`--min-melody-kinds=`、`--min-arrangement-variety=` で個別に上書きできる。melody-rhythm 変更時は duration sanity テストが全新規モチーフを対象にしていることを確認する。drums/noise 変更時は `noise-collision` が clean であることを確認する。スタイル固有モチーフを追加した場合は seed sweep の `diagnostics.motifSelection.candidatePools` と `motifUsage` を見て、新タグが過剰 fallback なしで到達可能か確認する。
 
 #### **付録: 生成後検証ループとチェックポイント**
 

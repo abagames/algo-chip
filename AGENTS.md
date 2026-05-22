@@ -42,8 +42,10 @@ authoritative specs for the full story.
 
 - Minimum regression guard: `npm test` targets all specs beneath
   `packages/core/src/test/`.
-- When touching motifs, also regenerate a demo seed sweep to spot subjective
-  issues; document notable outliers.
+- When touching motifs, run `npm run report:seed-sweep -- --assert` to enforce
+  variation thresholds (fallback rate, motif diversity, arrangement variety).
+  Also regenerate a demo seed sweep to spot subjective issues; document notable
+  outliers.
 - Maintain coverage for the named suites: `pipeline`, `two-axis-*`,
   `se-generator`, `noise-collision`, `gradual-build`, `chord-variety`,
   `electronica`.

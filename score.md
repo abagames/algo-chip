@@ -34,7 +34,16 @@ The final output is a time-series **`eventList`** (array of playback events) tha
     filterMotion: boolean;        // Filter modulation
     syncopationBias: boolean;     // Syncopation tendency
     atmosPad: boolean;            // Atmospheric pad
+    lofiFeel: boolean;            // Lo-fi aesthetic (calm+melodic quadrant)
   }
+
+  // Style Preset - Genre-specific intent bundle (must be specified explicitly)
+  type StylePreset =
+    | "minimalTechno"
+    | "progressiveHouse"
+    | "retroLoopwave"
+    | "breakbeatJungle"
+    | "lofiChillhop";
 
   // Style Profile Overrides
   type StyleOverrides = Partial<{
@@ -48,6 +57,8 @@ The final output is a time-series **`eventList`** (array of playback events) tha
     lengthInMeasures?: number;    // Number of measures (default: 32)
     seed?: number;                 // Random seed (auto-generated if unspecified)
     twoAxisStyle?: TwoAxisStyle;   // Two-axis style (default: {0, 0})
+    preset?: StylePreset;          // Genre preset (must be set explicitly; not auto-inferred from axis)
+    mode?: "major" | "minor";      // Tonal mode override (derived from axis if unset)
     overrides?: StyleOverrides;    // Style profile overrides
   }
   ```
@@ -120,21 +131,27 @@ Score generation is performed by sequentially executing the following 5 independ
 1. **Two-Axis Style Interpretation**:
    - `percussiveMelodic` axis: -1.0 (percussive) ~ +1.0 (melodic)
    - `calmEnergetic` axis: -1.0 (calm) ~ +1.0 (energetic)
-   - Infer mood (upbeat/sad/tense/peaceful) and tempo (slow/medium/fast) from coordinates
-   - Set 9 `StyleIntent` flags based on coordinates
+   - Derive tonal mode (`major`/`minor`) from axis via `deriveModeFromAxis()`:
+     - calm+melodic quadrant (`calmEnergetic ≤ -0.3` and `percussiveMelodic ≥ 0.2`) → minor
+     - strongly percussive (`percussiveMelodic ≤ -0.4`) → minor regardless of energy
+     - otherwise → major
+   - Override mode with `CompositionOptions.mode` if supplied
+   - Infer legacy mood string (upbeat/sad/tense/peaceful) for template and technique selection
+   - Derive tempo (slow/medium/fast) from `calmEnergetic`
+   - Set 10 `StyleIntent` flags from axis coordinates; `lofiFeel` activates when `calmStrength > 0.5 && melodicStrength > 0.3`
 
 2. **Musical Parameter Determination**:
    - Tempo base values: `slow=90BPM`, `medium=120BPM`, `fast=150BPM`
    - Fine-tune within ±15BPM range based on 2D coordinates and seed
-   - Key selection based on mood (upbeat→G Major, sad→E Minor, etc.)
+   - Key selection based on derived mode — candidates per mode:
+     - major: G Major, C Major, D Major, F Major
+     - minor: E Minor, A Minor, D Minor, B Minor, C Minor
+   - Final key selected from pool by `(seed + salt) % pool.length`
 
-3. **Mood Tag Normalization**:
-   | Mood | Priority Motif Tag Candidates |
-   |---------|------------------------------|
-   | upbeat | overworld_bright → heroic |
-   | sad | ending_sorrowful → dark |
-   | tense | final_battle_tense → castle_majestic |
-   | peaceful | town_peaceful → simple |
+3. **Axis-Based Chord Tag Selection**:
+   - Each chord tag is assigned a canonical position in (melodic, calm) 2D space via `TAG_AXIS_POSITION`
+   - `selectChordTagsFromAxis()` computes Euclidean distance from the current axis to each tag's position and picks the 2 nearest tags present in the selected key's chord data
+   - Fallback: when no axis is available (legacy path), use `MOOD_TAG_MAP` to map mood string to tag candidates
 
 4. **Musical Structure Selection**:
    - Select section templates optimized for measure count (16/32/64, etc.)
@@ -181,7 +198,7 @@ Score generation is performed by sequentially executing the following 5 independ
       e. **Excessive Tag Filtering Prevention**: When `preferTagPresence` tag priority filtering reduces candidates below 40%, fall back to maintain original candidate pool. This prevents candidate exhaustion and extreme motif repetition when multiple styleIntent flags are applied simultaneously.
 
   4. **Harmony Consistency Processing**:
-      When converting generated melody/accompaniment/bass from scale degrees to MIDI, quantize to chord tones on strong beats and select smoothest connecting notes within chords on weak beats. For accompaniment, evaluate consonance with simultaneously sounding melody notes and perform octave shifts if necessary.
+      When converting generated melody/accompaniment/bass from scale degrees to MIDI, quantize to chord tones on **strong beats** (beats 1 and 3 within a 4-beat measure; i.e., beat positions where `beat % 2 === 0`) and select smoothest connecting notes within chords on weak beats. For accompaniment, evaluate consonance with simultaneously sounding melody notes and perform octave shifts if necessary. The accompaniment base register is set a perfect 4th below the melody base to prevent voice crossing.
 
 ##### **Phase 3: Channel Mapping & Technique Implementation (Event Realization)**
 
@@ -202,7 +219,7 @@ Score generation is performed by sequentially executing the following 5 independ
         - `priority`: Generation probability 0.0-1.0. 1.0=always generate, 0.7=generate in 70% of measures (for sparse expression)
         - `octaveOffset`: Octave shift -1/0/+1. bassAlt(octave -1) generates sub-bass (D1-E2 range)
         - `seedOffset`: Seed addition value for varying patterns within same role
-      - **Selection Logic**: Weighted selection in Phase 1 based on `seed` and `stylePreset`. minimalTechno prioritizes minimal/bassLed, progressiveHouse prioritizes layeredBass, retroLoopwave prioritizes retroPulse, breakbeatJungle emphasizes breakLayered/dualBass, lofiChillhop prioritizes lofiPadLead/minimal, reflecting genre characteristics.
+      - **Selection Logic**: Weighted selection in Phase 1 based on `seed` and `stylePreset`. `stylePreset` must be explicitly supplied via `CompositionOptions.preset`; it is never auto-inferred from axis coordinates. minimalTechno prioritizes minimal/bassLed, progressiveHouse prioritizes layeredBass, retroLoopwave prioritizes retroPulse, breakbeatJungle emphasizes breakLayered/dualBass, lofiChillhop prioritizes lofiPadLead/minimal, reflecting genre characteristics.
       - **Velocity Adjustment**: `adjustVelocityForChannel()` implements scaling according to role and channel. Bass-type roles reduced to 70%, with additional 0.85 multiplication for MIDI below 52 to control ultra-low range. `triangle` attenuates to 75% of base value (additionally ×0.9 when non-bass), and `square` carrying bass applies ×0.82 to maintain inter-channel sound pressure balance.
       - **Backward Compatibility**: `standard`/`swapped` arrangements call legacy Phase 2 logic (`selectMotifsLegacy`), ensuring existing music generation behavior.
 
@@ -270,7 +287,7 @@ When adding motifs, keep the JSON library deterministic, tag-searchable, and saf
 - **Technique Motifs (`techniques.json`)**: Emit only parameters supported by the synthesizer/worklet. New ornaments should have a narrow trigger condition (`channels`, duration threshold, `styleFlag`, or cadence/boundary use) so decoration does not become dense across all notes.
 - **Variation Links**: Use `variations` for related alternatives that can replace each other in repeated sections. Variants should preserve phrase length and broad function while changing one musical dimension: rhythm, contour, register, or density.
 - **Patterns to Avoid**: Avoid motifs that rely on more simultaneous voices than available hardware channels, long final releases that overlap loop head, tags that contradict their behavior, very high square-wave lead jumps repeated every beat, and duplicate IDs or near-duplicate musical content.
-- **Required Verification**: After motif edits, run `npm test`, `npm run build:core`, `npm run report:seed-sweep -- --seeds=101,202,303`, and `git diff --check`. For melody-rhythm changes, confirm the duration sanity test covers every new motif. For drums/noise changes, confirm `noise-collision` remains clean. For style-specific motifs, inspect `diagnostics.motifSelection.candidatePools` and `motifUsage` in the seed sweep to confirm the new tags are reachable without excessive fallback.
+- **Required Verification**: After motif edits, run `npm test`, `npm run build:core`, `npm run report:seed-sweep -- --seeds=101,202,303 --assert`, and `git diff --check`. The `--assert` flag enforces automated thresholds (fallback rate ≤ 0.40 per run, melody motif kinds ≥ 2 per run, unique voice arrangements ≥ 3 across all runs, zero loop/noise-tail issues) and exits with code 1 on violation. Thresholds can be tightened with `--max-fallback-rate=`, `--min-melody-kinds=`, and `--min-arrangement-variety=`. For melody-rhythm changes, confirm the duration sanity test covers every new motif. For drums/noise changes, confirm `noise-collision` remains clean. For style-specific motifs, inspect `diagnostics.motifSelection.candidatePools` and `motifUsage` in the seed sweep to confirm the new tags are reachable without excessive fallback.
 
 #### **Appendix: Post-Generation Verification Loop and Checkpoints**
 
