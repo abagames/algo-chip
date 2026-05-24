@@ -37,7 +37,7 @@
   - [x] 施策1 expansion: 新規リズムモチーフ24種を追加（RM139-RM162、length 4/8、grid16/syncopation/breakbeat/rest_heavyタグ付与）。76→102件。seed-sweep検証通過。
   - [x] 施策2: Hook再利用の緩和（sectionRepeatBiasデフォルトを0.3→0.15に変更、閾値0.25→0.20に変更。テスト緩和済）。seed-sweep検証通過。
   - [x] 施策3: タグフィルタリング強化（preferTagPresenceのminRatioを0.4→0.15、pickWithAvoidリトライを3→6）。seed-sweep検証通過。
-  - [ ] 施策4: Two-Axis意図の連続強度化（StyleIntent boolean→float化は影響範囲が大きいため次期対応）。
+  - [x] 施策4: Two-Axis意図の連続強度化（StyleIntentをboolean→number(0.0-1.0)に変更。two-axis-mapper.tsで閾値判定をやめて連続的強度を出力。全consumerを`> 0.5`閾値判定に変更。テスト・seed-sweep検証通過）。
   - [x] 施策5: テクスチャ・構造の多様化（TEXTURE_VARIATION_PROBABILITYを0.1→0.25に増加。seed-sweep検証通過）。
   - [x] 施策6: テクニックライブラリ拡充（techniques.jsonにduty sweep +2、gain profile +2、pitchBend ornament +1を追加。seed-sweep検証通過）。
   - [x] 施策7: Voice Arrangementの再バランス（standard/swappedの重みを5/4→3/3に、他presetを2→3に均等化。seed-sweep検証通過）。
