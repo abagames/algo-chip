@@ -10,6 +10,7 @@ import {
   VoiceArrangement
 } from "../types.js";
 import { selectVoiceArrangement } from "./structure-planning/voice-arrangement-selector.js";
+import { TEXTURE_VARIATION_PROBABILITY } from "./structure-planning/constants.js";
 import chordsJson from "../../motifs/chords.json" with { type: "json" };
 
 const chords = chordsJson as Record<string, Record<string, string[][]>>;
@@ -668,7 +669,7 @@ function buildSections(
 }
 
 // Inline texture sequences (REFACTOR_PLAN.md Step 1-E: Scenario C - Hybrid approach)
-// Moved from texture-profiles.json to enable 10% seed-driven variation for diversity
+// Moved from texture-profiles.json to enable 25% seed-driven variation for diversity
 const TEMPLATE_TEXTURE_SEQUENCE: Record<string, TextureProfile[]> = {
   Intro: ["broken"],
   A: ["broken", "steady", "broken"],
@@ -690,9 +691,6 @@ const ARPEGGIO_KEEP_PROBABILITY = {
   firstOccurrence: 0.7,
   repeatOccurrence: 0.4
 };
-
-// Seed-driven variation probability (maintains diversity per VARIATION_RISK_ASSESSMENT.md)
-const TEXTURE_VARIATION_PROBABILITY = 0.1;
 
 function resolveTexture(
   templateId: string,
@@ -717,7 +715,7 @@ function resolveTexture(
     }
   }
 
-  // Apply 10% seed-driven variation to maintain diversity (REFACTOR_PLAN.md Scenario C)
+  // Apply 25% seed-driven variation to maintain diversity (REFACTOR_PLAN.md Scenario C)
   const variationSalt = templateId.charCodeAt(0) * 100 + occurrenceIndex;
   const variationRoll = randomFromSeed(seed, 2000 + variationSalt);
   if (variationRoll < TEXTURE_VARIATION_PROBABILITY) {
