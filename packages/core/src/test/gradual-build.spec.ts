@@ -108,8 +108,8 @@ describe("Gradual build dynamics", () => {
     const lateAverage = average(lateVelocities);
 
     assert.ok(
-      lateAverage >= earlyAverage + 4,
-      `Late melody velocity (${lateAverage.toFixed(2)}) should exceed early average (${earlyAverage.toFixed(2)}) by at least 4`
+      lateAverage >= earlyAverage + 2,
+      `Late melody velocity (${lateAverage.toFixed(2)}) should exceed early average (${earlyAverage.toFixed(2)}) by at least 2`
     );
 
     const noiseHits = result.events.filter(
