@@ -130,7 +130,10 @@ class NoiseProcessor extends AudioWorkletProcessor {
         env = Math.max(0, env - this.envelopeStep);
         this.envelope = env;
       }
-      const sample = raw * env;
+      // 4-bit (16-step) envelope quantization matching NES APU hardware
+      const stepSize = this.amplitude / 15;
+      const quantizedEnv = stepSize > 0 ? Math.round(env / stepSize) * stepSize : env;
+      const sample = raw * quantizedEnv;
       this.filterState += this.filterAlpha * (sample - this.filterState);
       output[i] = this.filterState;
     }

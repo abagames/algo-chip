@@ -505,4 +505,19 @@ export interface TechniqueLibrary {
     everyNthNote: number;
     styleFlag?: keyof StyleIntent;
   }>;
+  sweepOrnaments?: Array<{
+    id: string;
+    channels: Channel[];
+    minDurationBeats: number;
+    /** NES APU sweep divider period (0-7): higher = slower tick rate */
+    period: number;
+    /** NES APU shift count (0-7): bits to shift the timer period each tick */
+    shift: number;
+    /** false = pitch falls (period grows); true = pitch rises (period shrinks) */
+    negate: boolean;
+    /** Beats to keep sweep active before disabling */
+    sweepDurationBeats: number;
+    everyNthNote: number;
+    styleFlag?: keyof StyleIntent;
+  }>;
 }

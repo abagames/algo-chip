@@ -37,6 +37,22 @@ const NOISE_MIN_RELEASE_SECONDS = 0.015;
 const NOISE_MAX_RELEASE_SECONDS = 0.12;
 const NOISE_STACK_OFFSET = 1 / 16;  // Changed from 1/64 to 1/16 beat for safer collision avoidance
 
+// ── Kick body (triangle layer) ──────────────────────────────────────────────
+// Short pitch-falling triangle note layered with kick noise for NES "body" feel.
+const KICK_BODY_DURATION_SECONDS = 0.012;  // 12 ms body
+const KICK_BODY_START_MIDI = 43;            // G2
+const KICK_BODY_END_MIDI = 36;              // C2
+const KICK_BODY_VELOCITY = 75;
+const BEAT_EPSILON = 1e-9;  // ensures kick body sorts after same-beat bass noteOn
+
+// ── Period fall: mid-hit noise period shift giving pitch descent ────────────
+// Per instrument, how many NOISE_PERIOD_TABLE steps to shift upward (lower freq)
+// starting from the instrument's base periodIndex. Applied at 40 % of hit duration.
+const NOISE_PERIOD_FALL_STEPS: Partial<Record<string, number>> = {
+  S: 2,  // snare: e.g. idx 1 → 3  (~14 kHz → ~3.5 kHz)
+  T: 3,  // tom:   e.g. idx 5 → 8  (~1.2 kHz → ~554 Hz)
+};
+
 // Arpeggio generation probabilities and thresholds (score.md:134)
 interface ArpeggioProfile {
   reverseProbability: number;
@@ -87,6 +103,7 @@ function adjustVelocityForChannel(
   let scale = 1;
 
   const isBassRole = role === "bass" || role === "bassAlt";
+  const isMelodyRole = role === "melody" || role === "melodyAlt";
   const isSquare = channel === "square1" || channel === "square2";
 
   // Apply bass role scaling
@@ -108,6 +125,11 @@ function adjustVelocityForChannel(
   // Apply square bass scaling
   if (isSquare && isBassRole) {
     scale *= VELOCITY_CHANNEL_SCALE.SQUARE_BASS;
+  }
+
+  // Apply melody channel scaling
+  if (isSquare && isMelodyRole) {
+    scale *= VELOCITY_CHANNEL_SCALE.MELODY_CHANNEL_SCALE;
   }
 
   const scaled = Math.round(velocity * scale);
@@ -236,6 +258,51 @@ type NoteEventPayload = NoteOnEventData & {
   midi: number;
   velocity: number;
 };
+
+// ── Drum helper functions ──────────────────────────────────────────────────
+
+/**
+ * Returns true if the triangle channel has an active note at beatTime.
+ * Used to gate the kick body layer so it never creates a voice-allocation overlap.
+ */
+function triangleIsActiveAtBeat(
+  beatTime: number,
+  phase1: StructurePlanResult,
+  phase2: MotifSelectionResult
+): boolean {
+  const triVoices = phase1.voiceArrangement.voices.filter(v => v.channel === "triangle");
+  for (const triVoice of triVoices) {
+    const triTrack = phase2.tracks.find(t => t.role === triVoice.role);
+    if (!triTrack) continue;
+    if (triTrack.notes.some(n => n.startBeat <= beatTime && n.startBeat + n.durationBeats > beatTime)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+/**
+ * Finds the last noise-channel noteOff event in the event array (reverse scan).
+ */
+function findLastNoiseNoteOff(events: TimedEvent[]): TimedEvent<"noteOff"> | undefined {
+  for (let i = events.length - 1; i >= 0; i--) {
+    const ev = events[i];
+    if (ev.channel === "noise" && ev.command === "noteOff") {
+      return ev as TimedEvent<"noteOff">;
+    }
+  }
+  return undefined;
+}
+
+/**
+ * Returns true when the beat falls on a strong snare position (beat 2 or 4
+ * within a 4-beat measure, within ±0.1 beat tolerance).
+ * These accent positions receive the "heavy" long-LFSR snare mode (Case 5).
+ */
+function isSnareAccentBeat(beatTime: number): boolean {
+  const beatInMeasure = ((beatTime % BEATS_PER_MEASURE) + BEATS_PER_MEASURE) % BEATS_PER_MEASURE;
+  return Math.abs(beatInMeasure - 1) < 0.1 || Math.abs(beatInMeasure - 3) < 0.1;
+}
 
 function deriveArpeggioPattern(chordIntervals: number[]): number[] {
   const cycle = chordIntervals.length > 0 ? chordIntervals : [0, 4, 7];
@@ -519,19 +586,27 @@ function realizeAccompanimentTrack(
 }
 
 /**
- * Realizes drum events with noise channel collision avoidance.
- * Always outputs to the noise channel.
+ * Realizes drum events. Outputs noise events plus optional triangle kick-body
+ * layers (NES layered kick technique).
+ *
+ * Improvements applied:
+ *  1. Triangle kick-body layer (noise + pitch-falling triangle) when triangle is free
+ *  2. 4-bit envelope quantisation is handled in the worklet
+ *  3. Mid-hit period fall setParam for S/T (pitch-descending snare/tom)
+ *  4. O→H snap-close: open-hat gets a rapid noteOff when H follows
+ *  5. Accent-beat snare uses long LFSR mode for heavier impact
  */
 function realizeDrumEvents(
   drums: MotifSelectionResult["drums"],
   context: RealizationContext
 ): TimedEvent[] {
-  const noiseEvents: TimedEvent[] = [];
+  const drumEvents: TimedEvent[] = [];
+  // Index of the first event belonging to the last noise hit (for safe splice-based cancellation)
+  let lastNoteStartIndex = -1;
   let lastNoiseOffBeat: number | null = null;
   let lastNoiseOnBeat: number | null = null;
   let lastNoiseInstrument: string | null = null;
 
-  // Sort drums by start beat before processing
   const sortedDrums = [...drums].sort((a, b) => a.startBeat - b.startBeat);
 
   for (const hit of sortedDrums) {
@@ -543,7 +618,6 @@ function realizeDrumEvents(
     const canStack = allowsNoiseStacking(lastNoiseInstrument, hit.instrument);
     const stackOffset = canStack ? 0 : NOISE_STACK_OFFSET;
 
-    // Adjust start time if too close to last note
     // Use <= to catch exact collisions even when stackOffset=0 (stackable instruments)
     if (lastNoiseOnBeat !== null && adjustedStart - lastNoiseOnBeat <= stackOffset) {
       adjustedStart = lastNoiseOnBeat + Math.max(stackOffset, NOISE_STACK_OFFSET);
@@ -555,54 +629,120 @@ function realizeDrumEvents(
 
     if (adjustedStart >= context.totalBeats) continue;
 
-    // If this noteOn would start before the last noteOff, cancel the previous note
+    // ── Collision handling ──────────────────────────────────────────────────
     if (lastNoiseOffBeat !== null && adjustedStart < lastNoiseOffBeat) {
-      if (canStack && noiseEvents.length >= 2) {
-        const lastOffEvent = noiseEvents[noiseEvents.length - 1];
-        if (lastOffEvent.command === "noteOff") {
-          lastOffEvent.beatTime = adjustedStart;
+      if (canStack && lastNoteStartIndex >= 0) {
+        // Move the open-hat noteOff up; for O→H apply snap-close (Case 4)
+        const lastNoteOff = findLastNoiseNoteOff(drumEvents);
+        if (lastNoteOff) {
+          lastNoteOff.beatTime = adjustedStart;
+          if (hit.instrument === "H" && lastNoiseInstrument === "O") {
+            (lastNoteOff.data as NoteOffEventData).releaseSeconds = 0.003;
+          }
         }
         lastNoiseOffBeat = adjustedStart;
-      } else {
-        noiseEvents.pop(); // Remove noteOff
-        noiseEvents.pop(); // Remove noteOn
+      } else if (lastNoteStartIndex >= 0) {
+        // Remove ALL events added for the previous noise hit (including any
+        // setParam period-fall events that sit between noteOn and noteOff)
+        drumEvents.splice(lastNoteStartIndex);
+        lastNoteStartIndex = -1;
         lastNoiseOffBeat = null;
         lastNoiseOnBeat = null;
       }
     }
 
-    // Add noteOn
-    noiseEvents.push({
+    // Record where this hit's events begin (for safe cancellation above)
+    lastNoteStartIndex = drumEvents.length;
+
+    // ── Case 5: Accent-beat snare uses long LFSR for heavier impact ─────────
+    let effectiveMode: NoiseModeLabel = config.mode;
+    let effectivePeriodIndex = config.periodIndex;
+    let effectiveAmplitude = config.amplitude;
+    if (hit.instrument === "S" && isSnareAccentBeat(adjustedStart)) {
+      effectiveMode = "long";
+      effectivePeriodIndex = 4;  // ~1.75 kHz – deep snare body
+      effectiveAmplitude = Math.min(1.0, config.amplitude * 1.05);
+    }
+
+    // ── Main noise noteOn (LFSR mode fixed: use config.mode, not config.spec) ─
+    drumEvents.push({
       beatTime: adjustedStart,
       channel: "noise",
       command: "noteOn",
       data: {
-        noiseMode: config.spec,
-        mode: config.spec,
+        noiseMode: config.spec,          // descriptive label (kept for compat)
+        mode: effectiveMode,             // actual "long"|"short" LFSR selector
         velocity: config.velocity,
-        amplitude: config.amplitude,
+        amplitude: effectiveAmplitude,
         releaseSeconds: releaseSec,
         decaySeconds: decaySec,
-        periodIndex: config.periodIndex,
-        clockDivider: config.periodIndex
+        periodIndex: effectivePeriodIndex,
+        clockDivider: effectivePeriodIndex
       }
     });
 
-    // Add noteOff
     const offBeat = Math.min(adjustedStart + clampedDuration, context.totalBeats);
-    noiseEvents.push({
+
+    // ── Case 3: Mid-hit period fall (snare / tom pitch descent) ─────────────
+    const fallSteps = NOISE_PERIOD_FALL_STEPS[hit.instrument];
+    if (fallSteps !== undefined) {
+      const fallIndex = Math.min(15, effectivePeriodIndex + fallSteps);
+      const fallBeat = adjustedStart + (offBeat - adjustedStart) * 0.4;
+      if (fallBeat < offBeat) {
+        drumEvents.push({
+          beatTime: fallBeat,
+          channel: "noise",
+          command: "setParam",
+          data: { param: "periodIndex", value: fallIndex }
+        });
+      }
+    }
+
+    // ── Noise noteOff ────────────────────────────────────────────────────────
+    // Keep data: {} so the loop-integrity checker does not count this as a
+    // late-release event.  releaseSeconds is added to the O→H snap-close via
+    // mutation in the collision-handling block above.
+    drumEvents.push({
       beatTime: offBeat,
       channel: "noise",
       command: "noteOff",
       data: {}
     });
 
+    // ── Case 1: Kick body — short pitch-falling triangle note ────────────────
+    // Only when triangle is genuinely free (no voice-allocation overlap)
+    if (hit.instrument === "K" && !triangleIsActiveAtBeat(adjustedStart, context.phase1, context.phase2)) {
+      const kickBodyBeats = KICK_BODY_DURATION_SECONDS * context.phase1.bpm / 60;
+      const kickBodyOff = Math.min(adjustedStart + kickBodyBeats, context.totalBeats);
+      if (kickBodyOff > adjustedStart) {
+        drumEvents.push({
+          beatTime: adjustedStart + BEAT_EPSILON,  // fires after same-beat bass noteOn
+          channel: "triangle",
+          command: "noteOn",
+          data: {
+            midi: KICK_BODY_START_MIDI,
+            velocity: KICK_BODY_VELOCITY,
+            slide: {
+              targetMidi: KICK_BODY_END_MIDI,
+              durationSeconds: KICK_BODY_DURATION_SECONDS * 0.75
+            }
+          }
+        });
+        drumEvents.push({
+          beatTime: kickBodyOff + BEAT_EPSILON,
+          channel: "triangle",
+          command: "noteOff",
+          data: {}
+        });
+      }
+    }
+
     lastNoiseOffBeat = offBeat;
     lastNoiseOnBeat = adjustedStart;
     lastNoiseInstrument = hit.instrument;
   }
 
-  return noiseEvents;
+  return drumEvents;
 }
 
 /**

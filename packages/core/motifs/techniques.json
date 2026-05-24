@@ -79,6 +79,30 @@
       "defaultValue": 0.66
     }
   ],
+  "sweepOrnaments": [
+    {
+      "id": "SW_NES_FALL_MOTION",
+      "channels": ["square1", "square2"],
+      "minDurationBeats": 1,
+      "period": 3,
+      "shift": 5,
+      "negate": false,
+      "sweepDurationBeats": 0.5,
+      "everyNthNote": 8,
+      "styleFlag": "filterMotion"
+    },
+    {
+      "id": "SW_NES_RISE_BUILD",
+      "channels": ["square1", "square2"],
+      "minDurationBeats": 1,
+      "period": 4,
+      "shift": 5,
+      "negate": true,
+      "sweepDurationBeats": 0.5,
+      "everyNthNote": 12,
+      "styleFlag": "gradualBuild"
+    }
+  ],
   "pitchBendOrnaments": [
     {
       "id": "PB_RETRO_LEAD_SCOOP",

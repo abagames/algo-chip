@@ -34,7 +34,11 @@ export function applyTechniques(phase3: EventRealizationResult, styleIntent: Sty
   const pitchBendOrnaments = (techniqueLibrary.pitchBendOrnaments ?? []).filter((ornament) =>
     ornament.styleFlag ? styleIntent[ornament.styleFlag] : true
   );
+  const sweepOrnaments = (techniqueLibrary.sweepOrnaments ?? []).filter((ornament) =>
+    ornament.styleFlag ? styleIntent[ornament.styleFlag] : true
+  );
   const ornamentCounters: Partial<Record<TimedEvent["channel"], number>> = {};
+  const sweepOrnamentCounters: Partial<Record<TimedEvent["channel"], number>> = {};
 
   if (styleIntent.filterMotion) {
     dutySweeps.push({
@@ -181,6 +185,43 @@ export function applyTechniques(phase3: EventRealizationResult, styleIntent: Sty
           curve: "linear"
         }
       });
+    }
+
+    for (const ornament of sweepOrnaments) {
+      if (!ornament.channels.includes(event.channel)) continue;
+      if (!offEvent) continue;
+      if (duration < ornament.minDurationBeats) continue;
+      const nextCount = (sweepOrnamentCounters[event.channel] ?? 0) + 1;
+      sweepOrnamentCounters[event.channel] = nextCount;
+      if (nextCount % Math.max(1, ornament.everyNthNote) !== 0) continue;
+
+      // Enable hardware sweep at note start
+      additionalEvents.push({
+        beatTime: event.beatTime,
+        channel: event.channel,
+        command: "setParam",
+        data: {
+          param: "sweep",
+          enabled: true,
+          period: ornament.period,
+          shift: ornament.shift,
+          negate: ornament.negate
+        }
+      });
+
+      // Disable sweep after sweepDurationBeats (capped to just before noteOff)
+      const sweepEndBeat = Math.min(
+        event.beatTime + ornament.sweepDurationBeats,
+        offEvent.beatTime - 0.03125
+      );
+      if (sweepEndBeat > event.beatTime) {
+        additionalEvents.push({
+          beatTime: sweepEndBeat,
+          channel: event.channel,
+          command: "setParam",
+          data: { param: "sweep", enabled: false }
+        });
+      }
     }
 
     if (styleIntent.breakInsertion && event.channel === "noise") {

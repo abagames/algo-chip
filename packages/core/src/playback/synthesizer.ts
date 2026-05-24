@@ -125,6 +125,25 @@ function velocityToGain(velocity?: number, scale = 0.85): number {
   return Math.max(0, Math.min(1, ((velocity ?? 100) / 127) * scale));
 }
 
+/**
+ * Builds a WaveShaper transfer curve approximating the NES APU non-linear DAC mixer.
+ *
+ * The NES uses separate resistor-ladder DACs for pulse and TND channel groups whose
+ * combined response is non-linear: quiet signals are relatively louder (expansion)
+ * and the combined headroom compresses slightly at high amplitudes.  A tanh curve
+ * with k ≈ 0.55 closely matches that shape across the [0, 1] amplitude range.
+ */
+function makeNESMixerCurve(n = 256): Float32Array {
+  const k = 0.55;
+  const normFactor = Math.tanh(k);
+  const curve = new Float32Array(n);
+  for (let i = 0; i < n; i++) {
+    const x = (2 * i) / (n - 1) - 1; // map index to [-1, 1]
+    curve[i] = Math.tanh(x * k) / normFactor;
+  }
+  return curve;
+}
+
 // ============================================================================
 // Type Definitions
 // ============================================================================
@@ -279,6 +298,22 @@ class SquareChannel extends BaseChannel {
       );
       return;
     }
+    // Hardware sweep unit control.
+    // param: "sweep", plus: enabled, period (0-7), shift (0-7), negate (boolean).
+    // negate=false → pitch sweeps down; negate=true → pitch sweeps up.
+    if (data.param === "sweep") {
+      this.scheduleMessage(
+        {
+          type: "setSweep",
+          enabled: data.enabled !== false,
+          period: typeof data.period === "number" ? data.period : 0,
+          shift: typeof data.shift === "number" ? data.shift : 0,
+          negate: data.negate === true,
+        },
+        when
+      );
+      return;
+    }
     this.scheduleMessage(
       { type: "setParam", param: data.param, value: data.value },
       when
@@ -415,13 +450,21 @@ class NoiseChannel extends BaseChannel {
     }
     if (data.param === "mode" && typeof data.value === "string") {
       this.mode = data.value === "long" ? "long" : "short";
+      this.scheduleMessage({ type: "setParam", param: "mode", value: data.value }, when);
+      return;
     }
     if (data.param === "periodIndex") {
-      const index = Number(data.value ?? this.periodIndex);
-      this.periodIndex = Math.max(
+      const index = Math.max(
         0,
-        Math.min(NOISE_PERIOD_TABLE.length - 1, index)
+        Math.min(NOISE_PERIOD_TABLE.length - 1, Number(data.value ?? this.periodIndex))
       );
+      this.periodIndex = index;
+      // Convert to samples so both worklet variants receive the same pre-computed value
+      const periodCycles = NOISE_PERIOD_TABLE[index];
+      const periodSeconds = (periodCycles * 16) / CHIP_BASE_CLOCK;
+      const periodSamples = Math.max(1, Math.round(periodSeconds * this.sampleRate));
+      this.scheduleMessage({ type: "setParam", param: "periodSamples", value: periodSamples }, when);
+      return;
     }
     this.scheduleMessage(
       { type: "setParam", param: data.param, value: data.value },
@@ -466,6 +509,7 @@ const loadedWorklets = new WeakMap<BaseAudioContext, Set<string>>();
 export class AlgoChipSynthesizer {
   private static readonly BASE_GAIN = 0.16; // Default master gain value
   private readonly masterGainNode: GainNode;
+  private readonly destination: AudioNode;
   private readonly workletBasePath: string;
   private channels!: ChannelInstances;
   private events: PlaybackEvent[] = [];
@@ -487,9 +531,8 @@ export class AlgoChipSynthesizer {
     // Always create our own masterGainNode for independent volume control
     this.masterGainNode = context.createGain();
     this.masterGainNode.gain.value = AlgoChipSynthesizer.BASE_GAIN;
-    // Connect to external gainNode if provided, otherwise to destination
-    const destination = options.gainNode ?? context.destination;
-    this.masterGainNode.connect(destination);
+    // Save destination; full processing chain (WaveShaper → dcBlocker) is wired in init()
+    this.destination = options.gainNode ?? context.destination;
     this.workletBasePath = options.workletBasePath ?? "./worklets/";
   }
 
@@ -540,6 +583,28 @@ export class AlgoChipSynthesizer {
       triangle: new TriangleChannel(ctx, this.masterGainNode),
       noise: new NoiseChannel(ctx, this.masterGainNode),
     };
+
+    // Build NES-accurate post-processing chain:
+    //   masterGain → nesWaveShaper → dcBlocker → destination
+    //
+    // nesWaveShaper approximates the non-linear resistor-ladder DAC of the NES APU:
+    //   quiet signals get a slight boost (expansion) and loud combined signals are
+    //   gently compressed, matching the tanh-like transfer curve (k ≈ 0.55).
+    //
+    // dcBlocker is a highpass at 20 Hz matching the NES output capacitor's RC cutoff
+    //   (~16 Hz), which removes DC offset and adds the characteristic tight sub-bass roll-off.
+    const nesWaveShaper = ctx.createWaveShaper();
+    nesWaveShaper.curve = makeNESMixerCurve();
+    nesWaveShaper.oversample = "none";
+
+    const dcBlocker = ctx.createBiquadFilter();
+    dcBlocker.type = "highpass";
+    dcBlocker.frequency.value = 20;
+    dcBlocker.Q.value = 0.707;
+
+    this.masterGainNode.connect(nesWaveShaper);
+    nesWaveShaper.connect(dcBlocker);
+    dcBlocker.connect(this.destination);
   }
 
   /** Returns the master gain node for external ducking/mixing control */
