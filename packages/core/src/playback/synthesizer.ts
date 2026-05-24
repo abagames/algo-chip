@@ -35,65 +35,8 @@ const NOISE_PERIOD_TABLE = [
   4, 8, 16, 32, 64, 96, 128, 160, 202, 254, 380, 508, 762, 1016, 2034, 4068,
 ];
 
-/** Noise instrument types: K=kick, S=snare, H=hihat, O=open, T=tom */
-type NoiseInstrument = "K" | "S" | "H" | "O" | "T" | "default";
-
-/**
- * Noise channel presets for drum-like sounds.
- *
- * Each preset defines the mode (short/long), period index, amplitude envelope,
- * and filter cutoff to emulate different percussion instruments.
- */
-const NOISE_PRESETS: Record<NoiseInstrument, NoisePreset> = {
-  K: {
-    mode: "long",
-    periodIndex: 14,
-    baseAmplitude: 0.75,
-    decaySeconds: 0.22,
-    releaseSeconds: 0.04,
-    cutoffHz: 3200,
-  },
-  S: {
-    mode: "short",
-    periodIndex: 4,
-    baseAmplitude: 0.65,
-    decaySeconds: 0.14,
-    releaseSeconds: 0.03,
-    cutoffHz: 5200,
-  },
-  H: {
-    mode: "short",
-    periodIndex: 1,
-    baseAmplitude: 0.45,
-    decaySeconds: 0.06,
-    releaseSeconds: 0.02,
-    cutoffHz: 7800,
-  },
-  O: {
-    mode: "short",
-    periodIndex: 2,
-    baseAmplitude: 0.6,
-    decaySeconds: 0.4,
-    releaseSeconds: 0.06,
-    cutoffHz: 6800,
-  },
-  T: {
-    mode: "long",
-    periodIndex: 10,
-    baseAmplitude: 0.6,
-    decaySeconds: 0.26,
-    releaseSeconds: 0.05,
-    cutoffHz: 3600,
-  },
-  default: {
-    mode: "short",
-    periodIndex: 3,
-    baseAmplitude: 0.6,
-    decaySeconds: 0.14,
-    releaseSeconds: 0.03,
-    cutoffHz: 6000,
-  },
-};
+/** Default noise filter cutoff when not specified by the event generator */
+const DEFAULT_NOISE_CUTOFF_HZ = 5200;
 
 /** MIDI note number for A4 (440 Hz) */
 const MIDI_A4 = 69;
@@ -855,27 +798,17 @@ export class AlgoChipSynthesizer {
   private mapNoiseData(data: Record<string, unknown>): NoiseData {
     const velocity = typeof data.velocity === "number" ? data.velocity : 100;
     const velocityGain = Math.max(0, Math.min(1, velocity / 127));
-    const instrument = (
-      typeof data.instrument === "string" ? data.instrument : "S"
-    ) as NoiseInstrument;
-    const preset = NOISE_PRESETS[instrument] ?? NOISE_PRESETS.default;
     const amplitude = Math.min(
       1,
       Math.max(
         0,
-        (typeof data.amplitude === "number"
-          ? data.amplitude
-          : preset.baseAmplitude) * velocityGain
+        (typeof data.amplitude === "number" ? data.amplitude : 0.6) * velocityGain
       )
     );
     const decaySeconds =
-      typeof data.decaySeconds === "number"
-        ? data.decaySeconds
-        : preset.decaySeconds;
+      typeof data.decaySeconds === "number" ? data.decaySeconds : 0.14;
     const releaseSeconds =
-      typeof data.releaseSeconds === "number"
-        ? data.releaseSeconds
-        : preset.releaseSeconds;
+      typeof data.releaseSeconds === "number" ? data.releaseSeconds : 0.03;
     const periodIndex =
       typeof data.periodIndex === "number"
         ? data.periodIndex
@@ -883,16 +816,16 @@ export class AlgoChipSynthesizer {
         ? data.clockDivider
         : typeof data.period === "number"
         ? data.period
-        : preset.periodIndex;
+        : 3;
     const mode = (
       typeof data.mode === "string"
         ? data.mode
         : typeof data.noiseMode === "string"
         ? data.noiseMode
-        : preset.mode
+        : "short"
     ) as "short" | "long";
     const cutoffHz =
-      typeof data.cutoffHz === "number" ? data.cutoffHz : preset.cutoffHz;
+      typeof data.cutoffHz === "number" ? data.cutoffHz : DEFAULT_NOISE_CUTOFF_HZ;
 
     return {
       amplitude,
