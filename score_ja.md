@@ -207,18 +207,25 @@
         - `bassLed`: bass(sq1) + bassAlt(sq2, octave +1) + melody(tri, sparse) - ベース主導
         - `layeredBass`: bass(sq1) + bassAlt(tri, octave +1, variation seed) + melody(sq2) - 補完レイヤー
         - `minimal`: bass(sq1) + pad(tri, sparse) - メロディなしミニマル
+        - `breakLayered`: ブレイクビート志向のデュアルベース強調・シンコペーションメロディ対応
+        - `lofiPadLead`: パッド前景のローファイ配置・スパースメロディ。ドラム入りを2小節遅らせる
+        - `retroPulse`: レトロアルペジオ重視・三角波ベース基盤
       - **Voice 属性**:
         - `priority`: 0.0-1.0の生成確率。1.0=常に生成、0.7=70%の小節で生成（スパースな表現用）
         - `octaveOffset`: -1/0/+1のオクターブ移動。bassAlt(octave -1)でサブベース（D1-E2域）生成
         - `seedOffset`: 同role内でパターンを変えるためのseed加算値
       - **選択ロジック**: フェーズ1で`seed`と`stylePreset`に基づき重み付き抽選。`stylePreset`は `CompositionOptions.preset` で明示的に指定する必要があり、軸座標から自動推定されることはない。minimalTechnoはminimal/bassLed優先、progressiveHouseはlayeredBass優先、retroLoopwaveはretroPulse優先、breakbeatJungleはbreakLayered/dualBassを重視、lofiChillhopはlofiPadLead/minimalを優先するなど、ジャンル特性を反映。
-      - **velocity調整**: `adjustVelocityForChannel()` がロールとチャンネルに応じたスケーリングを実施。ベース系ロールは70%に抑え、さらにMIDI 52未満では0.85を乗算して超低域を制御。`triangle`は基準値の75%（非ベース時には追加で0.9倍）に減衰し、ベースを担当する`square`は0.82倍を掛けることでチャンネル間の音圧バランスを維持する。
+      - **velocity調整**: `adjustVelocityForChannel()` がロールとチャンネルに応じたスケーリングを実施。ベース系ロールは70%に抑え、さらにMIDI 52未満では0.85を乗算して超低域を制御。`triangle`は基準値の85%に減衰（非ベース時はフルストレングス）、ベースを担当する`square`は0.66倍、メロディは0.4倍を掛けてミックスを支配しないよう調整する。
       - **後方互換性**: `standard`/`swapped` arrangementではフェーズ2の従来ロジック（`selectMotifsLegacy`）を呼び出し、既存の楽曲生成動作を保証。
 2.  **リズムトラックの特殊変換**:
-     - **キック**: `noise`チャンネルで低域寄りの`setParam: {noiseMode: 'long_period', envelope: 'short_decay'}`を伴う`noteOn`イベントとして変換し、ベースとの発音競合を防ぐ。
-     - **スネア/ハイハット**: `noise`チャンネルに、`noiseMode: 'short_period'`の`setParam`イベントを伴う`noteOn`イベントとして変換。
-     - **長周期ノイズ**: 爆発や風など特殊効果音タグが付いたリズム要素に対しては `noiseMode: 'long_period'` を選択し、よりメロディックなノイズを生成する。
-     - **単一発音ガード**: `noise` の `noteOn` は常に 1/8 拍以下の長さに量子化し、次のヒットが同時刻または前の余韻内に到達した場合は直前の `noteOff` を同拍まで切り詰める。これにより、LFSR モード切り替え時に生じる「バタバタ音」を抑える。
+     - **キック (K)**: 長 LFSR モード（`mode: "long"`）＋短めのディケイで `noise` チャンネルに `noteOn` を送出し、低域ランブルを得る。さらにヒット時点で triangle チャンネルが空いている場合は、G2→C2 への 12 ms ピッチスライド（velocity 75）を triangle チャンネルに同時発音し、NES 定番のノイズ＋三角波レイヤーによるキックボディを再現する。
+     - **スネア (S)**: 短 LFSR モード（`mode: "short"`）でメタリックなクラックを出す。各小節のバックビート位置（拍 2 または 4 ±0.1 拍）では長 LFSR モード＋`periodIndex: 4`（約 1.75 kHz）に切り替え、重みのあるアクセントスネアとして機能させる。
+     - **ハイハット/オープン (H/O)**: ともに短 LFSR モードを使用。オープンハイハット (O) が鳴っている最中にクローズドハイハット (H) が発音される場合、O の `noteOff` を H の開始拍に移動させ `releaseSeconds: 0.003`（3 ms スナップクローズ）を付与し、物理的なシンバルチョークを再現する。
+     - **タム (T)**: 短 LFSR モードで低めの period index を使用。スネア同様、ヒット時間の 40 % 時点で `setParam periodIndex` を +3 ステップ下降させ、タム特有のミッドヒット・ピッチ降下を再現する。
+     - **ミッドヒット・ピリオドフォール**: S と T ヒットは、ヒット時間の 40 % 地点に `setParam { param: "periodIndex", value: idx + Δ }` を挿入する（S は +2 ステップ、T は +3 ステップ降下）。これにより NES 独特のピッチ降下テクスチャが得られる。
+     - **4 ビットエンベロープ量子化**: ノイズエンベロープ出力を 16 段階に量子化（`stepSize = amplitude / 15` として `Math.round(env / stepSize) * stepSize`）し、NES APU ハードウェアのボリュームレジスタ動作に合わせる。
+     - **LFSR モードマッピング**: 長周期楽器（K・T）はビット1フィードバック（`mode: "long"`）、短周期楽器（S・H・O）はビット6フィードバック（`mode: "short"`）を使用する。worklet `noteOn` には実際の `"long"` / `"short"` 文字列を渡し、説明ラベル（`"long_period"` 等）はログ用に別途保持する。
+     - **単一発音ガード**: `noise` の `noteOn` は常に 1/8 拍以下の長さに量子化し、次のヒットが前の余韻内に到達した場合は直前の `noteOff` を同拍まで切り詰める。スタック不可な楽器が衝突した際は `splice(lastNoteStartIndex)` により前ヒットの全イベント（ミッドヒット `setParam` を含む）を一括削除する。
      - **RNG 制御**: リズム／メロディ／ドラムの候補選択は `seed` 付き RNG に基づき、ムード別タグと機能タグのフィルタリング後にランダム抽選する。抽選結果は診断ログに残し、同一 seed では常に再現できるよう決定論的に動作させる。
 3.  **伴奏トラック (`square2`) の動的生成**:
      a. `seed` で初期化した RNG を用い、小節単位で伴奏シードをグルーピングする。連続する小節が極端に鳴ったり沈黙したりしないよう、前回の判定結果を踏まえて `fast_arpeggio` の採否を決める。

@@ -6,7 +6,7 @@ English | [日本語](./se_ja.md)
 
 Sound Effects (SE) are short audio elements corresponding to specific game events such as "jump", "coin collection", and "explosion". This system follows a **motif-based architecture** with the following characteristics:
 
-- **Template-Based Generation**: Select from 40 template variations defined in `packages/core/motifs/se-templates.json` based on SEType
+- **Template-Based Generation**: Select from 43 template variations defined in `packages/core/motifs/se-templates.json` based on SEType
 - **Seed-Driven RNG**: Regenerate identical SE with same seed value. Achieve natural variation through parameter randomization
 - **BGM Integration**: Share `Event[]` type for seamless integration with BGM pipeline
 - **4-Channel Chiptune Sound Source**: Authentic chiptune sound using square1/square2/triangle/noise channels
@@ -20,7 +20,7 @@ Sound Effects (SE) are short audio elements corresponding to specific game event
 ```
 packages/core/
 ├── motifs/
-│   └── se-templates.json           # SE template definitions (40 templates)
+│   └── se-templates.json           # SE template definitions (43 templates)
 └── src/
     ├── se/
     │   ├── seGenerator.ts          # SEGenerator class
@@ -103,6 +103,14 @@ export interface SETemplate {
     curveType?: "linear" | "exponential";
     curveOptions?: Array<"linear" | "exponential">;
     durationRange?: [number, number];
+  };
+
+  // NES APU hardware sweep unit (square channels only)
+  hardwareSweep?: {
+    enabled: boolean;
+    period: number;   // 0–7: APU sweep divider reload value (tick rate)
+    shift: number;    // 0–7: timer period shift count per tick
+    negate: boolean;  // false = pitch falls, true = pitch rises
   };
 }
 
@@ -313,7 +321,7 @@ Sample from `packages/core/motifs/se-templates.json`:
 - `durationRange` sampled by seed-driven RNG
 - Each template assigned `id` for future statistical analysis and verification
 - Optional `tags` and `weight` support flavor-based selection and relative frequency control
-- **Implementation Status**: All 10 types, total 40 templates implemented (4 per type)
+- **Implementation Status**: All 10 types, total 43 templates implemented
 
 #### **D. Usage Example**
 
@@ -353,7 +361,7 @@ const allEvents = [...bgm.events, ...jump.events].sort((a, b) => a.time - b.time
 
 ### **5. SE Type Characteristics**
 
-This system supports 10 SE types, with 4 template variations prepared for each type:
+This system supports 10 SE types, with 43 total template variations across all types:
 
 | SEType | Description | Channels | Main Features |
 |--------|-------------|----------|---------------|
@@ -442,7 +450,7 @@ This SE automatic generation system has the following characteristics:
 - Output in same `Event[]` format as BGM pipeline
 
 **Implementation Features**:
-- 10 SE types, total 40 templates
+- 10 SE types, total 43 templates
 - Diverse acoustic techniques including pitch sweeps, arpeggios, noise synthesis
 - Type safety through TypeScript type system
 

@@ -6,7 +6,7 @@
 
 効果音（SE: Sound Effect）は「ジャンプ」「コイン取得」「爆発」といった特定のゲームイベントに対応する短い音響です。本システムは**モチーフベースアーキテクチャ**に従い、以下の特徴を持ちます：
 
-- **テンプレートベース生成**: `packages/core/motifs/se-templates.json` に定義された40種類のテンプレートから、SETypeに基づいて選択
+- **テンプレートベース生成**: `packages/core/motifs/se-templates.json` に定義された43種類のテンプレートから、SETypeに基づいて選択
 - **シードドリブンRNG**: 同じシード値で同じSEを再生成可能。パラメータのランダム化により自然なバリエーションを実現
 - **BGMとの統合**: `Event[]` 型を共有し、BGMパイプラインとシームレスに統合
 - **4チャンネルチップチューン音源**: square1/square2/triangle/noiseチャンネルを使用した本格的なチップチューンサウンド
@@ -20,7 +20,7 @@
 ```
 packages/core/
 ├── motifs/
-│   └── se-templates.json           # SE テンプレート定義（40種類）
+│   └── se-templates.json           # SE テンプレート定義（43種類）
 └── src/
     ├── se/
     │   ├── seGenerator.ts          # SEGenerator クラス
@@ -101,6 +101,14 @@ export interface SETemplate {
     curveType?: "linear" | "exponential";
     curveOptions?: Array<"linear" | "exponential">;
     durationRange?: [number, number];
+  };
+
+  // NES APU ハードウェアスイープユニット（square チャンネルのみ）
+  hardwareSweep?: {
+    enabled: boolean;
+    period: number;   // 0–7: APU スイープ除算リロード値（tick レート）
+    shift: number;    // 0–7: 1 tick あたりのタイマー周期シフト数
+    negate: boolean;  // false = ピッチ下降、true = ピッチ上昇
   };
 }
 
@@ -311,7 +319,7 @@ export interface SEGenerationResult {
 - `durationRange` はシードドリブン RNG でサンプリング
 - 各テンプレートに `id` を付与し、将来的な統計解析や検証に利用
 - 任意の `tags` と `weight` により、フレーバー指定と出現頻度制御に対応
-- **実装状況**: 全10タイプ、計40テンプレート実装済み（各タイプ4個ずつ）
+- **実装状況**: 全10タイプ、計43テンプレート実装済み
 
 #### **D. 使用例**
 
@@ -440,7 +448,7 @@ BGMとSEは同じ`Event[]`形式を共有しているため、同じWeb Audioシ
 - BGMパイプラインと同じ`Event[]`形式での出力
 
 **実装の特徴**:
-- 10種類のSEタイプ、計40テンプレート
+- 10種類のSEタイプ、計43テンプレート
 - ピッチスイープ、アルペジオ、ノイズ合成など多彩な音響技法
 - TypeScript型システムによる型安全性
 

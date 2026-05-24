@@ -215,19 +215,26 @@ Score generation is performed by sequentially executing the following 5 independ
         - `bassLed`: bass(sq1) + bassAlt(sq2, octave +1) + melody(tri, sparse) - Bass-driven
         - `layeredBass`: bass(sq1) + bassAlt(tri, octave +1, variation seed) + melody(sq2) - Complementary layer
         - `minimal`: bass(sq1) + pad(tri, sparse) - Minimal without melody
+        - `breakLayered`: breakbeat-oriented dual-bass emphasis with syncopated melody support
+        - `lofiPadLead`: pad-forward lofi arrangement with sparse melody; delays drum entry 2 measures
+        - `retroPulse`: retro arpeggio focus with triangle bass foundation
       - **Voice Attributes**:
         - `priority`: Generation probability 0.0-1.0. 1.0=always generate, 0.7=generate in 70% of measures (for sparse expression)
         - `octaveOffset`: Octave shift -1/0/+1. bassAlt(octave -1) generates sub-bass (D1-E2 range)
         - `seedOffset`: Seed addition value for varying patterns within same role
       - **Selection Logic**: Weighted selection in Phase 1 based on `seed` and `stylePreset`. `stylePreset` must be explicitly supplied via `CompositionOptions.preset`; it is never auto-inferred from axis coordinates. minimalTechno prioritizes minimal/bassLed, progressiveHouse prioritizes layeredBass, retroLoopwave prioritizes retroPulse, breakbeatJungle emphasizes breakLayered/dualBass, lofiChillhop prioritizes lofiPadLead/minimal, reflecting genre characteristics.
-      - **Velocity Adjustment**: `adjustVelocityForChannel()` implements scaling according to role and channel. Bass-type roles reduced to 70%, with additional 0.85 multiplication for MIDI below 52 to control ultra-low range. `triangle` attenuates to 75% of base value (additionally ×0.9 when non-bass), and `square` carrying bass applies ×0.82 to maintain inter-channel sound pressure balance.
+      - **Velocity Adjustment**: `adjustVelocityForChannel()` implements scaling according to role and channel. Bass-type roles reduced to 70%, with additional 0.85 multiplication for MIDI below 52 to control ultra-low range. `triangle` attenuates to 85% of base value (non-bass roles use full strength), `square` carrying bass applies ×0.66, and melody on any channel applies ×0.4 to prevent the melody from overpowering the mix.
       - **Backward Compatibility**: `standard`/`swapped` arrangements call legacy Phase 2 logic (`selectMotifsLegacy`), ensuring existing music generation behavior.
 
 2. **Rhythm Track Special Conversion**:
-     - **Kick**: Convert to `noteOn` event on `noise` channel with `setParam: {noiseMode: 'long_period', envelope: 'short_decay'}` leaning toward low range, preventing pronunciation conflict with bass.
-     - **Snare/Hihat**: Convert to `noteOn` event on `noise` channel with `setParam` event of `noiseMode: 'short_period'`.
-     - **Long-period Noise**: For rhythm elements tagged with special effects like explosions or wind, select `noiseMode: 'long_period'` to generate more melodic noise.
-     - **Single-voice Guard**: Always quantize `noise` `noteOn` to 1/8 beat or less; if next hit arrives at same time or within previous reverberation, truncate previous `noteOff` to same beat. This suppresses "fluttering" when switching LFSR modes.
+     - **Kick (K)**: Emit `noteOn` on `noise` channel with long LFSR mode (`mode: "long"`) and short decay for a low-frequency rumble. Additionally, when the triangle channel is free at the hit time, emit a 12 ms triangle pitch-slide from G2→C2 (velocity 75) alongside the noise burst to add body — matching the classic NES technique of layering triangle and noise for kick weight.
+     - **Snare (S)**: Emit `noteOn` on `noise` channel with short LFSR mode (`mode: "short"`) for metallic crack. On backbeat positions (beat 2 or 4 ±0.1 beat within each measure), switch to long LFSR mode + `periodIndex: 4` (~1.75 kHz) for a heavier, accent-snare thump.
+     - **Hihat/Open (H/O)**: Both use short LFSR mode. When a closed hihat (H) fires while an open hihat (O) is still sounding, the O's `noteOff` is moved to the H's start time with `releaseSeconds: 0.003` (3 ms snap-close), reproducing the physical cymbal choke of the NES hardware.
+     - **Tom (T)**: Emits short-LFSR noise at a lower period index. Like snares, a `setParam periodIndex` event fires at 40 % of the hit duration to shift the period downward by 3 index steps, giving the tom its characteristic mid-hit pitch descent.
+     - **Mid-hit Period Fall**: S and T hits insert a `setParam { param: "periodIndex", value: idx + Δ }` at 40 % of their hit duration. S falls by 2 steps; T falls by 3 steps. This creates an authentic NES-style pitch-descend texture as the hit sustains.
+     - **4-bit Envelope Quantization**: Noise envelope output is quantized to 16 discrete steps (`Math.round(env / stepSize) * stepSize`, where `stepSize = amplitude / 15`) matching the NES APU hardware volume register.
+     - **LFSR Mode Mapping**: Long-period instruments (K, T in default config) use bit-1 feedback (`mode: "long"`); short-period instruments (S, H, O) use bit-6 feedback (`mode: "short"`). The worklet `noteOn` receives the actual `"long"` / `"short"` string; the descriptive label (`"long_period"` etc.) is carried separately for logging.
+     - **Single-voice Guard**: Always quantize `noise` `noteOn` to 1/8 beat or less; if the next hit arrives within the previous hit's reverb window, truncate the previous `noteOff` to the new hit's start time. Uses `splice(lastNoteStartIndex)` to atomically remove all events for the previous hit (including mid-hit `setParam` events) when non-stackable instruments collide.
      - **RNG Control**: Candidate selection for rhythm/melody/drums based on `seed`-driven RNG, randomly selecting after filtering by mood tags and functional tags. Selection results remain in diagnostic logs, operating deterministically for constant reproduction with identical seed.
 
 3. **Accompaniment Track (`square2`) Dynamic Generation**:
