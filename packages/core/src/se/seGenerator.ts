@@ -61,6 +61,7 @@ import type { Event, Channel } from "../types.js";
 import type { SEType, SETemplate, SEGenerationOptions, SEGenerationResult } from "./seTypes.js";
 import { loadSETemplates } from "./seTemplates.js";
 import { midiToFrequency, frequencyToSemitones, quantizeMidiToChord } from "../musicUtils.js";
+import { VELOCITY_CHANNEL_SCALE } from "../constants/velocity-config.js";
 
 /**
  * Seeded random number generator using Linear Congruential Generator (LCG).
@@ -204,13 +205,20 @@ export class SEGenerator {
     for (const ch of template.channels) {
       const tplParams = template.channelParams[ch];
       if (!tplParams) continue;
+      const isPitchedSquare = ch === "square1" || ch === "square2";
       const baseVelocityRange: [number, number] = tplParams.velocityRange
         ? tplParams.velocityRange
         : ch === "noise"
           ? [88, 118]
           : [96, 122];
+      // Channel-specific scale: square -20%, noise -15%, triangle unchanged
+      const chVelocityScale = ch === "square1" || ch === "square2"
+        ? 0.8
+        : ch === "noise"
+          ? 0.85
+          : 1.0;
       const sampledVelocity = Math.round(
-        Math.max(1, Math.min(127, this.sampleFloatRange(baseVelocityRange, rng) * velocityScale))
+        Math.max(1, Math.min(127, this.sampleFloatRange(baseVelocityRange, rng) * velocityScale * chVelocityScale))
       );
       const startOffset = tplParams.startOffsetRange
         ? this.sampleFloatRange(tplParams.startOffsetRange, rng)
@@ -395,7 +403,11 @@ export class SEGenerator {
     if (template.noteSequence) {
       events.push(...this.generateNoteSequence(channel, template, chParams, startTime));
     }
-    // ピッチスイープ
+    // NES ハードウェアスウィープ（APU sweep unit）
+    else if (template.hardwareSweep?.enabled) {
+      events.push(...this.generateHardwareSweep(channel, template, chParams, globalParams, startTime));
+    }
+    // ソフトウェアピッチスイープ（pitchBend補間）
     else if (template.pitchSweep?.enabled) {
       events.push(...this.generatePitchSweep(channel, template, chParams, globalParams, startTime));
     }
@@ -568,6 +580,59 @@ export class SEGenerator {
       channel,
       command: "noteOff",
       data: this.resolveNoteOffData(chParams, sweepDuration)
+    });
+
+    return events;
+  }
+
+  /**
+   * NES APU ハードウェアスウィープ SE 生成
+   *
+   * noteOn 後すぐに setSweep を送り、APU sweep unit を起動する。
+   * negate=true ならピッチ上昇（period 縮小）、false なら下降（period 拡大）。
+   * period が [8, 0x7FF] を外れるとワークレット側が自動ミュートする。
+   * noteOff は duration 後に送り、チャンネルとスウィープ状態を解放する。
+   */
+  private generateHardwareSweep(
+    channel: Channel,
+    template: SETemplate,
+    chParams: any,
+    globalParams: any,
+    startTime: number
+  ): Event[] {
+    const events: Event[] = [];
+    if (!template.hardwareSweep?.enabled) return events;
+
+    const hs = template.hardwareSweep;
+    const duration = globalParams.baseDuration;
+    const velocity = chParams.velocity ?? 110;
+
+    events.push({
+      time: startTime,
+      channel,
+      command: "noteOn",
+      data: { midi: chParams.pitchStart, velocity }
+    });
+
+    events.push({
+      time: startTime,
+      channel,
+      command: "setParam",
+      data: {
+        param: "sweep",
+        enabled: true,
+        period: hs.period,
+        shift: hs.shift,
+        negate: hs.negate
+      }
+    });
+
+    // noteOff が sweepEnabled を false にするのでスウィープ停止イベントは不要
+    events.push({
+      time: startTime + duration,
+      channel,
+      command: "noteOff",
+      data: {}
     });
 
     return events;

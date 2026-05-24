@@ -168,6 +168,27 @@ export interface SETemplate {
     /** Sweep duration range (can be shorter than total SE duration) */
     durationRange?: [number, number];
   };
+
+  /**
+   * NES APU hardware sweep unit configuration (square channels only).
+   *
+   * Unlike pitchSweep (which interpolates between two explicit pitches),
+   * hardwareSweep fires the NES 2A03 sweep unit that multiplicatively shifts
+   * the timer period each tick, creating the authentic "bomb fall" and
+   * "rising jump" sounds of classic Famicom games.
+   *
+   * The sweep auto-mutes when the timer period exits [8, 0x7FF].
+   * Only applicable to square1/square2 channels.
+   */
+  hardwareSweep?: {
+    enabled: boolean;
+    /** Divider reload value (0-7): fires every period+1 half-frames (~120 Hz base) */
+    period: number;
+    /** Shift count (0-7): timer delta = current_period >> shift each tick */
+    shift: number;
+    /** false = period grows → pitch falls; true = period shrinks → pitch rises */
+    negate: boolean;
+  };
 }
 
 /**
