@@ -2166,15 +2166,15 @@ function createPhraseContext(
     }
   }
 
-  // Hook variation fires only when repeatBias < 0.25 (default 0.3 = always exact).
+  // Hook variation fires when repeatBias <= 0.20 (default 0.15 = usually varied).
   // Only the pitch-degree motif (melody.json) is replaced; rhythm and note-duration
   // motifs are still restored from the cached hook below.
-  const repeatBias = options.sectionRepeatBias ?? 0.3;
+  const repeatBias = options.sectionRepeatBias ?? 0.15;
   const shouldVaryReprisedHook =
     repriseHook(section) &&
     isFirstPhrase &&
     Boolean(cachedHook) &&
-    repeatBias < 0.25 &&
+    repeatBias <= 0.20 &&
     context.rng() > repeatBias;
 
   if (shouldVaryReprisedHook) {

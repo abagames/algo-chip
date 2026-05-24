@@ -12,7 +12,7 @@ import { expandRhythmPattern } from "./pattern-expander.js";
 export function preferTagPresence<T extends { tags?: string[] }>(
   candidates: T[],
   tags: string[],
-  minRatio: number = 0.4
+  minRatio: number = 0.15
 ): T[] {
   if (!tags.length) {
     return candidates;
@@ -97,7 +97,7 @@ export function pickWithAvoid<T extends { id?: string }>(
   let choice = candidates[Math.floor(rng() * candidates.length)];
   if (avoidId && candidates.length > 1) {
     let attempts = 0;
-    while (choice?.id === avoidId && attempts < 3) {
+    while (choice?.id === avoidId && attempts < 6) {
       choice = candidates[Math.floor(rng() * candidates.length)];
       attempts++;
     }

@@ -11,7 +11,8 @@ async function run() {
       twoAxisStyle: {
         percussiveMelodic: -0.4,
         calmEnergetic: 0.2
-      }
+      },
+      sectionRepeatBias: 1
     })
   );
 

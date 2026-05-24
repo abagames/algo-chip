@@ -138,7 +138,8 @@ describe("Fixed Length Generation", () => {
         twoAxisStyle: {
           percussiveMelodic: -0.2,
           calmEnergetic: 0.3
-        }
+        },
+        sectionRepeatBias: 1
       });
 
       const result = runPipeline(options);

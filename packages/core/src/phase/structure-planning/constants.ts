@@ -131,4 +131,4 @@ export const ARPEGGIO_KEEP_PROBABILITY = {
   repeatOccurrence: 0.4
 };
 
-export const TEXTURE_VARIATION_PROBABILITY = 0.1;
+export const TEXTURE_VARIATION_PROBABILITY = 0.25;
