@@ -97,7 +97,7 @@ export function buildSections(
   const rng = createLocalRng(seed);
 
   // Use limited progression for harmonicStatic styles
-  const useHarmonicStatic = precomputedIntent.harmonicStatic === true;
+  const useHarmonicStatic = (precomputedIntent.harmonicStatic ?? 0) > 0.5;
   const useSingleChord = useHarmonicStatic && chordVariety.size <= 1;
 
   for (const section of repeatedTemplate) {

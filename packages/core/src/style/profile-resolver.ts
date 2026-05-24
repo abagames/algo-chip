@@ -106,16 +106,16 @@ const INTENT_KEYS: IntentKey[] = [
 ];
 
 const DEFAULT_INTENT: StyleIntent = {
-  textureFocus: false,
-  loopCentric: false,
-  gradualBuild: false,
-  harmonicStatic: false,
-  percussiveLayering: false,
-  breakInsertion: false,
-  filterMotion: false,
-  syncopationBias: false,
-  atmosPad: false,
-  lofiFeel: false
+  textureFocus: 0,
+  loopCentric: 0,
+  gradualBuild: 0,
+  harmonicStatic: 0,
+  percussiveLayering: 0,
+  breakInsertion: 0,
+  filterMotion: 0,
+  syncopationBias: 0,
+  atmosPad: 0,
+  lofiFeel: 0
 };
 
 const DEFAULT_PROFILE: StyleProfile = {
@@ -139,24 +139,24 @@ function seedRandom(seed: number): () => number {
 }
 
 function applyBaselineIntentVariety(intent: StyleIntent, seed: number): StyleIntent {
-  const allFalse = Object.values(intent).every(v => !v);
-  if (!allFalse) return intent;
+  const allZero = Object.values(intent).every(v => v <= 0);
+  if (!allZero) return intent;
   const rng = seedRandom(seed ^ 0xABCD);
   const candidates: (keyof StyleIntent)[] = ["loopCentric", "filterMotion", "atmosPad", "gradualBuild"];
   const picked = candidates[Math.floor(rng() * candidates.length)];
-  return { ...intent, [picked]: true };
+  return { ...intent, [picked]: 1.0 };
 }
 
 function ensureIntent(partial: Partial<StyleIntent>, rng: (() => number) | null, randomize: boolean): StyleIntent {
   const intent: StyleIntent = { ...DEFAULT_INTENT };
   for (const key of INTENT_KEYS) {
     const provided = partial[key];
-    if (typeof provided === "boolean") {
-      intent[key] = provided;
+    if (typeof provided === "number") {
+      intent[key] = Math.max(0, Math.min(1, provided));
     } else if (randomize && rng) {
-      intent[key] = rng() >= 0.5;
+      intent[key] = rng();
     } else {
-      intent[key] = false;
+      intent[key] = 0;
     }
   }
   return intent;
@@ -167,8 +167,8 @@ function mergeProfile(base: StyleProfile, patch: StyleOverrides): StyleProfile {
   if (patch.intent) {
     for (const key of INTENT_KEYS) {
       const value = patch.intent[key];
-      if (typeof value === "boolean") {
-        intent[key] = value;
+      if (typeof value === "number") {
+        intent[key] = Math.max(0, Math.min(1, value));
       }
     }
   }
@@ -273,8 +273,8 @@ export function resolveGenerationContext(options: CompositionOptions): ResolveRe
   if (options.overrides?.intent) {
     for (const key of INTENT_KEYS) {
       const value = options.overrides.intent[key];
-      if (typeof value === "boolean") {
-        axisStyleOverrides[key] = value;
+      if (typeof value === "number") {
+        axisStyleOverrides[key] = Math.max(0, Math.min(1, value));
       }
     }
   }
