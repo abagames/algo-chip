@@ -1,67 +1,33 @@
-# Backlog
+- [x] 音源の改善
+- [x] velocity-config の MELODY_SQUARE を変更し、音量調整
+- [x] SE の test から hash の整合を削除中。テストに問題があり、修正が必要
+  - 現状のテストの問題点を検証し、その検証結果をまずユーザに提示せよ
+  - 必要に応じて test を通過していた git 上の最新版を確認する
+- [x] MELODY_SQUARE という命名は実態と合わない。メロディ担当チャネルの音量であることを示す
+- [x] SE全体の音量が小さいので、調整する
 
-## Sound Effect Variation and Quality
+- [x] 一通り修正が完了したら、現状の実装をレビューする
+  - レビュー結果: テスト99件全件通過。実装は概ね良好。
+  - 発見した課題:
+    1. `phase/structure-planning.ts` と `phase/structure-planning/voice-arrangements.ts` + `voice-arrangement-selector.ts` でVoice Arrangementの定義が重複している（後者は未使用の可能性）。
+    2. `sectionRepeatBias` オプションが内部API `runPipeline()` のみで利用可能で、公開API `generateComposition()` からは使えない。
+    3. その他小さな改善点あり（詳細は実装レビューログ参照）。
+- [x] ドキュメントを現状に合わせて更新する
+  - `score.md` / `score_ja.md`: velocity scaling値を現行実装（triangle 85%/non-bass full strength, square bass 0.66, melody 0.4）に修正。
+  - `se.md`: 「SE typeあたり4テンプレート」という表現を「全体で43テンプレート」に修正。
 
-### P0: Quality guardrails
+- [x] 生成されるBGMのバリエーション増加のための施策を考える
+  - score.md 記載のロジックをレビューし、8つの施策を特定。
+  - 施策一覧（影響度順）:
+    1. **リズムモチーフの重複削除・拡充**: rhythm.jsonに22重複+18重複があり、実質34%が無駄。dedup後に新パターン追加。
+    2. **Hook再利用の緩和**: sectionRepeatBiasのデフォルトを下げ、再現Aセクションを自動的に変化させる。テストも緩和。
+    3. **タグフィルタリング強化**: preferTagPresenceのminRatioを0.4→0.15程度に、pickWithAvoidのリトライ回数を増やす。
+    4. **Two-Axis意図の連続強度化**: StyleIntentをbooleanから0.0-1.0の連続値にし、座標の微妙な差異が結果に反映されるようにする。
+    5. **テクスチャ・構造の多様化**: テンプレート数を4→8-10種に、texture変異確率を10%→25-30%に。sparse/call_and_response等の新テクスチャ追加。
+    6. **テクニックライブラリ拡充**: techniques.jsonのduty sweep/gain profile/ornamentを増やす。vibrato等の新ファミリ追加。
+    7. **Voice Arrangementの再バランス**: standard/swappedの重みを下げ、未使用presetの確率を上げる。セクション毎のarrangement変更も検討。
+    8. **ベースアルペジオの拡充**: bass-patterns.jsonのarpeggioが4種のみ。8-10種に増やす。
+  - 実装の際は各施策ごとにテスト・seed sweepで検証が必要。
 
-- [x] Add an SE audit test that generates every `SEType` across a fixed seed sweep
-      and validates structural invariants: sorted event time, noteOn/noteOff balance,
-      non-negative duration, finite MIDI/frequency values, velocity range 1-127, and
-      no accidental zero-length notes.
-- [x] Add template schema validation for `packages/core/motifs/se-templates.json`.
-      Check that each `SEType` has at least two templates, IDs are unique, duration
-      ranges are sane, `noteSequence.intervals` and `noteDurations` lengths match,
-      pitch ranges are ordered, and referenced channels have channel parameters.
-- [x] Add deterministic snapshot coverage for representative seeds per SE type.
-      Keep snapshots focused on event shape and metadata so template tuning can still
-      change musical values intentionally.
-- [x] Define loudness and tail budgets per SE family. Short UI sounds should stay
-      crisp, explosions may have longer tails, and sustained `synth` / `tone` sounds
-      should avoid masking BGM in the demo.
-
-### P1: Template variety
-
-- [x] Expand each existing SE type from 2 templates to 4 templates before adding new
-      public `SEType` values. Prioritize `coin`, `hit`, `laser`, and `explosion`
-      because repeated gameplay triggers make same-family variation most audible.
-- [x] Add per-family flavor targets:
-  - `jump`: tiny hop, heavy jump, spring jump, low-gravity jump.
-  - `coin`: single sparkle, fast triad, delayed sparkle, lower-pitch pickup.
-  - `explosion`: short pop, bass-heavy blast, noisy crumble, compact impact.
-  - `hit`: sharp tick, low thud, noise bite, descending square chirp.
-  - `powerup`: fast rise, fanfare arpeggio, two-channel shimmer, soft confirm.
-  - `laser`: short zap, long beam, upward charge shot, noisy blaster.
-  - `select` / `click`: confirm, cancel, disabled, cursor-move variants.
-  - `synth` / `tone`: square, triangle, pulse-width, short sustained variants.
-- [x] Add template selection weights so safer/default templates appear more often
-      while rare character templates still appear in seed-driven generation.
-- [x] Support optional `tags` on `SETemplate` such as `bright`, `soft`, `heavy`,
-      `ui`, `combat`, `pickup`, and `retro`. This allows demos and game integrations
-      to choose variants without hard-coding template IDs.
-
-### P1: Sound design controls
-
-- [x] Add `variantIntent` or equivalent options for high-level selection, e.g.
-      `soft`, `bright`, `heavy`, `short`, `long`, while preserving deterministic
-      replay through `meta.replayOptions`.
-- [x] Add optional pitch quantization helpers for SEs that should match the generated
-      BGM key. Keep this opt-in because UI sounds and noise-heavy effects should not
-      be forced into harmonic constraints.
-- [x] Add per-channel start offsets for layered templates. Small offsets can make
-      explosion and hit effects feel less flat without introducing new synthesis
-      primitives.
-- [x] Add envelope shape options beyond `percussive` and `sustained`, such as
-      `pluck`, `snap`, and `fade`, if they map cleanly to current WebAudio event
-      data.
-- [x] Add an optional gain or velocity scaling option at generation time so callers
-      can reuse the same template for foreground, background, and UI contexts.
-
-### P3: Documentation and localization
-
-- [x] Update `se.md` and `se_ja.md` whenever template fields, new `SEType` values,
-      selection behavior, or verification workflow changes.
-- [x] Document template authoring rules: pitch range bounds, duration ranges by
-      family, recommended velocity ranges, channel usage, and when to prefer
-      `noteSequence` vs `pitchSweep`.
-- [x] Keep README / USAGE examples aligned with any new generation options and make
-      sure TypeDoc is refreshed when public types change.
+- [ ] 上記レビューで発見された課題の解決
+- [ ] BGMバリエーション施策を順に実施。実施後は逐次多様性検証スクリプトで検証すること
