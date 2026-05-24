@@ -36,8 +36,7 @@
       "kick"
     ],
     "variations": [
-      "RM003",
-      "RM004"
+      "RM003"
     ]
   },
   {
@@ -58,28 +57,7 @@
       "sfx_long"
     ],
     "variations": [
-      "RM004",
       "RM005"
-    ]
-  },
-  {
-    "id": "RM004",
-    "length": 4,
-    "pattern": [
-      4,
-      8,
-      8,
-      4,
-      4
-    ],
-    "tags": [
-      "start",
-      "straight",
-      "loop_safe"
-    ],
-    "variations": [
-      "RM005",
-      "RM006"
     ]
   },
   {
@@ -99,30 +77,7 @@
       "loop_safe"
     ],
     "variations": [
-      "RM006",
       "RM007"
-    ]
-  },
-  {
-    "id": "RM006",
-    "length": 4,
-    "pattern": [
-      8,
-      8,
-      4,
-      8,
-      8,
-      4
-    ],
-    "tags": [
-      "start",
-      "syncopation",
-      "loop_safe",
-      "anacrusis"
-    ],
-    "variations": [
-      "RM007",
-      "RM008"
     ]
   },
   {
@@ -169,27 +124,6 @@
     "variations": [
       "RM027",
       "RM028"
-    ]
-  },
-  {
-    "id": "RM009",
-    "length": 4,
-    "pattern": [
-      8,
-      8,
-      4,
-      8,
-      8,
-      4
-    ],
-    "tags": [
-      "middle",
-      "straight",
-      "bridge"
-    ],
-    "variations": [
-      "RM010",
-      "RM011"
     ]
   },
   {
@@ -399,86 +333,7 @@
       "bridge"
     ],
     "variations": [
-      "RM029",
-      "RM030"
-    ]
-  },
-  {
-    "id": "RM019",
-    "length": 4,
-    "pattern": [
-      4,
-      4,
-      4,
-      4
-    ],
-    "tags": [
-      "end",
-      "straight",
-      "loop_safe"
-    ],
-    "variations": [
-      "RM020",
-      "RM021"
-    ]
-  },
-  {
-    "id": "RM020",
-    "length": 4,
-    "pattern": [
-      8,
-      8,
-      4,
-      8,
-      8,
-      4
-    ],
-    "tags": [
-      "end",
-      "straight",
-      "loop_safe"
-    ],
-    "variations": [
-      "RM021",
-      "RM022"
-    ]
-  },
-  {
-    "id": "RM021",
-    "length": 4,
-    "pattern": [
-      4,
-      8,
-      8,
-      4,
-      4
-    ],
-    "tags": [
-      "end",
-      "straight",
-      "loop_safe"
-    ],
-    "variations": [
-      "RM022",
-      "RM023"
-    ]
-  },
-  {
-    "id": "RM022",
-    "length": 4,
-    "pattern": [
-      4,
-      4,
-      4,
-      4
-    ],
-    "tags": [
-      "end",
-      "cadence"
-    ],
-    "variations": [
-      "RM023",
-      "RM024"
+      "RM029"
     ]
   },
   {
@@ -495,52 +350,7 @@
       "end",
       "cadence"
     ],
-    "variations": [
-      "RM024",
-      "RM025"
-    ]
-  },
-  {
-    "id": "RM024",
-    "length": 4,
-    "pattern": [
-      4,
-      8,
-      8,
-      4,
-      4
-    ],
-    "tags": [
-      "end",
-      "cadence"
-    ],
-    "variations": [
-      "RM025",
-      "RM026"
-    ]
-  },
-  {
-    "id": "RM025",
-    "length": 8,
-    "pattern": [
-      4,
-      4,
-      4,
-      4,
-      4,
-      4,
-      4,
-      4
-    ],
-    "tags": [
-      "end",
-      "cadence",
-      "loop_safe"
-    ],
-    "variations": [
-      "RM026",
-      "RM019"
-    ]
+    "variations": []
   },
   {
     "id": "RM026",
@@ -562,10 +372,7 @@
       "cadence",
       "loop_safe"
     ],
-    "variations": [
-      "RM019",
-      "RM020"
-    ]
+    "variations": []
   },
   {
     "id": "RM027",
@@ -633,642 +440,7 @@
       "bridge",
       "loop_safe"
     ],
-    "variations": [
-      "RM030",
-      "RM031"
-    ]
-  },
-  {
-    "id": "RM030",
-    "length": 8,
-    "pattern": [
-      8,
-      8,
-      4,
-      8,
-      8,
-      4,
-      8,
-      8,
-      4,
-      4,
-      4
-    ],
-    "tags": [
-      "middle",
-      "syncopation",
-      "bridge",
-      "loop_safe"
-    ],
-    "variations": [
-      "RM031",
-      "RM032"
-    ]
-  },
-  {
-    "id": "RM031",
-    "length": 8,
-    "pattern": [
-      8,
-      8,
-      4,
-      8,
-      8,
-      4,
-      8,
-      8,
-      4,
-      4,
-      4
-    ],
-    "tags": [
-      "middle",
-      "syncopation",
-      "bridge",
-      "loop_safe"
-    ],
-    "variations": [
-      "RM032",
-      "RM033"
-    ]
-  },
-  {
-    "id": "RM032",
-    "length": 8,
-    "pattern": [
-      8,
-      8,
-      4,
-      8,
-      8,
-      4,
-      8,
-      8,
-      4,
-      4,
-      4
-    ],
-    "tags": [
-      "middle",
-      "syncopation",
-      "bridge",
-      "loop_safe"
-    ],
-    "variations": [
-      "RM033",
-      "RM034"
-    ]
-  },
-  {
-    "id": "RM033",
-    "length": 8,
-    "pattern": [
-      8,
-      8,
-      4,
-      8,
-      8,
-      4,
-      8,
-      8,
-      4,
-      4,
-      4
-    ],
-    "tags": [
-      "middle",
-      "syncopation",
-      "bridge",
-      "loop_safe"
-    ],
-    "variations": [
-      "RM034",
-      "RM035"
-    ]
-  },
-  {
-    "id": "RM034",
-    "length": 8,
-    "pattern": [
-      8,
-      8,
-      4,
-      8,
-      8,
-      4,
-      8,
-      8,
-      4,
-      4,
-      4
-    ],
-    "tags": [
-      "middle",
-      "syncopation",
-      "bridge",
-      "loop_safe"
-    ],
-    "variations": [
-      "RM035",
-      "RM036"
-    ]
-  },
-  {
-    "id": "RM035",
-    "length": 8,
-    "pattern": [
-      8,
-      8,
-      4,
-      8,
-      8,
-      4,
-      8,
-      8,
-      4,
-      4,
-      4
-    ],
-    "tags": [
-      "middle",
-      "syncopation",
-      "bridge",
-      "loop_safe"
-    ],
-    "variations": [
-      "RM036",
-      "RM037"
-    ]
-  },
-  {
-    "id": "RM036",
-    "length": 8,
-    "pattern": [
-      8,
-      8,
-      4,
-      8,
-      8,
-      4,
-      8,
-      8,
-      4,
-      4,
-      4
-    ],
-    "tags": [
-      "middle",
-      "syncopation",
-      "bridge",
-      "loop_safe"
-    ],
-    "variations": [
-      "RM037",
-      "RM038"
-    ]
-  },
-  {
-    "id": "RM037",
-    "length": 8,
-    "pattern": [
-      8,
-      8,
-      4,
-      8,
-      8,
-      4,
-      8,
-      8,
-      4,
-      4,
-      4
-    ],
-    "tags": [
-      "middle",
-      "syncopation",
-      "bridge",
-      "loop_safe"
-    ],
-    "variations": [
-      "RM038",
-      "RM039"
-    ]
-  },
-  {
-    "id": "RM038",
-    "length": 8,
-    "pattern": [
-      8,
-      8,
-      4,
-      8,
-      8,
-      4,
-      8,
-      8,
-      4,
-      4,
-      4
-    ],
-    "tags": [
-      "middle",
-      "syncopation",
-      "bridge",
-      "loop_safe"
-    ],
-    "variations": [
-      "RM039",
-      "RM040"
-    ]
-  },
-  {
-    "id": "RM039",
-    "length": 8,
-    "pattern": [
-      8,
-      8,
-      4,
-      8,
-      8,
-      4,
-      8,
-      8,
-      4,
-      4,
-      4
-    ],
-    "tags": [
-      "middle",
-      "syncopation",
-      "bridge",
-      "loop_safe"
-    ],
-    "variations": [
-      "RM040",
-      "RM041"
-    ]
-  },
-  {
-    "id": "RM040",
-    "length": 8,
-    "pattern": [
-      8,
-      8,
-      4,
-      8,
-      8,
-      4,
-      8,
-      8,
-      4,
-      4,
-      4
-    ],
-    "tags": [
-      "middle",
-      "syncopation",
-      "bridge",
-      "loop_safe"
-    ],
-    "variations": [
-      "RM041",
-      "RM042"
-    ]
-  },
-  {
-    "id": "RM041",
-    "length": 8,
-    "pattern": [
-      8,
-      8,
-      4,
-      8,
-      8,
-      4,
-      8,
-      8,
-      4,
-      4,
-      4
-    ],
-    "tags": [
-      "middle",
-      "syncopation",
-      "bridge",
-      "loop_safe"
-    ],
-    "variations": [
-      "RM042",
-      "RM043"
-    ]
-  },
-  {
-    "id": "RM042",
-    "length": 8,
-    "pattern": [
-      8,
-      8,
-      4,
-      8,
-      8,
-      4,
-      8,
-      8,
-      4,
-      4,
-      4
-    ],
-    "tags": [
-      "middle",
-      "syncopation",
-      "bridge",
-      "loop_safe"
-    ],
-    "variations": [
-      "RM043",
-      "RM044"
-    ]
-  },
-  {
-    "id": "RM043",
-    "length": 8,
-    "pattern": [
-      8,
-      8,
-      4,
-      8,
-      8,
-      4,
-      8,
-      8,
-      4,
-      4,
-      4
-    ],
-    "tags": [
-      "middle",
-      "syncopation",
-      "bridge",
-      "loop_safe"
-    ],
-    "variations": [
-      "RM044",
-      "RM045"
-    ]
-  },
-  {
-    "id": "RM044",
-    "length": 8,
-    "pattern": [
-      8,
-      8,
-      4,
-      8,
-      8,
-      4,
-      8,
-      8,
-      4,
-      4,
-      4
-    ],
-    "tags": [
-      "middle",
-      "syncopation",
-      "bridge",
-      "loop_safe"
-    ],
-    "variations": [
-      "RM045",
-      "RM046"
-    ]
-  },
-  {
-    "id": "RM045",
-    "length": 8,
-    "pattern": [
-      8,
-      8,
-      4,
-      8,
-      8,
-      4,
-      8,
-      8,
-      4,
-      4,
-      4
-    ],
-    "tags": [
-      "middle",
-      "syncopation",
-      "bridge",
-      "loop_safe"
-    ],
-    "variations": [
-      "RM046",
-      "RM047"
-    ]
-  },
-  {
-    "id": "RM046",
-    "length": 8,
-    "pattern": [
-      8,
-      8,
-      4,
-      8,
-      8,
-      4,
-      8,
-      8,
-      4,
-      4,
-      4
-    ],
-    "tags": [
-      "middle",
-      "syncopation",
-      "bridge",
-      "loop_safe"
-    ],
-    "variations": [
-      "RM047",
-      "RM048"
-    ]
-  },
-  {
-    "id": "RM047",
-    "length": 8,
-    "pattern": [
-      8,
-      8,
-      4,
-      8,
-      8,
-      4,
-      8,
-      8,
-      4,
-      4,
-      4
-    ],
-    "tags": [
-      "middle",
-      "syncopation",
-      "bridge",
-      "loop_safe"
-    ],
-    "variations": [
-      "RM048",
-      "RM049"
-    ]
-  },
-  {
-    "id": "RM048",
-    "length": 8,
-    "pattern": [
-      8,
-      8,
-      4,
-      8,
-      8,
-      4,
-      8,
-      8,
-      4,
-      4,
-      4
-    ],
-    "tags": [
-      "middle",
-      "syncopation",
-      "bridge",
-      "loop_safe"
-    ],
-    "variations": [
-      "RM049",
-      "RM050"
-    ]
-  },
-  {
-    "id": "RM049",
-    "length": 8,
-    "pattern": [
-      8,
-      8,
-      4,
-      8,
-      8,
-      4,
-      8,
-      8,
-      4,
-      4,
-      4
-    ],
-    "tags": [
-      "middle",
-      "syncopation",
-      "bridge",
-      "loop_safe"
-    ],
-    "variations": [
-      "RM050",
-      "RM009"
-    ]
-  },
-  {
-    "id": "RM050",
-    "length": 8,
-    "pattern": [
-      8,
-      8,
-      4,
-      8,
-      8,
-      4,
-      8,
-      8,
-      4,
-      4,
-      4
-    ],
-    "tags": [
-      "middle",
-      "syncopation",
-      "bridge",
-      "loop_safe"
-    ],
-    "variations": [
-      "RM009",
-      "RM010"
-    ]
-  },
-  {
-    "id": "RM051",
-    "length": 4,
-    "pattern": [
-      8,
-      8,
-      4,
-      8,
-      8,
-      4
-    ],
-    "tags": [
-      "start",
-      "accented",
-      "syncopation",
-      "loop_safe"
-    ],
-    "variations": [
-      "RM052",
-      "RM053"
-    ]
-  },
-  {
-    "id": "RM052",
-    "length": 4,
-    "pattern": [
-      4,
-      8,
-      8,
-      4,
-      4
-    ],
-    "tags": [
-      "middle",
-      "accented",
-      "bridge",
-      "loop_safe"
-    ],
-    "variations": [
-      "RM051",
-      "RM053"
-    ]
-  },
-  {
-    "id": "RM053",
-    "length": 4,
-    "pattern": [
-      8,
-      8,
-      8,
-      8,
-      4,
-      4
-    ],
-    "tags": [
-      "end",
-      "accented",
-      "cadence",
-      "loop_safe"
-    ],
-    "variations": [
-      "RM051",
-      "RM052"
-    ]
+    "variations": []
   },
   {
     "id": "RM054",
@@ -1288,7 +460,6 @@
       "loop_safe"
     ],
     "variations": [
-      "RM052",
       "RM055"
     ]
   },
@@ -1310,7 +481,6 @@
       "loop_safe"
     ],
     "variations": [
-      "RM051",
       "RM054"
     ]
   },
@@ -1377,40 +547,6 @@
     ]
   },
   {
-    "id": "RM058",
-    "length": 4,
-    "pattern": [
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16
-    ],
-    "tags": [
-      "start",
-      "middle",
-      "texture_loop",
-      "grid16",
-      "loop_safe",
-      "simple"
-    ],
-    "variations": [
-      "RM059",
-      "RM060"
-    ]
-  },
-  {
     "id": "RM059",
     "length": 4,
     "pattern": [
@@ -1438,7 +574,6 @@
       "percussive_layer"
     ],
     "variations": [
-      "RM058",
       "RM060"
     ]
   },
@@ -1468,7 +603,6 @@
       "syncopation"
     ],
     "variations": [
-      "RM058",
       "RM059"
     ]
   },
@@ -1792,56 +926,6 @@
     ]
   },
   {
-    "id": "RM073",
-    "length": 8,
-    "pattern": [
-      4,
-      4,
-      4,
-      4,
-      4,
-      4,
-      4,
-      4
-    ],
-    "tags": [
-      "end",
-      "cadence",
-      "loop_safe",
-      "final"
-    ],
-    "variations": [
-      "RM074",
-      "RM075"
-    ]
-  },
-  {
-    "id": "RM074",
-    "length": 8,
-    "pattern": [
-      4,
-      8,
-      8,
-      4,
-      4,
-      4,
-      8,
-      8,
-      4,
-      4
-    ],
-    "tags": [
-      "end",
-      "cadence",
-      "loop_safe",
-      "final"
-    ],
-    "variations": [
-      "RM073",
-      "RM075"
-    ]
-  },
-  {
     "id": "RM075",
     "length": 8,
     "pattern": [
@@ -1859,32 +943,7 @@
       "loop_safe",
       "ritardando"
     ],
-    "variations": [
-      "RM073",
-      "RM074"
-    ]
-  },
-  {
-    "id": "RM076",
-    "length": 4,
-    "pattern": [
-      8,
-      8,
-      8,
-      8,
-      4,
-      4
-    ],
-    "tags": [
-      "start",
-      "anacrusis",
-      "staccato",
-      "loop_safe"
-    ],
-    "variations": [
-      "RM077",
-      "RM078"
-    ]
+    "variations": []
   },
   {
     "id": "RM077",
@@ -1905,56 +964,7 @@
       "drive",
       "loop_safe"
     ],
-    "variations": [
-      "RM076",
-      "RM078"
-    ]
-  },
-  {
-    "id": "RM078",
-    "length": 4,
-    "pattern": [
-      8,
-      8,
-      4,
-      8,
-      8,
-      4
-    ],
-    "tags": [
-      "start",
-      "anacrusis",
-      "syncopation",
-      "loop_safe"
-    ],
-    "variations": [
-      "RM076",
-      "RM077"
-    ]
-  },
-  {
-    "id": "RM079",
-    "length": 4,
-    "pattern": [
-      8,
-      16,
-      16,
-      4,
-      8,
-      16,
-      16,
-      4
-    ],
-    "tags": [
-      "middle",
-      "syncopation",
-      "drive",
-      "loop_safe"
-    ],
-    "variations": [
-      "RM080",
-      "RM081"
-    ]
+    "variations": []
   },
   {
     "id": "RM080",
@@ -1975,7 +985,6 @@
       "loop_safe"
     ],
     "variations": [
-      "RM079",
       "RM082"
     ]
   },
@@ -2001,7 +1010,6 @@
       "loop_safe"
     ],
     "variations": [
-      "RM079",
       "RM082"
     ]
   },
@@ -2107,8 +1115,7 @@
       "loop_safe"
     ],
     "variations": [
-      "RM084",
-      "RM079"
+      "RM084"
     ]
   },
   {
@@ -2223,214 +1230,7 @@
       "loop_safe"
     ],
     "variations": [
-      "RM087",
-      "RM090"
-    ]
-  },
-  {
-    "id": "RM090",
-    "length": 8,
-    "pattern": [
-      4,
-      8,
-      8,
-      4,
-      4,
-      8,
-      8,
-      4,
-      4,
-      4
-    ],
-    "tags": [
-      "middle",
-      "bridge",
-      "variation",
-      "loop_safe"
-    ],
-    "variations": [
-      "RM089",
-      "RM086"
-    ]
-  },
-  {
-    "id": "RM091",
-    "length": 4,
-    "pattern": [
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16
-    ],
-    "tags": [
-      "middle",
-      "texture_loop",
-      "grid16",
-      "percussive_layer",
-      "loop_safe",
-      "straight"
-    ]
-  },
-  {
-    "id": "RM092",
-    "length": 4,
-    "pattern": [
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16
-    ],
-    "tags": [
-      "middle",
-      "texture_loop",
-      "grid16",
-      "percussive_layer",
-      "loop_safe",
-      "syncopation"
-    ]
-  },
-  {
-    "id": "RM093",
-    "length": 4,
-    "pattern": [
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16
-    ],
-    "tags": [
-      "middle",
-      "texture_loop",
-      "grid16",
-      "percussive_layer",
-      "loop_safe",
-      "simple"
-    ]
-  },
-  {
-    "id": "RM094",
-    "length": 4,
-    "pattern": [
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16
-    ],
-    "tags": [
-      "middle",
-      "texture_loop",
-      "grid16",
-      "percussive_layer",
-      "loop_safe",
-      "accented"
-    ]
-  },
-  {
-    "id": "RM095",
-    "length": 4,
-    "pattern": [
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16
-    ],
-    "tags": [
-      "middle",
-      "texture_loop",
-      "grid16",
-      "percussive_layer",
-      "loop_safe",
-      "straight"
-    ]
-  },
-  {
-    "id": "RM096",
-    "length": 4,
-    "pattern": [
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16
-    ],
-    "tags": [
-      "start",
-      "texture_loop",
-      "grid16",
-      "percussive_layer",
-      "loop_safe",
-      "straight"
+      "RM087"
     ]
   },
   {
@@ -2457,63 +1257,8 @@
       "percussive_layer",
       "loop_safe",
       "syncopation"
-    ]
-  },
-  {
-    "id": "RM098",
-    "length": 4,
-    "pattern": [
-      16,
-      16,
-      8,
-      16,
-      16,
-      8,
-      16,
-      16,
-      8,
-      16,
-      16,
-      8
     ],
-    "tags": [
-      "start",
-      "texture_loop",
-      "grid16",
-      "percussive_layer",
-      "loop_safe",
-      "simple"
-    ]
-  },
-  {
-    "id": "RM099",
-    "length": 4,
-    "pattern": [
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16
-    ],
-    "tags": [
-      "start",
-      "texture_loop",
-      "grid16",
-      "percussive_layer",
-      "loop_safe",
-      "accented"
-    ]
+    "variations": []
   },
   {
     "id": "RM100",
@@ -2539,37 +1284,8 @@
       "percussive_layer",
       "loop_safe",
       "open"
-    ]
-  },
-  {
-    "id": "RM101",
-    "length": 4,
-    "pattern": [
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16
     ],
-    "tags": [
-      "end",
-      "texture_loop",
-      "grid16",
-      "percussive_layer",
-      "loop_safe",
-      "straight"
-    ]
+    "variations": []
   },
   {
     "id": "RM102",
@@ -2595,242 +1311,8 @@
       "percussive_layer",
       "loop_safe",
       "syncopation"
-    ]
-  },
-  {
-    "id": "RM103",
-    "length": 4,
-    "pattern": [
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16
     ],
-    "tags": [
-      "end",
-      "texture_loop",
-      "grid16",
-      "percussive_layer",
-      "loop_safe",
-      "simple"
-    ]
-  },
-  {
-    "id": "RM104",
-    "length": 4,
-    "pattern": [
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16
-    ],
-    "tags": [
-      "end",
-      "texture_loop",
-      "grid16",
-      "percussive_layer",
-      "loop_safe",
-      "accented"
-    ]
-  },
-  {
-    "id": "RM105",
-    "length": 4,
-    "pattern": [
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16
-    ],
-    "tags": [
-      "end",
-      "texture_loop",
-      "grid16",
-      "percussive_layer",
-      "loop_safe",
-      "open"
-    ]
-  },
-  {
-    "id": "RM106",
-    "length": 4,
-    "pattern": [
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16
-    ],
-    "tags": [
-      "middle",
-      "texture_loop",
-      "grid16",
-      "percussive_layer",
-      "straight"
-    ]
-  },
-  {
-    "id": "RM107",
-    "length": 4,
-    "pattern": [
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16
-    ],
-    "tags": [
-      "middle",
-      "texture_loop",
-      "grid16",
-      "percussive_layer",
-      "syncopation"
-    ]
-  },
-  {
-    "id": "RM108",
-    "length": 4,
-    "pattern": [
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16
-    ],
-    "tags": [
-      "middle",
-      "texture_loop",
-      "grid16",
-      "percussive_layer",
-      "simple"
-    ]
-  },
-  {
-    "id": "RM109",
-    "length": 4,
-    "pattern": [
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16
-    ],
-    "tags": [
-      "middle",
-      "texture_loop",
-      "grid16",
-      "percussive_layer",
-      "accented"
-    ]
-  },
-  {
-    "id": "RM110",
-    "length": 4,
-    "pattern": [
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16,
-      16
-    ],
-    "tags": [
-      "middle",
-      "texture_loop",
-      "grid16",
-      "percussive_layer",
-      "open"
-    ]
+    "variations": []
   },
   {
     "id": "RM111",
@@ -2900,7 +1382,8 @@
       "grid16",
       "syncopation",
       "percussive_layer"
-    ]
+    ],
+    "variations": []
   },
   {
     "id": "RM112",
@@ -2952,7 +1435,8 @@
       "grid16",
       "percussive_layer",
       "drive"
-    ]
+    ],
+    "variations": []
   },
   {
     "id": "RM113",
@@ -3009,7 +1493,8 @@
       "grid16",
       "syncopation",
       "break"
-    ]
+    ],
+    "variations": []
   },
   {
     "id": "RM114",
@@ -3080,7 +1565,8 @@
       "grid16",
       "syncopation",
       "breakbeat"
-    ]
+    ],
+    "variations": []
   },
   {
     "id": "RM115",
@@ -3130,7 +1616,8 @@
       "swing_hint",
       "rest_heavy",
       "lofi"
-    ]
+    ],
+    "variations": []
   },
   {
     "id": "RM116",
@@ -3187,7 +1674,8 @@
       "syncopation",
       "grid16",
       "breakbeat"
-    ]
+    ],
+    "variations": []
   },
   {
     "id": "RM117",
@@ -3259,7 +1747,8 @@
       "syncopation",
       "breakbeat",
       "variation"
-    ]
+    ],
+    "variations": []
   },
   {
     "id": "RM118",
@@ -3309,7 +1798,8 @@
       "swing_hint",
       "rest_heavy",
       "lofi"
-    ]
+    ],
+    "variations": []
   },
   {
     "id": "RM119",
@@ -3359,7 +1849,8 @@
       "rest_heavy",
       "lofi",
       "variation"
-    ]
+    ],
+    "variations": []
   },
   {
     "id": "RM120",
@@ -3646,7 +2137,8 @@
       "loop_safe",
       "rest_heavy",
       "lofi"
-    ]
+    ],
+    "variations": []
   },
   {
     "id": "RM127",
@@ -3696,7 +2188,8 @@
       "rest_heavy",
       "lofi",
       "texture_loop"
-    ]
+    ],
+    "variations": []
   },
   {
     "id": "RM128",
@@ -3733,7 +2226,8 @@
       "bridge",
       "rest_heavy",
       "lofi"
-    ]
+    ],
+    "variations": []
   },
   {
     "id": "RM129",
@@ -3763,7 +2257,8 @@
       "loop_safe",
       "rest_heavy",
       "lofi"
-    ]
+    ],
+    "variations": []
   },
   {
     "id": "RM131",
@@ -3836,7 +2331,8 @@
       "grid16",
       "syncopation",
       "breakbeat"
-    ]
+    ],
+    "variations": []
   },
   {
     "id": "RM132",
@@ -3886,7 +2382,8 @@
       "syncopation",
       "breakbeat",
       "variation"
-    ]
+    ],
+    "variations": []
   },
   {
     "id": "RM133",
@@ -3931,53 +2428,8 @@
       "loop_safe",
       "syncopation",
       "breakbeat"
-    ]
-  },
-  {
-    "id": "RM135",
-    "length": 4,
-    "pattern": [
-      8,
-      16,
-      16,
-      4,
-      8,
-      16,
-      16,
-      4
     ],
-    "tags": [
-      "start",
-      "loop_safe",
-      "swing_hint"
-    ],
-    "variations": [
-      "RM017"
-    ]
-  },
-  {
-    "id": "RM136",
-    "length": 4,
-    "pattern": [
-      8,
-      16,
-      16,
-      8,
-      16,
-      16,
-      8,
-      16,
-      16,
-      8,
-      16,
-      16
-    ],
-    "tags": [
-      "bridge",
-      "loop_safe",
-      "swing_hint",
-      "texture_loop"
-    ]
+    "variations": []
   },
   {
     "id": "RM137",
@@ -3995,6 +2447,7 @@
       "loop_safe",
       "swing_hint",
       "cadence"
-    ]
+    ],
+    "variations": []
   }
 ]
