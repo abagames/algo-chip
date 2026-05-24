@@ -34,91 +34,75 @@ export function mapTwoAxisToStyleIntent(axis: TwoAxisStyle): StyleIntent {
     // ========================================
 
     /**
-     * percussiveLayering: Activates when percussive strength > 0.3
-     * Effects: Prefers drums with "percussive_layer", "four_on_floor" tags
-     *          Shortens noise release times
+     * percussiveLayering: Continuous strength based on percussive axis.
+     * High values prefer drums with "percussive_layer", "four_on_floor" tags.
      */
-    percussiveLayering: percussiveStrength > 0.3,
+    percussiveLayering: percussiveStrength,
 
     /**
-     * syncopationBias: Activates when percussive strength > 0.4
-     * Effects: Prefers motifs with "syncopation" tags
-     *          Increases rhythmic complexity
+     * syncopationBias: Continuous strength based on percussive axis.
+     * High values prefer motifs with "syncopation" tags.
      */
-    syncopationBias: percussiveStrength > 0.4,
+    syncopationBias: percussiveStrength,
 
     /**
-     * breakInsertion: Requires both percussive AND energetic
-     * Effects: Inserts breaks every 2 measures
-     *          Adds noise FX transitions
+     * breakInsertion: Combined strength from both percussive and energetic axes.
+     * Limited by the weaker of the two.
      */
-    breakInsertion: percussiveStrength > 0.35 && energyStrength > 0.4,
+    breakInsertion: Math.min(percussiveStrength, energyStrength),
 
     // ========================================
     // Melodic side (positive percussiveMelodic)
     // ========================================
 
     /**
-     * harmonicStatic: Requires melodic + calm
-     * Effects: Enforces drone bass patterns
-     *          Prefers "scalar", "stepwise", "static" melodies
+     * harmonicStatic: Combined strength from melodic+calm or percussive+calm.
+     * Takes the stronger of the two possible combinations.
      */
-    harmonicStatic:
-      (melodicStrength > 0.4 && calmStrength > 0.3) ||
-      (percussiveStrength > 0.3 && calmStrength > 0.2),
+    harmonicStatic: Math.max(
+      Math.min(melodicStrength, calmStrength),
+      Math.min(percussiveStrength, calmStrength)
+    ),
 
     /**
-     * atmosPad: Activates with melody OR strong calm
-     * Effects: Increases portamento probability (0.4)
-     *          Adds triangle pad gain profiles
+     * atmosPad: Maximum of melodic, calm, or energetic strength.
      */
-    atmosPad: melodicStrength > 0.3 || calmStrength > 0.5 || energyStrength > 0.55,
+    atmosPad: Math.max(melodicStrength, calmStrength, energyStrength),
 
     /**
-     * filterMotion: Melodic-focused filter sweeps
-     * Effects: Adds duty cycle sweeps for timbral motion
+     * filterMotion: Maximum of melodic or energetic strength.
      */
-    filterMotion: melodicStrength > 0.3 || energyStrength > 0.5,
+    filterMotion: Math.max(melodicStrength, energyStrength),
 
     // ========================================
     // Calm side (negative calmEnergetic)
     // ========================================
 
     /**
-     * loopCentric: Activates with calm > 0.3
-     * Effects: Prefers "loop_safe", "texture_loop" motifs
-     *          Reduces velocity by 2
-     *          Increases arpegggio sustain probability
+     * loopCentric: Continuous strength based on calm axis.
      */
-    loopCentric: calmStrength > 0.3,
+    loopCentric: calmStrength,
 
     /**
-     * textureFocus: Strong calm OR percussive+calm combination
-     * Effects: Prefers "texture_loop", "straight", "simple" patterns
-     *          Reduces melody velocity by 8
-     *          Lowers melody register by 4
+     * textureFocus: Strong calm OR percussive+calm combination.
+     * The combo condition requires less calm strength, so it is amplified.
      */
-    textureFocus: calmStrength > 0.4 || (percussiveStrength > 0.5 && calmStrength > 0.2),
+    textureFocus: Math.max(calmStrength, Math.min(percussiveStrength, calmStrength * 2)),
 
     // ========================================
     // Energetic side (positive calmEnergetic)
     // ========================================
 
     /**
-     * gradualBuild: Activates with energy > 0.4
-     * Effects: Progressive velocity increase over track
-     *          Progressive register rise
-     *          Gain ramps on all channels
-     *          Adds duty cycle build sweeps
+     * gradualBuild: Continuous strength based on energetic axis.
      */
-    gradualBuild: energyStrength > 0.4,
+    gradualBuild: energyStrength,
 
     /**
-     * lofiFeel: Activates in the calm+melodic quadrant (calmStrength > 0.5 && melodicStrength > 0.3)
-     * Effects: Prefers "lofi", "swing_hint", "rest_heavy" motifs in all selectors
-     *          Applies independently of stylePreset; lofiChillhop preset also sets this true
+     * lofiFeel: Combined strength requiring both calm and melodic.
+     * Limited by the weaker of the two.
      */
-    lofiFeel: calmStrength > 0.5 && melodicStrength > 0.3,
+    lofiFeel: Math.min(calmStrength, melodicStrength),
   };
 }
 
