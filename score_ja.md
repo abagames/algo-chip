@@ -22,18 +22,18 @@
     calmEnergetic: number;      // -1.0（穏やか） ～ +1.0（激しい）
   }
 
-  // スタイル意図 - 楽曲の質感と構造を制御
+  // スタイル意図 - 楽曲の質感と構造を制御（0.0=オフ、1.0=最大）
   interface StyleIntent {
-    textureFocus: boolean;        // テクスチャ重視
-    loopCentric: boolean;         // ループ適性重視
-    gradualBuild: boolean;        // 段階的盛り上がり
-    harmonicStatic: boolean;      // 和声の安定性
-    percussiveLayering: boolean;  // パーカッシブレイヤー
-    breakInsertion: boolean;      // ブレイク挿入
-    filterMotion: boolean;        // フィルター変調
-    syncopationBias: boolean;     // シンコペーション傾向
-    atmosPad: boolean;            // アトモスフェリックパッド
-    lofiFeel: boolean;            // ローファイ美学（calm+melodic象限）
+    textureFocus: number;        // テクスチャ重視
+    loopCentric: number;         // ループ適性重視
+    gradualBuild: number;        // 段階的盛り上がり
+    harmonicStatic: number;      // 和声の安定性
+    percussiveLayering: number;  // パーカッシブレイヤー
+    breakInsertion: number;      // ブレイク挿入
+    filterMotion: number;        // フィルター変調
+    syncopationBias: number;     // シンコペーション傾向
+    atmosPad: number;            // アトモスフェリックパッド
+    lofiFeel: number;            // ローファイ美学（calm+melodic象限）
   }
 
   // スタイルプリセット - ジャンル固有の意図バンドル（明示的に指定する必要あり）
@@ -58,6 +58,7 @@
     twoAxisStyle?: TwoAxisStyle;   // 2軸スタイル（デフォルト: {0, 0}）
     preset?: StylePreset;          // ジャンルプリセット（明示的に設定必須; 軸座標から自動推定しない）
     mode?: "major" | "minor";      // 調性モード上書き（未設定時は軸から導出）
+    sectionRepeatBias?: number;   // フック再現の再使用度 0.0=最大変化、1.0=完全再現（デフォルト: 0.15）
     overrides?: StyleOverrides;    // スタイルプロファイル上書き
   }
   ```

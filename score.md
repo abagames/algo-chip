@@ -23,18 +23,18 @@ The final output is a time-series **`eventList`** (array of playback events) tha
     calmEnergetic: number;      // -1.0 (calm) ~ +1.0 (energetic)
   }
 
-  // Style Intent - Controls musical texture and structure
+  // Style Intent - Controls musical texture and structure (0.0=off, 1.0=max)
   interface StyleIntent {
-    textureFocus: boolean;        // Texture-focused
-    loopCentric: boolean;         // Loop suitability priority
-    gradualBuild: boolean;        // Gradual build-up
-    harmonicStatic: boolean;      // Harmonic stability
-    percussiveLayering: boolean;  // Percussive layering
-    breakInsertion: boolean;      // Break insertion
-    filterMotion: boolean;        // Filter modulation
-    syncopationBias: boolean;     // Syncopation tendency
-    atmosPad: boolean;            // Atmospheric pad
-    lofiFeel: boolean;            // Lo-fi aesthetic (calm+melodic quadrant)
+    textureFocus: number;        // Texture-focused
+    loopCentric: number;         // Loop suitability priority
+    gradualBuild: number;        // Gradual build-up
+    harmonicStatic: number;      // Harmonic stability
+    percussiveLayering: number;  // Percussive layering
+    breakInsertion: number;      // Break insertion
+    filterMotion: number;        // Filter modulation
+    syncopationBias: number;     // Syncopation tendency
+    atmosPad: number;            // Atmospheric pad
+    lofiFeel: number;            // Lo-fi aesthetic (calm+melodic quadrant)
   }
 
   // Style Preset - Genre-specific intent bundle (must be specified explicitly)
@@ -59,6 +59,7 @@ The final output is a time-series **`eventList`** (array of playback events) tha
     twoAxisStyle?: TwoAxisStyle;   // Two-axis style (default: {0, 0})
     preset?: StylePreset;          // Genre preset (must be set explicitly; not auto-inferred from axis)
     mode?: "major" | "minor";      // Tonal mode override (derived from axis if unset)
+    sectionRepeatBias?: number;   // Hook repeat bias 0.0=max variation, 1.0=exact repeat (default: 0.15)
     overrides?: StyleOverrides;    // Style profile overrides
   }
   ```
