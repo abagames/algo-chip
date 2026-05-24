@@ -84,12 +84,15 @@ describe("Gradual build dynamics", () => {
     const splitBeat = (result.meta.lengthInMeasures / 2) * BEATS_PER_MEASURE;
     const toBeats = (time: number) => time * (bpm / 60);
 
-    const square1Notes = result.events.filter(
-      (event) => event.channel === "square1" && event.command === "noteOn"
+    const melodyChannel = result.meta.voiceArrangement.voices.find(
+      (v) => v.role === "melody"
+    )?.channel ?? "square1";
+    const melodyNotes = result.events.filter(
+      (event) => event.channel === melodyChannel && event.command === "noteOn"
     );
     const earlyVelocities: number[] = [];
     const lateVelocities: number[] = [];
-    for (const event of square1Notes) {
+    for (const event of melodyNotes) {
       const beat = toBeats(event.time);
       const velocity = typeof event.data?.velocity === "number" ? event.data.velocity : 0;
       if (velocity === 0) continue;

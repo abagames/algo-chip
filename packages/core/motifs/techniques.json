@@ -33,6 +33,20 @@
       "channels": ["square1"],
       "minDurationBeats": 3,
       "steps": [0.22, 0.4, 0.56]
+    },
+    {
+      "id": "DS_BREAKBEAT_STUTTER",
+      "param": "duty",
+      "channels": ["square1", "square2"],
+      "minDurationBeats": 0.5,
+      "steps": [0.12, 0.75, 0.12, 0.75]
+    },
+    {
+      "id": "DS_LOFI_WARM_Wobble",
+      "param": "duty",
+      "channels": ["square2"],
+      "minDurationBeats": 2,
+      "steps": [0.3, 0.5, 0.3, 0.5]
     }
   ],
   "gainProfiles": [
@@ -77,6 +91,20 @@
       "param": "gain",
       "measureBoundaryValue": 0.8,
       "defaultValue": 0.66
+    },
+    {
+      "id": "GP_BREAKBEAT_CRASH",
+      "channel": "noise",
+      "param": "gain",
+      "measureBoundaryValue": 0.92,
+      "defaultValue": 0.78
+    },
+    {
+      "id": "GP_LOFI_TAPE_DROP",
+      "channel": "square1",
+      "param": "gain",
+      "measureBoundaryValue": 0.72,
+      "defaultValue": 0.62
     }
   ],
   "sweepOrnaments": [
@@ -133,6 +161,16 @@
       "rampDurationSeconds": 0.08,
       "everyNthNote": 9,
       "styleFlag": "atmosPad"
+    },
+    {
+      "id": "PB_GRADUAL_SCOOP",
+      "channels": ["square1"],
+      "minDurationBeats": 0.75,
+      "intervalSemitones": 0.5,
+      "returnAfterBeats": 0.125,
+      "rampDurationSeconds": 0.05,
+      "everyNthNote": 6,
+      "styleFlag": "gradualBuild"
     }
   ]
 }

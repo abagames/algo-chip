@@ -1163,6 +1163,96 @@
         "syncopated",
         "drive"
       ]
+    },
+    {
+      "id": "BP_ARPEGGIO_WAVE",
+      "texture": "arpeggio",
+      "steps": [
+        "root",
+        "fifth",
+        "octave",
+        "fifth",
+        "root",
+        "fifth",
+        "octave",
+        "approach"
+      ],
+      "tags": [
+        "loop_safe",
+        "smooth"
+      ]
+    },
+    {
+      "id": "BP_ARPEGGIO_STAIRS",
+      "texture": "arpeggio",
+      "steps": [
+        "root",
+        "octave",
+        "octaveHigh",
+        "octave",
+        "root",
+        "fifth",
+        "octave",
+        "approach"
+      ],
+      "tags": [
+        "loop_safe",
+        "rising"
+      ]
+    },
+    {
+      "id": "BP_ARPEGGIO_DIP",
+      "texture": "arpeggio",
+      "steps": [
+        "root",
+        "lowFifth",
+        "root",
+        "fifth",
+        "octave",
+        "fifth",
+        "root",
+        "approach"
+      ],
+      "tags": [
+        "loop_safe",
+        "variation"
+      ]
+    },
+    {
+      "id": "BP_ARPEGGIO_SYNC",
+      "texture": "arpeggio",
+      "steps": [
+        "root",
+        "rest",
+        "fifth",
+        "rest",
+        "octave",
+        "rest",
+        "fifth",
+        "approach"
+      ],
+      "tags": [
+        "syncopated",
+        "sparse"
+      ]
+    },
+    {
+      "id": "BP_ARPEGGIO_OCTAVE_BOUNCE",
+      "texture": "arpeggio",
+      "steps": [
+        "root",
+        "octave",
+        "root",
+        "octave",
+        "root",
+        "octaveHigh",
+        "root",
+        "approach"
+      ],
+      "tags": [
+        "loop_safe",
+        "energetic"
+      ]
     }
   ]
 }

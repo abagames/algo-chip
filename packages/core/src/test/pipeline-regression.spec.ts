@@ -42,12 +42,12 @@ describe("Pipeline regression", () => {
         meta: {
           bpm: 126,
           key: "B_Minor",
-          voiceArrangementId: "standard",
+          voiceArrangementId: "dualBass",
           loopBeats: 32,
           loopSeconds: 15.238095
         },
         eventCountMin: 200,
-        eventCountMax: 2000
+        eventCountMax: 2500
       }
     },
     {
@@ -61,7 +61,7 @@ describe("Pipeline regression", () => {
         meta: {
           bpm: 165,
           key: "G_Major",
-          voiceArrangementId: "bassLed",
+          voiceArrangementId: "layeredBass",
           loopBeats: 64,
           loopSeconds: 23.272727
         },

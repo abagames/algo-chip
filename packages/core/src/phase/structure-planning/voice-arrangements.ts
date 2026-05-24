@@ -144,13 +144,13 @@ export const ARRANGEMENT_WEIGHTS_BY_STYLE: Record<
 };
 
 export const DEFAULT_ARRANGEMENT_WEIGHTS: Record<VoiceArrangementPreset, number> = {
-  standard: 5,
-  swapped: 4,
-  dualBass: 2,
-  bassLed: 2,
-  layeredBass: 2,
-  minimal: 1,
-  breakLayered: 1,
-  lofiPadLead: 1,
-  retroPulse: 2
+  standard: 3,
+  swapped: 3,
+  dualBass: 3,
+  bassLed: 3,
+  layeredBass: 3,
+  minimal: 2,
+  breakLayered: 3,
+  lofiPadLead: 3,
+  retroPulse: 3
 };
