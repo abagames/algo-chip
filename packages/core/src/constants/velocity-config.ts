@@ -21,7 +21,7 @@ export const VELOCITY_GLOBAL = {
   MAX: 118,
 
   /** Maximum accent velocity (used for emphasized notes) */
-  MAX_ACCENT: 118
+  MAX_ACCENT: 118,
 } as const;
 
 /**
@@ -31,11 +31,11 @@ export const VELOCITY_GLOBAL = {
  * chiptune channel differences.
  */
 export const VELOCITY_CHANNEL_SCALE = {
-  /** Triangle channel base scale (Web Audio compensation) */
-  TRIANGLE_BASE: 0.75,
+  /** Triangle channel base scale (boosted for prominence) */
+  TRIANGLE_BASE: 0.85,
 
-  /** Triangle non-bass role additional scale */
-  TRIANGLE_NON_BASS: 0.9,
+  /** Triangle non-bass role additional scale (full strength) */
+  TRIANGLE_NON_BASS: 1.0,
 
   /** Bass role base scale (all channels) */
   BASS_BASE: 0.7,
@@ -43,8 +43,11 @@ export const VELOCITY_CHANNEL_SCALE = {
   /** Bass low-range additional scale (below E3) */
   BASS_LOW_RANGE: 0.85,
 
-  /** Square channel bass role additional scale */
-  SQUARE_BASS: 0.82
+  /** Square channel bass role additional scale (reduced to de-emphasize square) */
+  SQUARE_BASS: 0.66,
+
+  /** Melody channel velocity scale (prevents melody from overpowering the mix) */
+  MELODY_CHANNEL_SCALE: 0.4,
 } as const;
 
 /**
@@ -52,7 +55,7 @@ export const VELOCITY_CHANNEL_SCALE = {
  */
 export const VELOCITY_PITCH_THRESHOLD = {
   /** E3 (MIDI 52) - bass low-range boost threshold */
-  BASS_LOW_RANGE: 52
+  BASS_LOW_RANGE: 52,
 } as const;
 
 /**
@@ -66,7 +69,7 @@ export const VELOCITY_BASS_TEXTURE = {
   steady: 70,
   arpeggio: 76,
   /** Default fallback when texture is unknown */
-  default: 72
+  default: 72,
 } as const;
 
 /**
@@ -77,7 +80,7 @@ export const VELOCITY_BASS_ACCENT = {
   DOWNBEAT_BOOST: 6,
 
   /** Strong beat (step % 4 === 0) velocity boost */
-  STRONG_BEAT_BOOST: 3
+  STRONG_BEAT_BOOST: 3,
 } as const;
 
 /**
@@ -85,7 +88,7 @@ export const VELOCITY_BASS_ACCENT = {
  */
 export const VELOCITY_MELODY = {
   /** Pickup note base velocity */
-  PICKUP_BASE: 72
+  PICKUP_BASE: 72,
 } as const;
 
 /**
@@ -114,7 +117,7 @@ export const VELOCITY_ACCOMPANIMENT = {
   STEADY_SCALE: 0.85,
 
   /** Minimum steady chord velocity after scaling */
-  STEADY_MIN: 38
+  STEADY_MIN: 38,
 } as const;
 
 /**
@@ -125,7 +128,7 @@ export const VELOCITY_TECHNIQUE = {
   ECHO_SCALE: 0.6,
 
   /** Detune effect velocity scale */
-  DETUNE_SCALE: 0.7
+  DETUNE_SCALE: 0.7,
 } as const;
 
 /**
@@ -136,20 +139,20 @@ export const VELOCITY_TECHNIQUE = {
  */
 export const VELOCITY_NOISE = {
   /** K - Kick drum (long period, index 3) */
-  KICK: 120,
+  KICK: 102,
 
   /** T - Tom (long period, index 5) */
-  TOM: 116,
+  TOM: 99,
 
   /** N - Low noise (long period, index 8) */
-  LOW_NOISE: 112,
+  LOW_NOISE: 95,
 
   /** S - Snare (short period, index 1) */
-  SNARE: 115,
+  SNARE: 98,
 
   /** H - Hi-hat (short period, index 0) */
-  HIHAT: 118,
+  HIHAT: 100,
 
   /** O - Open hat (short period, index 2) */
-  OPEN_HAT: 114
+  OPEN_HAT: 97,
 } as const;
