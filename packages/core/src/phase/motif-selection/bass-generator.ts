@@ -229,7 +229,7 @@ export function resolveBassPattern(
   }
 
   // harmonicStatic: enforce drone bass for minimal techno aesthetic
-  if (styleIntent.harmonicStatic) {
+  if (styleIntent.harmonicStatic > 0.5) {
     if (!enforceDroneStatic && preferredTags.length) {
       const preferredPattern = selectBassPattern(
         section.texture,

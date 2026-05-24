@@ -143,12 +143,12 @@ function resolveArpeggioProfile(styleIntent: StyleIntent, texture: TextureProfil
     densityThresholds: { sparse: 0.45, normal: 0.85 }
   };
 
-  if (styleIntent.textureFocus) {
+  if (styleIntent.textureFocus > 0.5) {
     profile.reverseProbability = 0.35;
     profile.sustainProbability = 0.12;
     profile.densityThresholds = { sparse: 0.3, normal: 0.7 };
   }
-  if (styleIntent.loopCentric) {
+  if (styleIntent.loopCentric > 0.5) {
     profile.sustainProbability = Math.min(0.35, profile.sustainProbability + 0.1);
     profile.densityThresholds = {
       sparse: Math.min(0.5, profile.densityThresholds.sparse + 0.05),
@@ -195,7 +195,7 @@ function shouldApplyPortamento(
   // Style-based probability
   let probability = 0.15; // default
 
-  if (styleIntent.atmosPad) {
+  if (styleIntent.atmosPad > 0.5) {
     probability = 0.4;
   } else if (styleIntent.loopCentric && styleIntent.textureFocus) {
     // lofi chillhop style
@@ -245,10 +245,10 @@ function resolveNoiseRelease(
 ): number {
   const range = config?.releaseRange ?? [NOISE_MIN_RELEASE_SECONDS, NOISE_MAX_RELEASE_SECONDS];
   const base = range[0] + rng() * Math.max(0, range[1] - range[0]);
-  if (styleIntent.percussiveLayering) {
+  if (styleIntent.percussiveLayering > 0.5) {
     return Math.max(range[0], base * 0.85);
   }
-  if (styleIntent.gradualBuild) {
+  if (styleIntent.gradualBuild > 0.5) {
     return Math.min(range[1], base * 1.05);
   }
   return base;

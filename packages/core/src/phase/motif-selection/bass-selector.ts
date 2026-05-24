@@ -24,13 +24,13 @@ export function selectBassPattern(
   if (styleIntent.loopCentric || styleIntent.harmonicStatic) {
     candidates = preferTagPresence(candidates, ["loop_safe"]);
   }
-  if (styleIntent.syncopationBias) {
+  if (styleIntent.syncopationBias > 0.5) {
     candidates = preferTagPresence(candidates, ["syncopated"]);
   }
-  if (styleIntent.textureFocus) {
+  if (styleIntent.textureFocus > 0.5) {
     candidates = preferTagPresence(candidates, ["default"]);
   }
-  if (styleIntent.percussiveLayering) {
+  if (styleIntent.percussiveLayering > 0.5) {
     candidates = preferTagPresence(candidates, ["percussive_layer", "four_on_floor"]);
   }
   if (styleIntent.percussiveLayering && styleIntent.syncopationBias && styleIntent.breakInsertion) {
@@ -39,10 +39,10 @@ export function selectBassPattern(
   if (styleIntent.atmosPad && styleIntent.loopCentric) {
     candidates = preferTagPresence(candidates, ["lofi", "rest_heavy"], 0.25);
   }
-  if (styleIntent.lofiFeel) {
+  if (styleIntent.lofiFeel > 0.5) {
     candidates = preferTagPresence(candidates, ["lofi", "rest_heavy", "drone", "static"], 0.25);
   }
-  if (styleIntent.harmonicStatic) {
+  if (styleIntent.harmonicStatic > 0.5) {
     candidates = biasByTagPresence(candidates, ["drone", "static"], rng, 0.65);
   }
   if (requiredTags.length) {

@@ -243,55 +243,55 @@ const DEFAULT_TEXTURE: TextureProfile = "steady";
 const DEFAULT_PHRASE_LENGTH = 1;
 
 const STYLE_INTENT_BASE: StyleIntent = {
-  textureFocus: false,
-  loopCentric: false,
-  gradualBuild: false,
-  harmonicStatic: false,
-  percussiveLayering: false,
-  breakInsertion: false,
-  filterMotion: false,
-  syncopationBias: false,
-  atmosPad: false,
-  lofiFeel: false
+  textureFocus: 0,
+  loopCentric: 0,
+  gradualBuild: 0,
+  harmonicStatic: 0,
+  percussiveLayering: 0,
+  breakInsertion: 0,
+  filterMotion: 0,
+  syncopationBias: 0,
+  atmosPad: 0,
+  lofiFeel: 0
 };
 
 const STYLE_PRESET_MAP: Record<StylePreset, Partial<StyleIntent>> = {
   minimalTechno: {
-    textureFocus: true,
-    loopCentric: true,
-    harmonicStatic: true,
-    percussiveLayering: true,
-    filterMotion: true,
-    syncopationBias: true
+    textureFocus: 1.0,
+    loopCentric: 1.0,
+    harmonicStatic: 1.0,
+    percussiveLayering: 1.0,
+    filterMotion: 1.0,
+    syncopationBias: 1.0
   },
   progressiveHouse: {
-    textureFocus: true,
-    loopCentric: true,
-    gradualBuild: true,
-    percussiveLayering: true,
-    breakInsertion: true,
-    filterMotion: true,
-    atmosPad: true
+    textureFocus: 1.0,
+    loopCentric: 1.0,
+    gradualBuild: 1.0,
+    percussiveLayering: 1.0,
+    breakInsertion: 1.0,
+    filterMotion: 1.0,
+    atmosPad: 1.0
   },
   retroLoopwave: {
-    textureFocus: true,
-    loopCentric: true,
-    percussiveLayering: true,
-    filterMotion: true,
-    syncopationBias: true
+    textureFocus: 1.0,
+    loopCentric: 1.0,
+    percussiveLayering: 1.0,
+    filterMotion: 1.0,
+    syncopationBias: 1.0
   },
   breakbeatJungle: {
-    textureFocus: true,
-    percussiveLayering: true,
-    breakInsertion: true,
-    filterMotion: true,
-    syncopationBias: true
+    textureFocus: 1.0,
+    percussiveLayering: 1.0,
+    breakInsertion: 1.0,
+    filterMotion: 1.0,
+    syncopationBias: 1.0
   },
   lofiChillhop: {
-    loopCentric: true,
-    harmonicStatic: true,
-    atmosPad: true,
-    textureFocus: true
+    loopCentric: 1.0,
+    harmonicStatic: 1.0,
+    atmosPad: 1.0,
+    textureFocus: 1.0
   }
 };
 
@@ -311,7 +311,8 @@ function mergeStyleIntent(base: StyleIntent, patch: Partial<StyleIntent> | undef
   const merged: StyleIntent = { ...base };
   for (const key of Object.keys(base) as Array<keyof StyleIntent>) {
     if (patch[key] !== undefined) {
-      merged[key] = Boolean(patch[key]);
+      const v = patch[key];
+      merged[key] = typeof v === "number" ? Math.max(0, Math.min(1, v)) : 0;
     }
   }
   return merged;
@@ -354,33 +355,33 @@ function resolveStyleIntent(options: PipelineCompositionOptions, sections: Secti
   const averageSectionLength = sections.length ? totalMeasures / sections.length : totalMeasures;
 
   if (hasRepeatedTemplate || averageSectionLength <= 4) {
-    intent.loopCentric = true;
+    intent.loopCentric = 1.0;
   }
 
   if (options.tempo !== "slow" && totalMeasures >= 8) {
-    intent.loopCentric = true;
-    intent.percussiveLayering = true;
+    intent.loopCentric = 1.0;
+    intent.percussiveLayering = 1.0;
   }
 
   if (options.mood === "tense" || options.mood === "sad") {
-    intent.textureFocus = true;
+    intent.textureFocus = 1.0;
   }
 
   if (options.mood === "peaceful") {
-    intent.atmosPad = true;
+    intent.atmosPad = 1.0;
   }
 
   if (options.mood === "upbeat" || options.mood === "tense") {
-    intent.syncopationBias = true;
+    intent.syncopationBias = 1.0;
   }
 
   if (options.tempo === "fast") {
-    intent.filterMotion = true;
-    intent.percussiveLayering = true;
+    intent.filterMotion = 1.0;
+    intent.percussiveLayering = 1.0;
   }
 
   if (totalMeasures >= 12) {
-    intent.gradualBuild = true;
+    intent.gradualBuild = 1.0;
   }
 
   const uniqueChords = new Set<string>();
@@ -397,20 +398,20 @@ function resolveStyleIntent(options: PipelineCompositionOptions, sections: Secti
 
   const allSectionsStatic = sections.length > 0 && sectionsWithSingleChord === sections.length;
   if (distinctProgressions.size <= 1 && (uniqueChords.size <= 2 || allSectionsStatic)) {
-    intent.harmonicStatic = true;
+    intent.harmonicStatic = 1.0;
   }
 
   if (totalMeasures >= 8 && options.tempo !== "slow") {
-    intent.breakInsertion = true;
+    intent.breakInsertion = 1.0;
   }
 
   const inferredHarmonicStatic = intent.harmonicStatic;
   intent = mergeStyleIntent(intent, options.styleOverrides);
 
   // Only reset harmonicStatic when it was neither inferred nor explicitly provided via styleOverrides
-  const wasExplicitlyProvided = options.styleOverrides && typeof options.styleOverrides.harmonicStatic === "boolean";
-  if (!inferredHarmonicStatic && !wasExplicitlyProvided) {
-    intent.harmonicStatic = false;
+  const wasExplicitlyProvided = options.styleOverrides && typeof options.styleOverrides.harmonicStatic === "number";
+  if (inferredHarmonicStatic <= 0 && !wasExplicitlyProvided) {
+    intent.harmonicStatic = 0;
   }
 
   // Preset applied last: wins over axis-mapping and structure inference.
@@ -623,7 +624,7 @@ function buildSections(
   const rng = createLocalRng(seed);
 
   // Use limited progression for harmonicStatic styles
-  const useHarmonicStatic = precomputedIntent.harmonicStatic === true;
+  const useHarmonicStatic = (precomputedIntent.harmonicStatic ?? 0) > 0.5;
   const useSingleChord = useHarmonicStatic && chordVariety.size <= 1;
 
   for (const section of repeatedTemplate) {
@@ -792,40 +793,40 @@ function jitterTechnique(base: TechniqueStrategy, seed: number | undefined, salt
 function applyStyleIntentToTechnique(base: TechniqueStrategy, intent: StyleIntent): TechniqueStrategy {
   const result: TechniqueStrategy = { ...base };
 
-  if (intent.textureFocus) {
+  if (intent.textureFocus > 0.5) {
     result.fastArpeggioProbability = Math.max(0.05, result.fastArpeggioProbability * 0.6);
     result.echoProbability = Math.min(0.95, result.echoProbability + 0.05);
   }
 
-  if (intent.loopCentric) {
+  if (intent.loopCentric > 0.5) {
     result.detuneProbability = Math.max(0.05, result.detuneProbability * 0.8);
   }
 
-  if (intent.gradualBuild) {
+  if (intent.gradualBuild > 0.5) {
     result.echoProbability = Math.min(0.95, result.echoProbability + 0.1);
   }
 
-  if (intent.harmonicStatic) {
+  if (intent.harmonicStatic > 0.5) {
     result.detuneProbability = Math.max(0.05, result.detuneProbability * 0.7);
   }
 
-  if (intent.percussiveLayering) {
+  if (intent.percussiveLayering > 0.5) {
     result.fastArpeggioProbability = Math.min(0.9, result.fastArpeggioProbability + 0.05);
   }
 
-  if (intent.filterMotion) {
+  if (intent.filterMotion > 0.5) {
     result.detuneProbability = Math.min(0.9, result.detuneProbability + 0.1);
   }
 
-  if (intent.syncopationBias) {
+  if (intent.syncopationBias > 0.5) {
     result.echoProbability = Math.min(0.9, result.echoProbability + 0.05);
   }
 
-  if (intent.atmosPad) {
+  if (intent.atmosPad > 0.5) {
     result.echoProbability = Math.min(0.95, result.echoProbability + 0.08);
   }
 
-  if (intent.breakInsertion) {
+  if (intent.breakInsertion > 0.5) {
     result.fastArpeggioProbability = Math.max(0.05, result.fastArpeggioProbability * 0.9);
   }
 

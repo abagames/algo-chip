@@ -34,7 +34,7 @@ export function maybeGenerateTransition(
 
   const progress = totalMeasures > 1 ? globalMeasureIndex / Math.max(1, totalMeasures - 1) : 0;
   const priorityTags: string[] = [];
-  if (styleIntent.gradualBuild) {
+  if (styleIntent.gradualBuild > 0.5) {
     if (progress < 0.4) {
       priorityTags.push("build");
     } else if (progress < 0.8) {
@@ -46,7 +46,7 @@ export function maybeGenerateTransition(
   if (styleIntent.breakInsertion && progress >= 0.5) {
     priorityTags.push("noise_fx");
   }
-  if (styleIntent.percussiveLayering) {
+  if (styleIntent.percussiveLayering > 0.5) {
     priorityTags.push("drum_fill");
   }
 

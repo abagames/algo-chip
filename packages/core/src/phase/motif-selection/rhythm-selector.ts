@@ -44,23 +44,23 @@ export function selectRhythmMotif(
     }
   }
 
-  if (styleIntent.loopCentric) {
+  if (styleIntent.loopCentric > 0.5) {
     candidates = preferTagPresence(candidates, ["loop_safe", "texture_loop"]);
   }
 
-  if (styleIntent.textureFocus) {
+  if (styleIntent.textureFocus > 0.5) {
     candidates = preferTagPresence(candidates, ["texture_loop", "straight", "simple", "grid16"]);
   }
 
-  if (styleIntent.percussiveLayering) {
+  if (styleIntent.percussiveLayering > 0.5) {
     candidates = preferTagPresence(candidates, ["grid16", "percussive_layer"]);
   }
 
-  if (styleIntent.syncopationBias) {
+  if (styleIntent.syncopationBias > 0.5) {
     candidates = preferTagPresence(candidates, ["syncopation"]);
   }
 
-  if (styleIntent.lofiFeel) {
+  if (styleIntent.lofiFeel > 0.5) {
     candidates = preferTagPresence(candidates, ["lofi", "swing_hint", "rest_heavy"], 0.25);
   }
 

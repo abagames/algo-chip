@@ -23,10 +23,10 @@ export function resolveMelodyVelocity(
   let base = baseByTexture[section.texture] ?? 88;
   const downbeatBoost = measureInSection === 0 ? 6 : 0;
   const cadenceLift = section.measures - measureInSection <= 1 ? 4 : 0;
-  if (styleIntent.textureFocus) {
+  if (styleIntent.textureFocus > 0.5) {
     base -= 8;
   }
-  if (styleIntent.gradualBuild) {
+  if (styleIntent.gradualBuild > 0.5) {
     // Global progressive build: velocity increases across entire track
     const globalProgress =
       totalMeasures > 1 ? globalMeasureIndex / Math.max(1, totalMeasures - 1) : 0;
@@ -37,7 +37,7 @@ export function resolveMelodyVelocity(
     const buildAmount = Math.floor(shaped * maxBoost);
     base += buildAmount;
   }
-  if (styleIntent.loopCentric) {
+  if (styleIntent.loopCentric > 0.5) {
     base = Math.max(60, base - 2);
   }
   return Math.min(110, Math.max(58, base + downbeatBoost + cadenceLift));

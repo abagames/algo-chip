@@ -39,7 +39,7 @@ export function selectMelodyFragment(
     candidates = melodyList;
   }
 
-  if (styleIntent.textureFocus) {
+  if (styleIntent.textureFocus > 0.5) {
     candidates = preferTagPresence(candidates, [
       "texture_loop",
       "ostinato",
@@ -49,15 +49,15 @@ export function selectMelodyFragment(
     ]);
   }
 
-  if (styleIntent.harmonicStatic) {
+  if (styleIntent.harmonicStatic > 0.5) {
     candidates = biasByTagPresence(candidates, ["scalar", "stepwise", "static"], rng, 0.6);
   }
 
-  if (styleIntent.gradualBuild) {
+  if (styleIntent.gradualBuild > 0.5) {
     candidates = preferTagPresence(candidates, ["ascending"]);
   }
 
-  if (styleIntent.lofiFeel) {
+  if (styleIntent.lofiFeel > 0.5) {
     candidates = preferTagPresence(candidates, ["lofi", "simple", "peaceful"], 0.25);
   }
 

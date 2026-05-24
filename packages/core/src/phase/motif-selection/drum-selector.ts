@@ -179,19 +179,19 @@ export function selectDrumPattern(
     styleIntent.loopCentric && styleIntent.textureFocus && styleIntent.percussiveLayering;
 
   if (!isFill) {
-    if (styleIntent.loopCentric) {
+    if (styleIntent.loopCentric > 0.5) {
       candidates = preferTagPresence(candidates, ["loop_safe"]);
     }
-    if (styleIntent.syncopationBias) {
+    if (styleIntent.syncopationBias > 0.5) {
       const syncTags = prefersBreakbeatFocus
         ? ["breakbeat", "syncopation", "grid16"]
         : ["syncopation"];
       candidates = preferTagPresence(candidates, syncTags);
     }
-    if (styleIntent.textureFocus) {
+    if (styleIntent.textureFocus > 0.5) {
       candidates = preferTagPresence(candidates, ["texture_loop", "straight", "grid16"]);
     }
-    if (styleIntent.percussiveLayering) {
+    if (styleIntent.percussiveLayering > 0.5) {
       const percussiveTags = prefersBreakbeatFocus
         ? ["breakbeat", "percussive_layer", "grid16"]
         : ["percussive_layer", "four_on_floor"];

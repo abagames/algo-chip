@@ -781,23 +781,23 @@ function selectRhythmMotif(
     }
   }
 
-  if (styleIntent.lofiFeel) {
+  if (styleIntent.lofiFeel > 0.5) {
     candidates = preferTagPresenceWithDiagnostics(candidates, ["lofi", "swing_hint", "rest_heavy"], diagnostics, "rhythm", "lofiFeel", 0.25);
   }
 
-  if (styleIntent.loopCentric) {
+  if (styleIntent.loopCentric > 0.5) {
     candidates = preferTagPresenceWithDiagnostics(candidates, ["loop_safe", "texture_loop"], diagnostics, "rhythm", "loopCentric");
   }
 
-  if (styleIntent.syncopationBias) {
+  if (styleIntent.syncopationBias > 0.5) {
     candidates = preferTagPresenceWithDiagnostics(candidates, ["syncopation"], diagnostics, "rhythm", "syncopationBias");
   }
 
-  if (styleIntent.textureFocus) {
+  if (styleIntent.textureFocus > 0.5) {
     candidates = preferTagPresenceWithDiagnostics(candidates, ["texture_loop", "straight", "simple", "grid16"], diagnostics, "rhythm", "textureFocus");
   }
 
-  if (styleIntent.percussiveLayering) {
+  if (styleIntent.percussiveLayering > 0.5) {
     candidates = preferTagPresenceWithDiagnostics(candidates, ["grid16", "percussive_layer"], diagnostics, "rhythm", "percussiveLayering");
   }
 
@@ -883,19 +883,19 @@ function selectMelodyFragment(
     candidates = melodyList;
   }
 
-  if (styleIntent.textureFocus) {
+  if (styleIntent.textureFocus > 0.5) {
     candidates = preferTagPresenceWithDiagnostics(candidates, ["texture_loop", "ostinato", "loop_safe", "short", "static"], diagnostics, "melody", "textureFocus");
   }
 
-  if (styleIntent.harmonicStatic) {
+  if (styleIntent.harmonicStatic > 0.5) {
     candidates = biasByTagPresence(candidates, ["scalar", "stepwise", "static"], rng, 0.6);
   }
 
-  if (styleIntent.gradualBuild) {
+  if (styleIntent.gradualBuild > 0.5) {
     candidates = preferTagPresenceWithDiagnostics(candidates, ["ascending"], diagnostics, "melody", "gradualBuild");
   }
 
-  if (styleIntent.lofiFeel) {
+  if (styleIntent.lofiFeel > 0.5) {
     candidates = preferTagPresenceWithDiagnostics(candidates, ["lofi", "simple", "peaceful"], diagnostics, "melody", "lofiFeel", 0.25);
   }
 
@@ -938,19 +938,19 @@ function selectMelodyRhythmMotif(
     moodFiltered = filtered;
   }
 
-  if (styleIntent.lofiFeel) {
+  if (styleIntent.lofiFeel > 0.5) {
     moodFiltered = preferTagPresenceWithDiagnostics(moodFiltered, ["lofi", "swing_hint"], diagnostics, "melodyRhythm", "lofiFeel", 0.25);
   }
 
-  if (styleIntent.loopCentric) {
+  if (styleIntent.loopCentric > 0.5) {
     moodFiltered = preferTagPresenceWithDiagnostics(moodFiltered, ["loop_safe", "texture_loop"], diagnostics, "melodyRhythm", "loopCentric");
   }
 
-  if (styleIntent.syncopationBias) {
+  if (styleIntent.syncopationBias > 0.5) {
     moodFiltered = preferTagPresenceWithDiagnostics(moodFiltered, ["syncopated", "drive"], diagnostics, "melodyRhythm", "syncopationBias");
   }
 
-  if (styleIntent.textureFocus) {
+  if (styleIntent.textureFocus > 0.5) {
     moodFiltered = preferTagPresenceWithDiagnostics(moodFiltered, ["texture_loop", "grid16", "simple"], diagnostics, "melodyRhythm", "textureFocus");
   }
 
@@ -988,10 +988,10 @@ function resolveMelodyVelocity(
   let base = baseByTexture[section.texture] ?? 88;
   const downbeatBoost = measureInSection === 0 ? 6 : 0;
   const cadenceLift = section.measures - measureInSection <= 1 ? 4 : 0;
-  if (styleIntent.textureFocus) {
+  if (styleIntent.textureFocus > 0.5) {
     base -= 8;
   }
-  if (styleIntent.gradualBuild) {
+  if (styleIntent.gradualBuild > 0.5) {
     // Global progressive build: velocity increases across entire track
     const globalProgress = totalMeasures > 1 ? globalMeasureIndex / Math.max(1, totalMeasures - 1) : 0;
     const clamped = Math.min(1, Math.max(0, globalProgress));
@@ -1001,7 +1001,7 @@ function resolveMelodyVelocity(
     const buildAmount = Math.floor(shaped * maxBoost);
     base += buildAmount;
   }
-  if (styleIntent.loopCentric) {
+  if (styleIntent.loopCentric > 0.5) {
     base = Math.max(60, base - 2);
   }
   return Math.min(110, Math.max(58, base + downbeatBoost + cadenceLift));
@@ -1111,11 +1111,11 @@ function resolveMelodyRegister(
   const clampedMeasure = Math.max(0, measureInSection);
   let offset = textureOffsets[section.texture] ?? 0;
 
-  if (styleIntent.textureFocus) {
+  if (styleIntent.textureFocus > 0.5) {
     offset -= 4;
   }
 
-  if (styleIntent.filterMotion) {
+  if (styleIntent.filterMotion > 0.5) {
     offset += 1;
   }
 
@@ -1126,7 +1126,7 @@ function resolveMelodyRegister(
     offset -= 2;
   }
 
-  if (styleIntent.gradualBuild) {
+  if (styleIntent.gradualBuild > 0.5) {
     // Global progressive build: register rises across entire track
     const globalProgress = globalMeasureIndex / Math.max(1, totalMeasures - 1);
     const buildAmount = Math.round(Math.pow(globalProgress, 0.7) * 8);
@@ -1141,7 +1141,7 @@ function resolveMelodyRegister(
   const occurrenceDrop = Math.min(section.occurrenceIndex - 1, 2) * 2;
   offset -= occurrenceDrop;
 
-  if (styleIntent.atmosPad) {
+  if (styleIntent.atmosPad > 0.5) {
     offset -= 1;
   }
 
@@ -1288,7 +1288,7 @@ function resolveBassPattern(
   }
 
   // harmonicStatic: enforce drone bass for minimal techno aesthetic
-  if (styleIntent.harmonicStatic) {
+  if (styleIntent.harmonicStatic > 0.5) {
     if (!enforceDroneStatic && preferredTags.length) {
       const preferredPattern = selectBassPattern(
         section.texture,
@@ -1374,13 +1374,13 @@ function selectBassPattern(
   if (styleIntent.loopCentric || styleIntent.harmonicStatic) {
     candidates = preferTagPresenceWithDiagnostics(candidates, ["loop_safe"], diagnostics, "bass", "loopCentricOrHarmonicStatic");
   }
-  if (styleIntent.syncopationBias) {
+  if (styleIntent.syncopationBias > 0.5) {
     candidates = preferTagPresenceWithDiagnostics(candidates, ["syncopated"], diagnostics, "bass", "syncopationBias");
   }
-  if (styleIntent.textureFocus) {
+  if (styleIntent.textureFocus > 0.5) {
     candidates = preferTagPresenceWithDiagnostics(candidates, ["default"], diagnostics, "bass", "textureFocus");
   }
-  if (styleIntent.percussiveLayering) {
+  if (styleIntent.percussiveLayering > 0.5) {
     candidates = preferTagPresenceWithDiagnostics(candidates, ["percussive_layer", "four_on_floor"], diagnostics, "bass", "percussiveLayering");
   }
   if (styleIntent.percussiveLayering && styleIntent.syncopationBias && styleIntent.breakInsertion) {
@@ -1389,7 +1389,7 @@ function selectBassPattern(
   if (styleIntent.lofiFeel || (styleIntent.atmosPad && styleIntent.loopCentric)) {
     candidates = preferTagPresenceWithDiagnostics(candidates, ["lofi", "rest_heavy"], diagnostics, "bass", "lofiPad", 0.25);
   }
-  if (styleIntent.harmonicStatic) {
+  if (styleIntent.harmonicStatic > 0.5) {
     candidates = biasByTagPresence(candidates, ["drone", "static"], rng, 0.65);
   }
   const presetBassTags = presetTags(stylePreset, "bass");
@@ -1481,7 +1481,7 @@ function maybeGenerateTransition(
 
   const progress = totalMeasures > 1 ? globalMeasureIndex / Math.max(1, totalMeasures - 1) : 0;
   const priorityTags: string[] = [];
-  if (styleIntent.gradualBuild) {
+  if (styleIntent.gradualBuild > 0.5) {
     if (progress < 0.4) {
       priorityTags.push("build");
     } else if (progress < 0.8) {
@@ -1493,7 +1493,7 @@ function maybeGenerateTransition(
   if (styleIntent.breakInsertion && progress >= 0.5) {
     priorityTags.push("noise_fx");
   }
-  if (styleIntent.percussiveLayering) {
+  if (styleIntent.percussiveLayering > 0.5) {
     priorityTags.push("drum_fill");
   }
 
@@ -2968,17 +2968,17 @@ function selectDrumPattern(
     styleIntent.percussiveLayering;
 
   if (!isFill) {
-    if (styleIntent.loopCentric) {
+    if (styleIntent.loopCentric > 0.5) {
       candidates = preferTagPresenceWithDiagnostics(candidates, ["loop_safe"], diagnostics, "drums", "loopCentric");
     }
-    if (styleIntent.syncopationBias) {
+    if (styleIntent.syncopationBias > 0.5) {
       const syncTags = prefersBreakbeatFocus ? ["breakbeat", "syncopation", "grid16"] : ["syncopation"];
       candidates = preferTagPresenceWithDiagnostics(candidates, syncTags, diagnostics, "drums", "syncopationBias");
     }
-    if (styleIntent.textureFocus) {
+    if (styleIntent.textureFocus > 0.5) {
       candidates = preferTagPresenceWithDiagnostics(candidates, ["texture_loop", "straight", "grid16"], diagnostics, "drums", "textureFocus");
     }
-    if (styleIntent.percussiveLayering) {
+    if (styleIntent.percussiveLayering > 0.5) {
       const percussiveTags = prefersBreakbeatFocus
         ? ["breakbeat", "percussive_layer", "grid16"]
         : ["percussive_layer", "four_on_floor"];
@@ -3068,7 +3068,7 @@ function shouldGenerateForVoice(
   }
 
   // For gradualBuild style, increase density over time
-  if (styleIntent.gradualBuild) {
+  if (styleIntent.gradualBuild > 0.5) {
     const progress = measureInSection / Math.max(1, totalMeasures - 1);
     const adjustedPriority = Math.min(1.0, priority + progress * 0.3);
     return rng() < adjustedPriority;

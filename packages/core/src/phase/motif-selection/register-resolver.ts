@@ -93,11 +93,11 @@ export function resolveMelodyRegister(
   const clampedMeasure = Math.max(0, measureInSection);
   let offset = textureOffsets[section.texture] ?? 0;
 
-  if (styleIntent.textureFocus) {
+  if (styleIntent.textureFocus > 0.5) {
     offset -= 4;
   }
 
-  if (styleIntent.filterMotion) {
+  if (styleIntent.filterMotion > 0.5) {
     offset += 1;
   }
 
@@ -108,7 +108,7 @@ export function resolveMelodyRegister(
     offset -= 2;
   }
 
-  if (styleIntent.gradualBuild) {
+  if (styleIntent.gradualBuild > 0.5) {
     // Global progressive build: register rises across entire track
     const globalProgress = globalMeasureIndex / Math.max(1, totalMeasures - 1);
     const buildAmount = Math.round(Math.pow(globalProgress, 0.7) * 8);
@@ -123,7 +123,7 @@ export function resolveMelodyRegister(
   const occurrenceDrop = Math.min(section.occurrenceIndex - 1, 2) * 2;
   offset -= occurrenceDrop;
 
-  if (styleIntent.atmosPad) {
+  if (styleIntent.atmosPad > 0.5) {
     offset -= 1;
   }
 

@@ -40,7 +40,7 @@ export function applyTechniques(phase3: EventRealizationResult, styleIntent: Sty
   const ornamentCounters: Partial<Record<TimedEvent["channel"], number>> = {};
   const sweepOrnamentCounters: Partial<Record<TimedEvent["channel"], number>> = {};
 
-  if (styleIntent.filterMotion) {
+  if (styleIntent.filterMotion > 0.5) {
     dutySweeps.push({
       id: "STYLE_FILTER_SWELL",
       param: "duty",
@@ -50,7 +50,7 @@ export function applyTechniques(phase3: EventRealizationResult, styleIntent: Sty
     });
   }
 
-  if (styleIntent.percussiveLayering) {
+  if (styleIntent.percussiveLayering > 0.5) {
     gainProfiles.push({
       id: "STYLE_NOISE_PUNCH",
       channel: "noise",
@@ -79,7 +79,7 @@ export function applyTechniques(phase3: EventRealizationResult, styleIntent: Sty
     );
   }
 
-  if (styleIntent.atmosPad) {
+  if (styleIntent.atmosPad > 0.5) {
     gainProfiles.push({
       id: "STYLE_TRIANGLE_PAD",
       channel: "triangle",

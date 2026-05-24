@@ -60,40 +60,40 @@ function jitterTechnique(base: TechniqueStrategy, seed: number | undefined, salt
 function applyStyleIntentToTechnique(base: TechniqueStrategy, intent: StyleIntent): TechniqueStrategy {
   const result: TechniqueStrategy = { ...base };
 
-  if (intent.textureFocus) {
+  if (intent.textureFocus > 0.5) {
     result.fastArpeggioProbability = Math.max(0.05, result.fastArpeggioProbability * 0.6);
     result.echoProbability = Math.min(0.95, result.echoProbability + 0.05);
   }
 
-  if (intent.loopCentric) {
+  if (intent.loopCentric > 0.5) {
     result.detuneProbability = Math.max(0.05, result.detuneProbability * 0.8);
   }
 
-  if (intent.gradualBuild) {
+  if (intent.gradualBuild > 0.5) {
     result.echoProbability = Math.min(0.95, result.echoProbability + 0.1);
   }
 
-  if (intent.harmonicStatic) {
+  if (intent.harmonicStatic > 0.5) {
     result.detuneProbability = Math.max(0.05, result.detuneProbability * 0.7);
   }
 
-  if (intent.percussiveLayering) {
+  if (intent.percussiveLayering > 0.5) {
     result.fastArpeggioProbability = Math.min(0.9, result.fastArpeggioProbability + 0.05);
   }
 
-  if (intent.filterMotion) {
+  if (intent.filterMotion > 0.5) {
     result.detuneProbability = Math.min(0.9, result.detuneProbability + 0.1);
   }
 
-  if (intent.syncopationBias) {
+  if (intent.syncopationBias > 0.5) {
     result.echoProbability = Math.min(0.9, result.echoProbability + 0.05);
   }
 
-  if (intent.atmosPad) {
+  if (intent.atmosPad > 0.5) {
     result.echoProbability = Math.min(0.95, result.echoProbability + 0.08);
   }
 
-  if (intent.breakInsertion) {
+  if (intent.breakInsertion > 0.5) {
     result.fastArpeggioProbability = Math.max(0.05, result.fastArpeggioProbability * 0.9);
   }
 

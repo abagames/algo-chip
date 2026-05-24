@@ -178,19 +178,19 @@ export function selectMelodyRhythmMotif(
     moodFiltered = filtered;
   }
 
-  if (styleIntent.loopCentric) {
+  if (styleIntent.loopCentric > 0.5) {
     moodFiltered = preferTagPresence(moodFiltered, ["loop_safe", "texture_loop"]);
   }
 
-  if (styleIntent.textureFocus) {
+  if (styleIntent.textureFocus > 0.5) {
     moodFiltered = preferTagPresence(moodFiltered, ["texture_loop", "grid16", "simple"]);
   }
 
-  if (styleIntent.syncopationBias) {
+  if (styleIntent.syncopationBias > 0.5) {
     moodFiltered = preferTagPresence(moodFiltered, ["syncopated", "drive"]);
   }
 
-  if (styleIntent.lofiFeel) {
+  if (styleIntent.lofiFeel > 0.5) {
     moodFiltered = preferTagPresence(moodFiltered, ["lofi", "rest_heavy", "legato"], 0.25);
   }
 
