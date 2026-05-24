@@ -34,7 +34,7 @@
   - 課題2: `sectionRepeatBias` を `CompositionOptions` に追加し、`profile-resolver.ts` で `PipelineCompositionOptions` に伝達。
 - [ ] BGMバリエーション施策を順に実施。実施後は逐次多様性検証スクリプトで検証すること
   - [x] 施策1 dedup: rhythm.jsonから59件の重複モチーフを削除（135→76件）。
-  - [ ] 施策1 expansion: 新規リズムパターンを追加（dedup後の余白を埋める）。
+  - [x] 施策1 expansion: 新規リズムモチーフ24種を追加（RM139-RM162、length 4/8、grid16/syncopation/breakbeat/rest_heavyタグ付与）。76→102件。seed-sweep検証通過。
   - [x] 施策2: Hook再利用の緩和（sectionRepeatBiasデフォルトを0.3→0.15に変更、閾値0.25→0.20に変更。テスト緩和済）。seed-sweep検証通過。
   - [x] 施策3: タグフィルタリング強化（preferTagPresenceのminRatioを0.4→0.15、pickWithAvoidリトライを3→6）。seed-sweep検証通過。
   - [ ] 施策4: Two-Axis意図の連続強度化（StyleIntent boolean→float化は影響範囲が大きいため次期対応）。

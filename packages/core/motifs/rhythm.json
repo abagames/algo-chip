@@ -2449,5 +2449,1129 @@
       "cadence"
     ],
     "variations": []
+  },
+  {
+    "id": "RM137",
+    "length": 8,
+    "pattern": [
+      {
+        "value": 4
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 4
+      }
+    ],
+    "tags": [
+      "middle",
+      "breakbeat",
+      "loop_safe"
+    ],
+    "variations": []
+  },
+  {
+    "id": "RM138",
+    "length": 4,
+    "pattern": [
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      }
+    ],
+    "tags": [
+      "middle",
+      "grid16",
+      "syncopation"
+    ],
+    "variations": []
+  },
+  {
+    "id": "RM139",
+    "length": 4,
+    "pattern": [
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      }
+    ],
+    "tags": [
+      "middle",
+      "grid16",
+      "loop_safe"
+    ],
+    "variations": []
+  },
+  {
+    "id": "RM140",
+    "length": 4,
+    "pattern": [
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      }
+    ],
+    "tags": [
+      "middle",
+      "syncopation",
+      "grid16",
+      "loop_safe"
+    ],
+    "variations": []
+  },
+  {
+    "id": "RM141",
+    "length": 4,
+    "pattern": [
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      }
+    ],
+    "tags": [
+      "middle",
+      "grid16",
+      "loop_safe"
+    ],
+    "variations": []
+  },
+  {
+    "id": "RM142",
+    "length": 4,
+    "pattern": [
+      {
+        "value": 4
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 8
+      }
+    ],
+    "tags": [
+      "middle",
+      "straight",
+      "loop_safe"
+    ],
+    "variations": []
+  },
+  {
+    "id": "RM143",
+    "length": 4,
+    "pattern": [
+      {
+        "value": 8
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 8
+      }
+    ],
+    "tags": [
+      "middle",
+      "syncopation",
+      "loop_safe"
+    ],
+    "variations": []
+  },
+  {
+    "id": "RM144",
+    "length": 4,
+    "pattern": [
+      {
+        "value": 8
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      }
+    ],
+    "tags": [
+      "middle",
+      "grid16",
+      "syncopation",
+      "loop_safe"
+    ],
+    "variations": []
+  },
+  {
+    "id": "RM145",
+    "length": 4,
+    "pattern": [
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 4
+      }
+    ],
+    "tags": [
+      "middle",
+      "grid16",
+      "loop_safe"
+    ],
+    "variations": []
+  },
+  {
+    "id": "RM146",
+    "length": 4,
+    "pattern": [
+      {
+        "value": 4
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 4
+      }
+    ],
+    "tags": [
+      "middle",
+      "grid16",
+      "loop_safe"
+    ],
+    "variations": []
+  },
+  {
+    "id": "RM147",
+    "length": 4,
+    "pattern": [
+      {
+        "value": 8
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 16
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      }
+    ],
+    "tags": [
+      "middle",
+      "grid16",
+      "syncopation",
+      "loop_safe"
+    ],
+    "variations": []
+  },
+  {
+    "id": "RM148",
+    "length": 4,
+    "pattern": [
+      {
+        "value": 4
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 4
+      }
+    ],
+    "tags": [
+      "middle",
+      "syncopation",
+      "loop_safe"
+    ],
+    "variations": []
+  },
+  {
+    "id": "RM149",
+    "length": 4,
+    "pattern": [
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      }
+    ],
+    "tags": [
+      "middle",
+      "syncopation",
+      "loop_safe"
+    ],
+    "variations": []
+  },
+  {
+    "id": "RM150",
+    "length": 4,
+    "pattern": [
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 4
+      }
+    ],
+    "tags": [
+      "middle",
+      "breakbeat",
+      "loop_safe"
+    ],
+    "variations": []
+  },
+  {
+    "id": "RM151",
+    "length": 4,
+    "pattern": [
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 4
+      }
+    ],
+    "tags": [
+      "middle",
+      "breakbeat",
+      "loop_safe"
+    ],
+    "variations": []
+  },
+  {
+    "id": "RM152",
+    "length": 4,
+    "pattern": [
+      {
+        "value": 4
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 4
+      }
+    ],
+    "tags": [
+      "middle",
+      "breakbeat",
+      "syncopation",
+      "loop_safe"
+    ],
+    "variations": []
+  },
+  {
+    "id": "RM153",
+    "length": 4,
+    "pattern": [
+      {
+        "value": 8
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 4
+      }
+    ],
+    "tags": [
+      "middle",
+      "breakbeat",
+      "syncopation",
+      "loop_safe"
+    ],
+    "variations": []
+  },
+  {
+    "id": "RM154",
+    "length": 8,
+    "pattern": [
+      {
+        "value": 4
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      }
+    ],
+    "tags": [
+      "middle",
+      "straight",
+      "loop_safe"
+    ],
+    "variations": []
+  },
+  {
+    "id": "RM155",
+    "length": 8,
+    "pattern": [
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 4
+      }
+    ],
+    "tags": [
+      "middle",
+      "syncopation",
+      "loop_safe"
+    ],
+    "variations": []
+  },
+  {
+    "id": "RM156",
+    "length": 8,
+    "pattern": [
+      {
+        "value": 4
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 4
+      }
+    ],
+    "tags": [
+      "middle",
+      "syncopation",
+      "loop_safe"
+    ],
+    "variations": []
+  },
+  {
+    "id": "RM157",
+    "length": 8,
+    "pattern": [
+      {
+        "value": 4
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      }
+    ],
+    "tags": [
+      "middle",
+      "straight",
+      "loop_safe"
+    ],
+    "variations": []
+  },
+  {
+    "id": "RM158",
+    "length": 8,
+    "pattern": [
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 4
+      }
+    ],
+    "tags": [
+      "middle",
+      "breakbeat",
+      "loop_safe"
+    ],
+    "variations": []
+  },
+  {
+    "id": "RM159",
+    "length": 8,
+    "pattern": [
+      {
+        "value": 4
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      }
+    ],
+    "tags": [
+      "middle",
+      "syncopation",
+      "loop_safe"
+    ],
+    "variations": []
+  },
+  {
+    "id": "RM160",
+    "length": 4,
+    "pattern": [
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 4
+      }
+    ],
+    "tags": [
+      "middle",
+      "rest_heavy",
+      "lofi",
+      "loop_safe"
+    ],
+    "variations": []
+  },
+  {
+    "id": "RM161",
+    "length": 4,
+    "pattern": [
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      }
+    ],
+    "tags": [
+      "middle",
+      "rest_heavy",
+      "lofi",
+      "loop_safe"
+    ],
+    "variations": []
+  },
+  {
+    "id": "RM162",
+    "length": 4,
+    "pattern": [
+      {
+        "value": 4
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      }
+    ],
+    "tags": [
+      "middle",
+      "rest_heavy",
+      "lofi",
+      "loop_safe"
+    ],
+    "variations": []
   }
 ]
