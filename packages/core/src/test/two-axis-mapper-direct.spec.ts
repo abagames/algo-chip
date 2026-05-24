@@ -22,7 +22,7 @@ describe("mapTwoAxisToStyleIntent - Direct Test", () => {
     // melodicStrength = Max(0, +1.0) = 1.0 > 0.4 ✓
     // calmStrength = Max(0, -(-1.0)) = Max(0, +1.0) = 1.0 > 0.3 ✓
     // harmonicStatic should be true
-    assert.strictEqual(result.harmonicStatic, true, "harmonicStatic should be true");
+    assert.ok(result.harmonicStatic > 0.5, "harmonicStatic should be true");
   });
 
   it("should show strength calculations explicitly", () => {
@@ -57,25 +57,25 @@ describe("mapTwoAxisToStyleIntent - Direct Test", () => {
 
     // Now test the actual function
     const result = mapTwoAxisToStyleIntent({ percussiveMelodic: pm, calmEnergetic: ce });
-    assert.strictEqual(result.harmonicStatic, true, "harmonicStatic should match manual calculation");
+    assert.ok(result.harmonicStatic > 0.5, "harmonicStatic should match manual calculation");
   });
 
   it("lofiFeel activates in calm+melodic quadrant", () => {
-    // lofi-leaning: percussiveMelodic=0.45, calmEnergetic=-0.75
-    // calmStrength=0.75 > 0.5, melodicStrength=0.45 > 0.3 → lofiFeel=true
-    const lofi = mapTwoAxisToStyleIntent({ percussiveMelodic: 0.45, calmEnergetic: -0.75 });
-    assert.strictEqual(lofi.lofiFeel, true, "lofi-leaning should activate lofiFeel");
+    // lofi-leaning: percussiveMelodic=0.55, calmEnergetic=-0.75
+    // calmStrength=0.75, melodicStrength=0.55 → lofiFeel=min(0.75,0.55)=0.55 > 0.5
+    const lofi = mapTwoAxisToStyleIntent({ percussiveMelodic: 0.55, calmEnergetic: -0.75 });
+    assert.ok(lofi.lofiFeel > 0.5, "lofi-leaning should activate lofiFeel");
 
     // percussive-energetic: no calm, no melodic → lofiFeel=false
     const perc = mapTwoAxisToStyleIntent({ percussiveMelodic: -0.65, calmEnergetic: 0.65 });
-    assert.strictEqual(perc.lofiFeel, false, "percussive-energetic should not activate lofiFeel");
+    assert.ok(perc.lofiFeel <= 0.5, "percussive-energetic should not activate lofiFeel");
 
     // calm but not melodic: melodicStrength=0 → lofiFeel=false
     const calmPerc = mapTwoAxisToStyleIntent({ percussiveMelodic: -0.3, calmEnergetic: -0.8 });
-    assert.strictEqual(calmPerc.lofiFeel, false, "calm+percussive should not activate lofiFeel");
+    assert.ok(calmPerc.lofiFeel <= 0.5, "calm+percussive should not activate lofiFeel");
 
     // neutral: both axes near 0 → lofiFeel=false
     const neutral = mapTwoAxisToStyleIntent({ percussiveMelodic: 0, calmEnergetic: 0 });
-    assert.strictEqual(neutral.lofiFeel, false, "neutral should not activate lofiFeel");
+    assert.ok(neutral.lofiFeel <= 0.5, "neutral should not activate lofiFeel");
   });
 });

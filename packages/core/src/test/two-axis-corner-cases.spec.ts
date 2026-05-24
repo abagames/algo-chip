@@ -35,19 +35,19 @@ describe("Two-Axis Corner Cases", () => {
       console.log("(-1, -1) BPM:", result.meta.bpm);
 
       // Percussive flags (percussiveStrength = 1.0)
-      assert.strictEqual(intent.percussiveLayering, true, "percussiveLayering should be true");
-      assert.strictEqual(intent.syncopationBias, true, "syncopationBias should be true");
+      assert.ok(intent.percussiveLayering > 0.5, "percussiveLayering should be true");
+      assert.ok(intent.syncopationBias > 0.5, "syncopationBias should be true");
 
       // Calm flags (calmStrength = 1.0)
-      assert.strictEqual(intent.loopCentric, true, "loopCentric should be true");
-      assert.strictEqual(intent.textureFocus, true, "textureFocus should be true");
+      assert.ok(intent.loopCentric > 0.5, "loopCentric should be true");
+      assert.ok(intent.textureFocus > 0.5, "textureFocus should be true");
 
       // Melodic flags should be false
-      assert.strictEqual(intent.filterMotion, false, "filterMotion should remain disabled without melodic drive");
-      assert.strictEqual(intent.harmonicStatic, true, "harmonicStatic should engage for percussive calm combinations");
+      assert.ok(intent.filterMotion <= 0.5, "filterMotion should remain disabled without melodic drive");
+      assert.ok(intent.harmonicStatic > 0.5, "harmonicStatic should engage for percussive calm combinations");
 
       // Energy flags should be false
-      assert.strictEqual(intent.gradualBuild, false, "gradualBuild should be false");
+      assert.ok(intent.gradualBuild <= 0.5, "gradualBuild should be false");
 
       // Tempo & energy tags
       assert.strictEqual(result.meta.tempo, "slow", "tempo should be slow");
@@ -72,19 +72,19 @@ describe("Two-Axis Corner Cases", () => {
       console.log("(-1, +1) BPM:", result.meta.bpm);
 
       // Percussive flags (percussiveStrength = 1.0)
-      assert.strictEqual(intent.percussiveLayering, true, "percussiveLayering should be true");
-      assert.strictEqual(intent.syncopationBias, true, "syncopationBias should be true");
-      assert.strictEqual(intent.breakInsertion, true, "breakInsertion should be true (percussive + energetic)");
+      assert.ok(intent.percussiveLayering > 0.5, "percussiveLayering should be true");
+      assert.ok(intent.syncopationBias > 0.5, "syncopationBias should be true");
+      assert.ok(intent.breakInsertion > 0.5, "breakInsertion should be true (percussive + energetic)");
 
       // Energetic flags (energyStrength = 1.0)
-      assert.strictEqual(intent.gradualBuild, true, "gradualBuild should be true");
+      assert.ok(intent.gradualBuild > 0.5, "gradualBuild should be true");
 
       // Calm flags should be false
-      assert.strictEqual(intent.loopCentric, false, "loopCentric should be false");
+      assert.ok(intent.loopCentric <= 0.5, "loopCentric should be false");
 
       // Melodic flags should be false
-      assert.strictEqual(intent.filterMotion, true, "filterMotion should reflect energetic motion");
-      assert.strictEqual(intent.harmonicStatic, false, "harmonicStatic should be false");
+      assert.ok(intent.filterMotion > 0.5, "filterMotion should reflect energetic motion");
+      assert.ok(intent.harmonicStatic <= 0.5, "harmonicStatic should be false");
 
       // Tempo & energy tags
       assert.strictEqual(result.meta.tempo, "fast", "tempo should be fast");
@@ -109,21 +109,21 @@ describe("Two-Axis Corner Cases", () => {
       console.log("(+1, -1) BPM:", result.meta.bpm);
 
       // Melodic flags (melodicStrength = 1.0)
-      assert.strictEqual(intent.harmonicStatic, true, "harmonicStatic should be true (melodic + calm)");
-      assert.strictEqual(intent.atmosPad, true, "atmosPad should be true");
-      assert.strictEqual(intent.filterMotion, true, "filterMotion should be true");
+      assert.ok(intent.harmonicStatic > 0.5, "harmonicStatic should be true (melodic + calm)");
+      assert.ok(intent.atmosPad > 0.5, "atmosPad should be true");
+      assert.ok(intent.filterMotion > 0.5, "filterMotion should be true");
 
       // Calm flags (calmStrength = 1.0)
-      assert.strictEqual(intent.loopCentric, true, "loopCentric should be true");
-      assert.strictEqual(intent.textureFocus, true, "textureFocus should be true");
+      assert.ok(intent.loopCentric > 0.5, "loopCentric should be true");
+      assert.ok(intent.textureFocus > 0.5, "textureFocus should be true");
 
       // Percussive flags should be false
-      assert.strictEqual(intent.percussiveLayering, false, "percussiveLayering should be false");
-      assert.strictEqual(intent.syncopationBias, false, "syncopationBias should be false");
+      assert.ok(intent.percussiveLayering <= 0.5, "percussiveLayering should be false");
+      assert.ok(intent.syncopationBias <= 0.5, "syncopationBias should be false");
 
       // Energy flags should be false
-      assert.strictEqual(intent.gradualBuild, false, "gradualBuild should be false");
-      assert.strictEqual(intent.breakInsertion, false, "breakInsertion should be false");
+      assert.ok(intent.gradualBuild <= 0.5, "gradualBuild should be false");
+      assert.ok(intent.breakInsertion <= 0.5, "breakInsertion should be false");
 
       // Tempo & energy tags
       assert.strictEqual(result.meta.tempo, "slow", "tempo should be slow");
@@ -148,23 +148,23 @@ describe("Two-Axis Corner Cases", () => {
       console.log("(+1, +1) BPM:", result.meta.bpm);
 
       // Melodic flags (melodicStrength = 1.0)
-      assert.strictEqual(intent.atmosPad, true, "atmosPad should be true");
-      assert.strictEqual(intent.filterMotion, true, "filterMotion should be true");
+      assert.ok(intent.atmosPad > 0.5, "atmosPad should be true");
+      assert.ok(intent.filterMotion > 0.5, "filterMotion should be true");
 
       // Energetic flags (energyStrength = 1.0)
-      assert.strictEqual(intent.gradualBuild, true, "gradualBuild should be true");
+      assert.ok(intent.gradualBuild > 0.5, "gradualBuild should be true");
 
       // harmonicStatic requires melodic + CALM, so should be false here
-      assert.strictEqual(intent.harmonicStatic, false, "harmonicStatic should be false (needs calm)");
+      assert.ok(intent.harmonicStatic <= 0.5, "harmonicStatic should be false (needs calm)");
 
       // Calm flags should be false
-      assert.strictEqual(intent.loopCentric, false, "loopCentric should be false");
-      assert.strictEqual(intent.textureFocus, false, "textureFocus should be false");
+      assert.ok(intent.loopCentric <= 0.5, "loopCentric should be false");
+      assert.ok(intent.textureFocus <= 0.5, "textureFocus should be false");
 
       // Percussive flags should be false
-      assert.strictEqual(intent.percussiveLayering, false, "percussiveLayering should be false");
-      assert.strictEqual(intent.syncopationBias, false, "syncopationBias should be false");
-      assert.strictEqual(intent.breakInsertion, false, "breakInsertion should be false (needs percussive)");
+      assert.ok(intent.percussiveLayering <= 0.5, "percussiveLayering should be false");
+      assert.ok(intent.syncopationBias <= 0.5, "syncopationBias should be false");
+      assert.ok(intent.breakInsertion <= 0.5, "breakInsertion should be false (needs percussive)");
 
       // Tempo & energy tags
       assert.strictEqual(result.meta.tempo, "fast", "tempo should be fast");
@@ -190,14 +190,14 @@ describe("Two-Axis Corner Cases", () => {
 
       // Baseline variety ensures at least one of the safe candidates is true
       const baselineCandidates: (keyof typeof intent)[] = ["loopCentric", "filterMotion", "atmosPad", "gradualBuild"];
-      const atLeastOneActive = baselineCandidates.some(k => intent[k]);
+      const atLeastOneActive = baselineCandidates.some(k => intent[k] > 0.5);
       assert.ok(atLeastOneActive, "at least one baseline candidate flag should be true at origin");
 
       // Axis-driven flags that require non-zero strength must stay false
-      assert.strictEqual(intent.percussiveLayering, false, "percussiveLayering should be false (needs percussive strength)");
-      assert.strictEqual(intent.syncopationBias, false, "syncopationBias should be false (needs percussive strength)");
-      assert.strictEqual(intent.breakInsertion, false, "breakInsertion should be false (needs percussive+energetic strength)");
-      assert.strictEqual(intent.harmonicStatic, false, "harmonicStatic should be false (needs melodic+calm strength)");
+      assert.ok(intent.percussiveLayering <= 0.5, "percussiveLayering should be false (needs percussive strength)");
+      assert.ok(intent.syncopationBias <= 0.5, "syncopationBias should be false (needs percussive strength)");
+      assert.ok(intent.breakInsertion <= 0.5, "breakInsertion should be false (needs percussive+energetic strength)");
+      assert.ok(intent.harmonicStatic <= 0.5, "harmonicStatic should be false (needs melodic+calm strength)");
 
       // Tempo & energy tags should be neutral
       assert.strictEqual(result.meta.tempo, "medium", "tempo should be medium");

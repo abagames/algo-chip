@@ -186,15 +186,15 @@ describe("Fixed Length Generation", () => {
         lengthInMeasures: 32,
         seed: 12345,
         styleOverrides: {
-          textureFocus: true,
-          loopCentric: false,
-          gradualBuild: true,
-          harmonicStatic: false,
-          percussiveLayering: true,
-          breakInsertion: true,
-          filterMotion: true,
-          syncopationBias: true,
-          atmosPad: false
+          textureFocus: 1.0,
+          loopCentric: 0,
+          gradualBuild: 1.0,
+          harmonicStatic: 0,
+          percussiveLayering: 1.0,
+          breakInsertion: 1.0,
+          filterMotion: 1.0,
+          syncopationBias: 1.0,
+          atmosPad: 0
         }
       };
 

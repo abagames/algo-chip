@@ -234,7 +234,7 @@ describe("Electronica Style Validation", () => {
       const result = runPipeline(options);
 
       // gradualBuild should be enabled
-      assert.strictEqual(result.meta.styleIntent.gradualBuild, true);
+      assert.ok(result.meta.styleIntent.gradualBuild > 0.5);
 
       // Check melody velocity progression
       const melodyChannels = getChannelsForRoles(result, ["melody", "melodyAlt"]);
@@ -270,7 +270,7 @@ describe("Electronica Style Validation", () => {
       const result = runPipeline(options);
 
       // breakInsertion should be enabled
-      assert.strictEqual(result.meta.styleIntent.breakInsertion, true);
+      assert.ok(result.meta.styleIntent.breakInsertion > 0.5);
 
       // Check for noise channel breaks (silence or reduced activity)
       const noiseEvents = result.events
@@ -289,7 +289,7 @@ describe("Electronica Style Validation", () => {
       const result = runPipeline(options);
 
       // atmosPad should be enabled
-      assert.strictEqual(result.meta.styleIntent.atmosPad, true);
+      assert.ok(result.meta.styleIntent.atmosPad > 0.5);
     });
 
     it("should inject progressive duty and pad automation", () => {
@@ -401,7 +401,7 @@ describe("Electronica Style Validation", () => {
       assert.ok(melodyEvents.length > 0, "Should have melody");
 
       // Auto mode should still respect syncopation bias but not force break insertion
-      assert.strictEqual(result.meta.styleIntent.breakInsertion, false);
+      assert.ok(result.meta.styleIntent.breakInsertion <= 0.5);
     });
 
     it("should allow explicitly melodic calm music generation", () => {
@@ -435,14 +435,14 @@ describe("Electronica Style Validation", () => {
           calmEnergetic: 0.65
         },
         overrides: {
-          atmosPad: true
+          atmosPad: 1.0
         }
       });
 
       const result = runPipeline(options);
 
-      assert.strictEqual(result.meta.styleIntent.gradualBuild, true);
-      assert.strictEqual(result.meta.styleIntent.atmosPad, true);
+      assert.ok(result.meta.styleIntent.gradualBuild > 0.5);
+      assert.ok(result.meta.styleIntent.atmosPad > 0.5);
       assert.ok(result.events.length > 0, "Should generate hybrid music");
     });
 
@@ -455,14 +455,14 @@ describe("Electronica Style Validation", () => {
           calmEnergetic: 0.4
         },
         overrides: {
-          percussiveLayering: true,
-          harmonicStatic: false
+          percussiveLayering: 1.0,
+          harmonicStatic: 0
         }
       });
 
       const result = runPipeline(options);
 
-      assert.strictEqual(result.meta.styleIntent.percussiveLayering, true);
+      assert.ok(result.meta.styleIntent.percussiveLayering > 0.5);
       assert.ok(result.events.length > 0, "Should generate custom-styled music");
     });
   });

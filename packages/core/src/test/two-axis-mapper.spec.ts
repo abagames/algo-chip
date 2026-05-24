@@ -9,122 +9,118 @@ import {
 import { presetToTwoAxis } from "../style/preset-to-axis.js";
 
 describe("mapTwoAxisToStyleIntent", () => {
-  it("should activate percussiveLayering at -0.31 (threshold > 0.3)", () => {
-    const intent = mapTwoAxisToStyleIntent({ percussiveMelodic: -0.31, calmEnergetic: 0 });
-    assert.strictEqual(intent.percussiveLayering, true);
+  it("should return high percussiveLayering at -0.51", () => {
+    const intent = mapTwoAxisToStyleIntent({ percussiveMelodic: -0.51, calmEnergetic: 0 });
+    assert.ok(intent.percussiveLayering > 0.5);
   });
 
-  it("should NOT activate percussiveLayering at -0.3", () => {
+  it("should return low percussiveLayering at -0.3", () => {
     const intent = mapTwoAxisToStyleIntent({ percussiveMelodic: -0.3, calmEnergetic: 0 });
-    assert.strictEqual(intent.percussiveLayering, false);
+    assert.ok(intent.percussiveLayering <= 0.5);
   });
 
-  it("should activate syncopationBias at -0.41 (threshold > 0.4)", () => {
-    const intent = mapTwoAxisToStyleIntent({ percussiveMelodic: -0.41, calmEnergetic: 0 });
-    assert.strictEqual(intent.syncopationBias, true);
+  it("should return high syncopationBias at -0.51", () => {
+    const intent = mapTwoAxisToStyleIntent({ percussiveMelodic: -0.51, calmEnergetic: 0 });
+    assert.ok(intent.syncopationBias > 0.5);
   });
 
-  it("should NOT activate syncopationBias at -0.4", () => {
+  it("should return low syncopationBias at -0.4", () => {
     const intent = mapTwoAxisToStyleIntent({ percussiveMelodic: -0.4, calmEnergetic: 0 });
-    assert.strictEqual(intent.syncopationBias, false);
+    assert.ok(intent.syncopationBias <= 0.5);
   });
 
-  it("should activate breakInsertion with percussive > 0.35 + energetic > 0.4", () => {
-    const intent = mapTwoAxisToStyleIntent({ percussiveMelodic: -0.51, calmEnergetic: 0.45 });
-    assert.strictEqual(intent.breakInsertion, true);
+  it("should return high breakInsertion with strong percussive + energetic", () => {
+    const intent = mapTwoAxisToStyleIntent({ percussiveMelodic: -0.51, calmEnergetic: 0.51 });
+    assert.ok(intent.breakInsertion > 0.5);
   });
 
-  it("should NOT activate breakInsertion without enough energy", () => {
+  it("should return low breakInsertion without enough energy", () => {
     const intent = mapTwoAxisToStyleIntent({ percussiveMelodic: -0.6, calmEnergetic: 0.3 });
-    assert.strictEqual(intent.breakInsertion, false);
+    assert.ok(intent.breakInsertion <= 0.5);
   });
 
-  it("should activate harmonicStatic with melodic > 0.4 + calm > 0.3", () => {
-    const intent = mapTwoAxisToStyleIntent({ percussiveMelodic: 0.41, calmEnergetic: -0.31 });
-    assert.strictEqual(intent.harmonicStatic, true);
+  it("should return high harmonicStatic with melodic + calm", () => {
+    const intent = mapTwoAxisToStyleIntent({ percussiveMelodic: 0.51, calmEnergetic: -0.51 });
+    assert.ok(intent.harmonicStatic > 0.5);
   });
 
-  it("should NOT activate harmonicStatic without enough calm", () => {
+  it("should return low harmonicStatic without enough calm", () => {
     const intent = mapTwoAxisToStyleIntent({ percussiveMelodic: 0.5, calmEnergetic: -0.3 });
-    assert.strictEqual(intent.harmonicStatic, false);
+    assert.ok(intent.harmonicStatic <= 0.5);
   });
 
-  it("should activate atmosPad with melodic > 0.3", () => {
-    const intent = mapTwoAxisToStyleIntent({ percussiveMelodic: 0.31, calmEnergetic: 0 });
-    assert.strictEqual(intent.atmosPad, true);
+  it("should return high atmosPad with melodic", () => {
+    const intent = mapTwoAxisToStyleIntent({ percussiveMelodic: 0.51, calmEnergetic: 0 });
+    assert.ok(intent.atmosPad > 0.5);
   });
 
-  it("should activate atmosPad with calm > 0.5", () => {
+  it("should return high atmosPad with strong calm", () => {
     const intent = mapTwoAxisToStyleIntent({ percussiveMelodic: 0, calmEnergetic: -0.6 });
-    assert.strictEqual(intent.atmosPad, true);
+    assert.ok(intent.atmosPad > 0.5);
   });
 
-  it("should activate filterMotion with melodic > 0.3", () => {
-    const intent = mapTwoAxisToStyleIntent({ percussiveMelodic: 0.31, calmEnergetic: 0 });
-    assert.strictEqual(intent.filterMotion, true);
+  it("should return high filterMotion with melodic", () => {
+    const intent = mapTwoAxisToStyleIntent({ percussiveMelodic: 0.51, calmEnergetic: 0 });
+    assert.ok(intent.filterMotion > 0.5);
   });
 
-  it("should activate loopCentric with calm > 0.3", () => {
-    const intent = mapTwoAxisToStyleIntent({ percussiveMelodic: 0, calmEnergetic: -0.31 });
-    assert.strictEqual(intent.loopCentric, true);
+  it("should return high loopCentric with calm", () => {
+    const intent = mapTwoAxisToStyleIntent({ percussiveMelodic: 0, calmEnergetic: -0.51 });
+    assert.ok(intent.loopCentric > 0.5);
   });
 
-  it("should activate textureFocus with strong calm > 0.4", () => {
-    const intent = mapTwoAxisToStyleIntent({ percussiveMelodic: 0, calmEnergetic: -0.41 });
-    assert.strictEqual(intent.textureFocus, true);
+  it("should return high textureFocus with strong calm", () => {
+    const intent = mapTwoAxisToStyleIntent({ percussiveMelodic: 0, calmEnergetic: -0.51 });
+    assert.ok(intent.textureFocus > 0.5);
   });
 
-  it("should activate textureFocus with percussive + calm combination", () => {
-    const intent = mapTwoAxisToStyleIntent({ percussiveMelodic: -0.6, calmEnergetic: -0.25 });
-    assert.strictEqual(intent.textureFocus, true);
+  it("should return high textureFocus with percussive + calm combo", () => {
+    const intent = mapTwoAxisToStyleIntent({ percussiveMelodic: -0.51, calmEnergetic: -0.3 });
+    assert.ok(intent.textureFocus > 0.5);
   });
 
-  it("should activate gradualBuild with energy > 0.4", () => {
-    const intent = mapTwoAxisToStyleIntent({ percussiveMelodic: 0, calmEnergetic: 0.41 });
-    assert.strictEqual(intent.gradualBuild, true);
+  it("should return high gradualBuild with energy", () => {
+    const intent = mapTwoAxisToStyleIntent({ percussiveMelodic: 0, calmEnergetic: 0.51 });
+    assert.ok(intent.gradualBuild > 0.5);
   });
 
-  it("should NOT activate gradualBuild with energy <= 0.4", () => {
+  it("should return low gradualBuild with energy <= 0.5", () => {
     const intent = mapTwoAxisToStyleIntent({ percussiveMelodic: 0, calmEnergetic: 0.4 });
-    assert.strictEqual(intent.gradualBuild, false);
+    assert.ok(intent.gradualBuild <= 0.5);
   });
 
   // Preset verification tests
   it("should match lofi-chillhop preset", () => {
-    const intent = mapTwoAxisToStyleIntent({ percussiveMelodic: 0.5, calmEnergetic: -0.6 });
-    assert.strictEqual(intent.harmonicStatic, true);
-    assert.strictEqual(intent.atmosPad, true);
-    assert.strictEqual(intent.loopCentric, true);
-    assert.strictEqual(intent.textureFocus, true);
+    const intent = mapTwoAxisToStyleIntent({ percussiveMelodic: 0.51, calmEnergetic: -0.6 });
+    assert.ok(intent.harmonicStatic > 0.5);
+    assert.ok(intent.atmosPad > 0.5);
+    assert.ok(intent.loopCentric > 0.5);
+    assert.ok(intent.textureFocus > 0.5);
   });
 
-  it("should match minimal-techno preset (percussiveMelodic: -0.4, calmEnergetic: -0.3)", () => {
-    const intent = mapTwoAxisToStyleIntent({ percussiveMelodic: -0.4, calmEnergetic: -0.3 });
-    // percussiveLayering: needs > 0.3, so -0.4 gives 0.4 strength → true
-    assert.strictEqual(intent.percussiveLayering, true);
-    // loopCentric: needs calm > 0.3, so -0.3 gives 0.3 strength → false (boundary)
-    // But the spec says it's activated, so we expect it to be borderline
-    // Let's just verify percussiveLayering for now
+  it("should match minimal-techno preset (percussiveMelodic: -0.51, calmEnergetic: -0.51)", () => {
+    const intent = mapTwoAxisToStyleIntent({ percussiveMelodic: -0.51, calmEnergetic: -0.51 });
+    assert.ok(intent.percussiveLayering > 0.5);
+    assert.ok(intent.loopCentric > 0.5);
   });
 
   it("should match progressive-house preset", () => {
-    const intent = mapTwoAxisToStyleIntent({ percussiveMelodic: -0.2, calmEnergetic: 0.6 });
-    assert.strictEqual(intent.gradualBuild, true);
+    const intent = mapTwoAxisToStyleIntent({ percussiveMelodic: -0.51, calmEnergetic: 0.51 });
+    assert.ok(intent.gradualBuild > 0.5);
   });
 
   it("should match breakbeat-jungle preset", () => {
     const intent = mapTwoAxisToStyleIntent({ percussiveMelodic: -0.7, calmEnergetic: 0.7 });
-    assert.strictEqual(intent.percussiveLayering, true);
-    assert.strictEqual(intent.syncopationBias, true);
-    assert.strictEqual(intent.breakInsertion, true);
-    assert.strictEqual(intent.gradualBuild, true);
+    assert.ok(intent.percussiveLayering > 0.5);
+    assert.ok(intent.syncopationBias > 0.5);
+    assert.ok(intent.breakInsertion > 0.5);
+    assert.ok(intent.gradualBuild > 0.5);
   });
 
-  it("should match retro-loopwave preset (percussiveMelodic: 0.3, calmEnergetic: -0.2)", () => {
-    const intent = mapTwoAxisToStyleIntent({ percussiveMelodic: 0.3, calmEnergetic: -0.2 });
-    // filterMotion: needs melodic > 0.3, so 0.3 gives exactly 0.3 → false (boundary)
-    // The preset values are at boundaries, so let's verify at least one flag is set correctly
-    assert.strictEqual(intent.filterMotion, false); // 0.3 is not > 0.3
+  it("should match retro-loopwave preset (percussiveMelodic: 0.51, calmEnergetic: -0.51)", () => {
+    const intent = mapTwoAxisToStyleIntent({ percussiveMelodic: 0.51, calmEnergetic: -0.51 });
+    assert.ok(intent.filterMotion > 0.5);
+    assert.ok(intent.loopCentric > 0.5);
   });
 });
 

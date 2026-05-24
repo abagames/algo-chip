@@ -8,7 +8,7 @@ import { buildTwoAxisOptions } from "./test-utils.js";
 async function run() {
   console.log("Testing chord progression variety for minimal techno...\n");
 
-  // Generate composition with minimal techno style (harmonicStatic: true)
+  // Generate composition with minimal techno style (harmonicStatic: 1.0)
   const options = buildTwoAxisOptions({
     lengthInMeasures: 32,
     seed: 42,
@@ -20,10 +20,9 @@ async function run() {
   // Check that harmonicStatic is enabled
   const styleIntent = result.meta.styleIntent;
   console.log("StyleIntent:", styleIntent);
-  assert.strictEqual(
-    styleIntent.harmonicStatic,
-    true,
-    "harmonicStatic should be true for minimal techno"
+  assert.ok(
+    styleIntent.harmonicStatic > 0.5,
+    "harmonicStatic should be > 0.5 for minimal techno"
   );
 
   console.log("\n✓ harmonicStatic is enabled for minimal techno");
@@ -40,10 +39,9 @@ async function run() {
   });
 
   const lofiResult = runPipeline(lofiOptions);
-  assert.strictEqual(
-    lofiResult.meta.styleIntent.harmonicStatic,
-    true,
-    "harmonicStatic should be true for lofi-chillhop"
+  assert.ok(
+    lofiResult.meta.styleIntent.harmonicStatic > 0.5,
+    "harmonicStatic should be > 0.5 for lofi-chillhop"
   );
 
   console.log("✓ harmonicStatic is enabled for lofi-chillhop");
