@@ -132,6 +132,11 @@ export interface CompositionOptions {
    * When omitted, derived automatically from two-axis coordinates.
    */
   mode?: "major" | "minor";
+  /**
+   * Controls whether reprised hooks repeat exactly or use varied pitch motifs.
+   * 0.0 = Maximum variation, 1.0 = Always repeat exactly. Default: 0.3.
+   */
+  sectionRepeatBias?: number;
 }
 
 export interface PipelineCompositionOptions {
@@ -150,7 +155,7 @@ export interface PipelineCompositionOptions {
    * Controls whether reprised hooks (e.g. A2) repeat exactly or use a varied pitch motif.
    * 0.0 = Maximum variation (pitch motif always replaced on reprise)
    * 1.0 = Always repeat exactly (maximum coherence)
-   * Default: 0.3 — exact repetition (hook variation only fires when value < 0.25)
+   * Default: 0.15 — usually varied (hook variation fires when value <= 0.20)
    *
    * When variation fires, only the pitch-degree motif changes; rhythm and
    * note-duration motifs are preserved from the original hook.

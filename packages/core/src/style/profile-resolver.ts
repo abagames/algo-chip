@@ -289,7 +289,8 @@ export function resolveGenerationContext(options: CompositionOptions): ResolveRe
     lengthInMeasures: resolvedLength,
     seed: resolvedSeed,
     stylePreset: options.preset ?? undefined,
-    styleOverrides: axisStyleOverrides
+    styleOverrides: axisStyleOverrides,
+    sectionRepeatBias: options.sectionRepeatBias
   };
 
   const resolvedProfile: ResolvedStyleProfile = {
@@ -317,6 +318,10 @@ export function resolveGenerationContext(options: CompositionOptions): ResolveRe
 
   if (options.mode) {
     replayOptions.mode = options.mode;
+  }
+
+  if (typeof options.sectionRepeatBias === "number") {
+    replayOptions.sectionRepeatBias = options.sectionRepeatBias;
   }
 
   return {

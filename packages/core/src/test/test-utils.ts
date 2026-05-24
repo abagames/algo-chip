@@ -18,6 +18,7 @@ export function buildTwoAxisOptions(params: {
   twoAxisStyle?: TwoAxisStyle;
   preset?: PresetSlug;
   overrides?: Partial<Pick<StyleIntent, IntentKey>>;
+  sectionRepeatBias?: number;
 }): CompositionOptions {
   let axis = params.twoAxisStyle;
 
@@ -33,13 +34,19 @@ export function buildTwoAxisOptions(params: {
     ? { intent: { ...params.overrides } }
     : undefined;
 
-  return {
+  const result: CompositionOptions = {
     lengthInMeasures: params.lengthInMeasures,
     seed: params.seed,
     twoAxisStyle: axis,
     overrides,
     preset: params.preset ? PRESET_SLUG_TO_ENUM[params.preset] : undefined
   };
+
+  if (typeof params.sectionRepeatBias === "number") {
+    result.sectionRepeatBias = params.sectionRepeatBias;
+  }
+
+  return result;
 }
 
 export function isNoteOnEvent(event: Event): event is Event<"noteOn"> {
