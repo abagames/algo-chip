@@ -4,191 +4,420 @@
       "id": "SE_JUMP_01",
       "type": "jump",
       "description": "Light upward jump sound (square wave sweep)",
-      "tags": ["bright", "short", "retro"],
+      "tags": [
+        "bright",
+        "short",
+        "retro"
+      ],
       "weight": 1.5,
-      "channels": ["square1"],
-      "durationRange": [0.12, 0.25],
+      "channels": [
+        "square1"
+      ],
+      "durationRange": [
+        0.12,
+        0.25
+      ],
       "channelParams": {
         "square1": {
-          "pitchStart": { "min": 50, "max": 62 },
-          "pitchEnd": { "min": 72, "max": 84 },
-          "dutyCycle": [0.25, 0.5],
-          "velocityRange": [96, 122]
+          "pitchStart": {
+            "min": 50,
+            "max": 62
+          },
+          "pitchEnd": {
+            "min": 72,
+            "max": 84
+          },
+          "dutyCycle": [
+            0.25,
+            0.5
+          ],
+          "velocityRange": [
+            96,
+            122
+          ]
         }
       },
       "pitchSweep": {
         "enabled": true,
-        "curveOptions": ["linear", "exponential"],
-        "durationRange": [0.14, 0.26]
+        "curveOptions": [
+          "linear",
+          "exponential"
+        ],
+        "durationRange": [
+          0.14,
+          0.26
+        ]
       }
     },
     {
       "id": "SE_JUMP_02",
       "type": "jump",
       "description": "Powerful jump sound (linear sweep, low-pitch start)",
-      "tags": ["heavy", "long", "retro"],
+      "tags": [
+        "heavy",
+        "long",
+        "retro"
+      ],
       "weight": 1.0,
-      "channels": ["square2"],
-      "durationRange": [0.15, 0.30],
+      "channels": [
+        "square2"
+      ],
+      "durationRange": [
+        0.15,
+        0.3
+      ],
       "channelParams": {
         "square2": {
-          "pitchStart": { "min": 40, "max": 52 },
-          "pitchEnd": { "min": 64, "max": 76 },
-          "dutyCycle": [0.5],
-          "velocityRange": [94, 120]
+          "pitchStart": {
+            "min": 40,
+            "max": 52
+          },
+          "pitchEnd": {
+            "min": 64,
+            "max": 76
+          },
+          "dutyCycle": [
+            0.5
+          ],
+          "velocityRange": [
+            94,
+            120
+          ]
         }
       },
       "pitchSweep": {
         "enabled": true,
-        "curveOptions": ["linear", "exponential"],
-        "durationRange": [0.16, 0.32]
+        "curveOptions": [
+          "linear",
+          "exponential"
+        ],
+        "durationRange": [
+          0.16,
+          0.32
+        ]
       }
     },
     {
       "id": "SE_JUMP_03",
       "type": "jump",
       "description": "Spring jump sound (fast bright upward sweep)",
-      "tags": ["bright", "short", "retro"],
+      "tags": [
+        "bright",
+        "short",
+        "retro"
+      ],
       "weight": 1.0,
-      "channels": ["square1"],
-      "durationRange": [0.10, 0.18],
+      "channels": [
+        "square1"
+      ],
+      "durationRange": [
+        0.1,
+        0.18
+      ],
       "channelParams": {
         "square1": {
-          "pitchStart": { "min": 56, "max": 64 },
-          "pitchEnd": { "min": 84, "max": 96 },
-          "dutyCycle": [0.125, 0.25],
-          "velocityRange": [98, 124]
+          "pitchStart": {
+            "min": 56,
+            "max": 64
+          },
+          "pitchEnd": {
+            "min": 84,
+            "max": 96
+          },
+          "dutyCycle": [
+            0.125,
+            0.25
+          ],
+          "velocityRange": [
+            98,
+            124
+          ]
         }
       },
       "pitchSweep": {
         "enabled": true,
-        "curveOptions": ["exponential"],
-        "durationRange": [0.10, 0.18]
+        "curveOptions": [
+          "exponential"
+        ],
+        "durationRange": [
+          0.1,
+          0.18
+        ]
       }
     },
     {
       "id": "SE_JUMP_04",
       "type": "jump",
       "description": "Low-gravity jump sound (soft triangle upward sweep)",
-      "tags": ["soft", "long"],
+      "tags": [
+        "soft",
+        "long"
+      ],
       "weight": 0.7,
-      "channels": ["triangle"],
-      "durationRange": [0.24, 0.38],
+      "channels": [
+        "triangle"
+      ],
+      "durationRange": [
+        0.24,
+        0.38
+      ],
       "channelParams": {
         "triangle": {
-          "pitchStart": { "min": 45, "max": 55 },
-          "pitchEnd": { "min": 67, "max": 79 },
-          "velocityRange": [82, 108]
+          "pitchStart": {
+            "min": 45,
+            "max": 55
+          },
+          "pitchEnd": {
+            "min": 67,
+            "max": 79
+          },
+          "velocityRange": [
+            82,
+            108
+          ]
         }
       },
       "pitchSweep": {
         "enabled": true,
-        "curveOptions": ["linear", "exponential"],
-        "durationRange": [0.24, 0.38]
+        "curveOptions": [
+          "linear",
+          "exponential"
+        ],
+        "durationRange": [
+          0.24,
+          0.38
+        ]
       }
     },
     {
       "id": "SE_COIN_01",
       "type": "coin",
       "description": "Sparkling coin collection sound (2-note arpeggio)",
-      "tags": ["bright", "pickup", "short"],
+      "tags": [
+        "bright",
+        "pickup",
+        "short"
+      ],
       "weight": 1.5,
-      "channels": ["square1"],
-      "durationRange": [0.18, 0.24],
+      "channels": [
+        "square1"
+      ],
+      "durationRange": [
+        0.18,
+        0.24
+      ],
       "channelParams": {
         "square1": {
-          "pitchStart": { "min": 72, "max": 84 },
-          "dutyCycle": [0.5],
-          "velocityRange": [102, 124]
+          "pitchStart": {
+            "min": 72,
+            "max": 84
+          },
+          "dutyCycle": [
+            0.5
+          ],
+          "velocityRange": [
+            102,
+            124
+          ]
         }
       },
       "noteSequence": {
-        "intervals": [0, 4],
-        "noteDurations": [0.04, 0.16]
+        "intervals": [
+          0,
+          4
+        ],
+        "noteDurations": [
+          0.04,
+          0.16
+        ]
       }
     },
     {
       "id": "SE_COIN_02",
       "type": "coin",
       "description": "Super Mario-style coin sound (3-note arpeggio, high-pitch)",
-      "tags": ["bright", "pickup", "retro"],
+      "tags": [
+        "bright",
+        "pickup",
+        "retro"
+      ],
       "weight": 1.0,
-      "channels": ["square1"],
-      "durationRange": [0.20, 0.28],
+      "channels": [
+        "square1"
+      ],
+      "durationRange": [
+        0.2,
+        0.28
+      ],
       "channelParams": {
         "square1": {
-          "pitchStart": { "min": 76, "max": 84 },
-          "dutyCycle": [0.5],
-          "velocityRange": [98, 120]
+          "pitchStart": {
+            "min": 76,
+            "max": 84
+          },
+          "dutyCycle": [
+            0.5
+          ],
+          "velocityRange": [
+            98,
+            120
+          ]
         }
       },
       "noteSequence": {
-        "intervals": [0, 4, 12],
-        "noteDurations": [0.04, 0.04, 0.16]
+        "intervals": [
+          0,
+          4,
+          12
+        ],
+        "noteDurations": [
+          0.04,
+          0.04,
+          0.16
+        ]
       }
     },
     {
       "id": "SE_COIN_03",
       "type": "coin",
       "description": "Delayed sparkle pickup sound (wide arpeggio)",
-      "tags": ["pickup", "bright", "retro"],
+      "tags": [
+        "pickup",
+        "bright",
+        "retro"
+      ],
       "weight": 1.0,
-      "channels": ["square2"],
-      "durationRange": [0.20, 0.30],
+      "channels": [
+        "square2"
+      ],
+      "durationRange": [
+        0.2,
+        0.3
+      ],
       "channelParams": {
         "square2": {
-          "pitchStart": { "min": 74, "max": 82 },
-          "dutyCycle": [0.25, 0.5],
-          "velocityRange": [98, 122]
+          "pitchStart": {
+            "min": 74,
+            "max": 82
+          },
+          "dutyCycle": [
+            0.25,
+            0.5
+          ],
+          "velocityRange": [
+            120,
+            127
+          ]
         }
       },
       "noteSequence": {
-        "intervals": [0, 7, 12],
-        "noteDurations": [0.03, 0.05, 0.14]
+        "intervals": [
+          0,
+          7,
+          12
+        ],
+        "noteDurations": [
+          0.03,
+          0.05,
+          0.14
+        ]
       }
     },
     {
       "id": "SE_COIN_04",
       "type": "coin",
       "description": "Lower-pitch pickup sound (compact major arpeggio)",
-      "tags": ["pickup", "soft", "short"],
+      "tags": [
+        "pickup",
+        "soft",
+        "short"
+      ],
       "weight": 0.7,
-      "channels": ["square1"],
-      "durationRange": [0.16, 0.24],
+      "channels": [
+        "square1"
+      ],
+      "durationRange": [
+        0.16,
+        0.24
+      ],
       "channelParams": {
         "square1": {
-          "pitchStart": { "min": 64, "max": 72 },
-          "dutyCycle": [0.25],
+          "pitchStart": {
+            "min": 64,
+            "max": 72
+          },
+          "dutyCycle": [
+            0.25
+          ],
           "envelope": "pluck",
-          "velocityRange": [90, 116]
+          "velocityRange": [
+            90,
+            116
+          ]
         }
       },
       "noteSequence": {
-        "intervals": [0, 3, 7],
-        "noteDurations": [0.04, 0.04, 0.10]
+        "intervals": [
+          0,
+          3,
+          7
+        ],
+        "noteDurations": [
+          0.04,
+          0.04,
+          0.1
+        ]
       }
     },
     {
       "id": "SE_EXPLOSION_01",
       "type": "explosion",
       "description": "Impact explosion sound (noise + triangle bass sweep, linear)",
-      "tags": ["heavy", "long", "combat"],
+      "tags": [
+        "heavy",
+        "long",
+        "combat"
+      ],
       "weight": 1.0,
-      "channels": ["noise", "triangle"],
-      "durationRange": [0.80, 1.20],
+      "channels": [
+        "noise",
+        "triangle"
+      ],
+      "durationRange": [
+        0.8,
+        1.2
+      ],
       "channelParams": {
         "noise": {
           "noiseMode": "long",
           "envelope": "percussive",
-          "velocityRange": [92, 120],
-          "releaseRange": [0.5, 0.8]
+          "velocityRange": [
+            92,
+            120
+          ],
+          "releaseRange": [
+            0.5,
+            0.8
+          ]
         },
         "triangle": {
-          "pitchStart": { "min": 36, "max": 43 },
-          "pitchEnd": { "min": 24, "max": 31 },
+          "pitchStart": {
+            "min": 36,
+            "max": 43
+          },
+          "pitchEnd": {
+            "min": 24,
+            "max": 31
+          },
           "envelope": "percussive",
-          "velocityRange": [78, 104],
-          "startOffsetRange": [0.01, 0.025]
+          "velocityRange": [
+            78,
+            104
+          ],
+          "startOffsetRange": [
+            0.01,
+            0.025
+          ]
         }
       },
       "pitchSweep": {
@@ -200,16 +429,31 @@
       "id": "SE_EXPLOSION_02",
       "type": "explosion",
       "description": "Short explosion sound (noise only, high-frequency)",
-      "tags": ["short", "combat", "bright"],
+      "tags": [
+        "short",
+        "combat",
+        "bright"
+      ],
       "weight": 1.5,
-      "channels": ["noise"],
-      "durationRange": [0.40, 0.60],
+      "channels": [
+        "noise"
+      ],
+      "durationRange": [
+        0.4,
+        0.6
+      ],
       "channelParams": {
         "noise": {
           "noiseMode": "short",
           "envelope": "percussive",
-          "velocityRange": [90, 118],
-          "releaseRange": [0.22, 0.4]
+          "velocityRange": [
+            90,
+            118
+          ],
+          "releaseRange": [
+            0.22,
+            0.4
+          ]
         }
       }
     },
@@ -217,23 +461,51 @@
       "id": "SE_EXPLOSION_03",
       "type": "explosion",
       "description": "Noisy crumble explosion (long noise with falling triangle, exponential sweep)",
-      "tags": ["heavy", "long", "combat"],
+      "tags": [
+        "heavy",
+        "long",
+        "combat"
+      ],
       "weight": 0.8,
-      "channels": ["noise", "triangle"],
-      "durationRange": [0.65, 0.95],
+      "channels": [
+        "noise",
+        "triangle"
+      ],
+      "durationRange": [
+        0.65,
+        0.95
+      ],
       "channelParams": {
         "noise": {
           "noiseMode": "long",
           "envelope": "percussive",
-          "velocityRange": [86, 112],
-          "releaseRange": [0.42, 0.7]
+          "velocityRange": [
+            86,
+            112
+          ],
+          "releaseRange": [
+            0.42,
+            0.7
+          ]
         },
         "triangle": {
-          "pitchStart": { "min": 31, "max": 38 },
-          "pitchEnd": { "min": 18, "max": 26 },
+          "pitchStart": {
+            "min": 31,
+            "max": 38
+          },
+          "pitchEnd": {
+            "min": 18,
+            "max": 26
+          },
           "envelope": "percussive",
-          "velocityRange": [82, 106],
-          "startOffsetRange": [0.015, 0.035]
+          "velocityRange": [
+            82,
+            106
+          ],
+          "startOffsetRange": [
+            0.015,
+            0.035
+          ]
         }
       },
       "pitchSweep": {
@@ -245,23 +517,50 @@
       "id": "SE_EXPLOSION_04",
       "type": "explosion",
       "description": "Compact impact explosion (noise burst plus square punch)",
-      "tags": ["short", "heavy", "combat"],
+      "tags": [
+        "short",
+        "heavy",
+        "combat"
+      ],
       "weight": 1.0,
-      "channels": ["noise", "square1"],
-      "durationRange": [0.18, 0.32],
+      "channels": [
+        "noise",
+        "square1"
+      ],
+      "durationRange": [
+        0.18,
+        0.32
+      ],
       "channelParams": {
         "noise": {
           "noiseMode": "short",
           "envelope": "percussive",
-          "velocityRange": [98, 124],
-          "releaseRange": [0.16, 0.28]
+          "velocityRange": [
+            98,
+            124
+          ],
+          "releaseRange": [
+            0.16,
+            0.28
+          ]
         },
         "square1": {
-          "pitchStart": { "min": 34, "max": 43 },
-          "dutyCycle": [0.125],
+          "pitchStart": {
+            "min": 34,
+            "max": 43
+          },
+          "dutyCycle": [
+            0.125
+          ],
           "envelope": "percussive",
-          "velocityRange": [86, 108],
-          "startOffsetRange": [0.006, 0.018]
+          "velocityRange": [
+            86,
+            108
+          ],
+          "startOffsetRange": [
+            0.006,
+            0.018
+          ]
         }
       }
     },
@@ -269,43 +568,95 @@
       "id": "SE_HIT_01",
       "type": "hit",
       "description": "Damage sound (short descending arpeggio)",
-      "tags": ["short", "combat", "retro"],
+      "tags": [
+        "short",
+        "combat",
+        "retro"
+      ],
       "weight": 1.5,
-      "channels": ["square1"],
-      "durationRange": [0.08, 0.12],
+      "channels": [
+        "square1"
+      ],
+      "durationRange": [
+        0.08,
+        0.12
+      ],
       "channelParams": {
         "square1": {
-          "pitchStart": { "min": 60, "max": 72 },
-          "dutyCycle": [0.125],
+          "pitchStart": {
+            "min": 60,
+            "max": 72
+          },
+          "dutyCycle": [
+            0.125
+          ],
           "envelope": "percussive",
-          "velocityRange": [100, 126]
+          "velocityRange": [
+            100,
+            126
+          ]
         }
       },
       "noteSequence": {
-        "intervals": [0, -2, -5],
-        "noteDurations": [0.03, 0.03, 0.03]
+        "intervals": [
+          0,
+          -2,
+          -5
+        ],
+        "noteDurations": [
+          0.03,
+          0.03,
+          0.03
+        ]
       }
     },
     {
       "id": "SE_HIT_02",
       "type": "hit",
       "description": "Sharp damage sound (noise + square wave combo)",
-      "tags": ["bright", "combat", "short"],
+      "tags": [
+        "bright",
+        "combat",
+        "short"
+      ],
       "weight": 1.0,
-      "channels": ["square1", "noise"],
-      "durationRange": [0.10, 0.15],
+      "channels": [
+        "square1",
+        "noise"
+      ],
+      "durationRange": [
+        0.1,
+        0.15
+      ],
       "channelParams": {
         "square1": {
-          "pitchStart": { "min": 48, "max": 60 },
-          "dutyCycle": [0.125],
-          "velocityRange": [96, 120]
+          "pitchStart": {
+            "min": 48,
+            "max": 60
+          },
+          "dutyCycle": [
+            0.125
+          ],
+          "velocityRange": [
+            70,
+            94
+          ]
         },
         "noise": {
           "noiseMode": "short",
           "envelope": "percussive",
-          "velocityRange": [94, 120],
-          "releaseRange": [0.12, 0.2],
-          "startOffsetRange": [0.004, 0.014]
+          "velocityRange": [
+            94,
+            120
+          ],
+          "releaseRange": [
+            0.12,
+            0.2
+          ],
+          "startOffsetRange": [
+            0.004,
+            0.014
+          ]
         }
       }
     },
@@ -313,37 +664,73 @@
       "id": "SE_HIT_03",
       "type": "hit",
       "description": "Low thud damage sound (triangle downward sweep)",
-      "tags": ["heavy", "combat", "short"],
+      "tags": [
+        "heavy",
+        "combat",
+        "short"
+      ],
       "weight": 1.0,
-      "channels": ["triangle"],
-      "durationRange": [0.10, 0.18],
+      "channels": [
+        "triangle"
+      ],
+      "durationRange": [
+        0.1,
+        0.18
+      ],
       "channelParams": {
         "triangle": {
-          "pitchStart": { "min": 43, "max": 52 },
-          "pitchEnd": { "min": 31, "max": 38 },
-          "velocityRange": [94, 118]
+          "pitchStart": {
+            "min": 43,
+            "max": 52
+          },
+          "pitchEnd": {
+            "min": 31,
+            "max": 38
+          },
+          "velocityRange": [
+            94,
+            118
+          ]
         }
       },
       "pitchSweep": {
         "enabled": true,
         "curveType": "linear",
-        "durationRange": [0.08, 0.16]
+        "durationRange": [
+          0.08,
+          0.16
+        ]
       }
     },
     {
       "id": "SE_HIT_04",
       "type": "hit",
       "description": "Noise bite damage sound (short percussive burst)",
-      "tags": ["bright", "combat", "short"],
+      "tags": [
+        "bright",
+        "combat",
+        "short"
+      ],
       "weight": 0.7,
-      "channels": ["noise"],
-      "durationRange": [0.05, 0.09],
+      "channels": [
+        "noise"
+      ],
+      "durationRange": [
+        0.05,
+        0.09
+      ],
       "channelParams": {
         "noise": {
           "noiseMode": "short",
           "envelope": "percussive",
-          "velocityRange": [102, 126],
-          "releaseRange": [0.04, 0.08]
+          "velocityRange": [
+            102,
+            126
+          ],
+          "releaseRange": [
+            0.04,
+            0.08
+          ]
         }
       }
     },
@@ -351,100 +738,245 @@
       "id": "SE_POWERUP_01",
       "type": "powerup",
       "description": "Power-up sound (ascending arpeggio, fast)",
-      "tags": ["pickup", "bright", "short"],
+      "tags": [
+        "pickup",
+        "bright",
+        "short"
+      ],
       "weight": 1.5,
-      "channels": ["square1"],
-      "durationRange": [0.24, 0.32],
+      "channels": [
+        "square1"
+      ],
+      "durationRange": [
+        0.24,
+        0.32
+      ],
       "channelParams": {
         "square1": {
-          "pitchStart": { "min": 60, "max": 67 },
-          "dutyCycle": [0.5],
-          "velocityRange": [92, 116]
+          "pitchStart": {
+            "min": 60,
+            "max": 67
+          },
+          "dutyCycle": [
+            0.5
+          ],
+          "velocityRange": [
+            92,
+            116
+          ]
         }
       },
       "noteSequence": {
-        "intervals": [0, 3, 5, 7, 10, 12],
-        "noteDurations": [0.04, 0.04, 0.04, 0.04, 0.04, 0.08]
+        "intervals": [
+          0,
+          3,
+          5,
+          7,
+          10,
+          12
+        ],
+        "noteDurations": [
+          0.04,
+          0.04,
+          0.04,
+          0.04,
+          0.04,
+          0.08
+        ]
       }
     },
     {
       "id": "SE_POWERUP_02",
       "type": "powerup",
       "description": "Bright power-up sound (fast arpeggio, high-pitch)",
-      "tags": ["pickup", "bright", "retro"],
+      "tags": [
+        "pickup",
+        "bright",
+        "retro"
+      ],
       "weight": 1.0,
-      "channels": ["square2"],
-      "durationRange": [0.28, 0.36],
+      "channels": [
+        "square2"
+      ],
+      "durationRange": [
+        0.28,
+        0.36
+      ],
       "channelParams": {
         "square2": {
-          "pitchStart": { "min": 64, "max": 72 },
-          "dutyCycle": [0.25],
-          "velocityRange": [88, 112]
+          "pitchStart": {
+            "min": 64,
+            "max": 72
+          },
+          "dutyCycle": [
+            0.25
+          ],
+          "velocityRange": [
+            88,
+            112
+          ]
         }
       },
       "noteSequence": {
-        "intervals": [0, 2, 4, 7, 9, 12, 16],
-        "noteDurations": [0.04, 0.04, 0.04, 0.04, 0.04, 0.04, 0.08]
+        "intervals": [
+          0,
+          2,
+          4,
+          7,
+          9,
+          12,
+          16
+        ],
+        "noteDurations": [
+          0.04,
+          0.04,
+          0.04,
+          0.04,
+          0.04,
+          0.04,
+          0.08
+        ]
       }
     },
     {
       "id": "SE_POWERUP_03",
       "type": "powerup",
       "description": "Two-channel shimmer power-up arpeggio",
-      "tags": ["pickup", "bright", "long"],
+      "tags": [
+        "pickup",
+        "bright",
+        "long"
+      ],
       "weight": 0.8,
-      "channels": ["square1", "square2"],
-      "durationRange": [0.32, 0.44],
+      "channels": [
+        "square1",
+        "square2"
+      ],
+      "durationRange": [
+        0.32,
+        0.44
+      ],
       "channelParams": {
         "square1": {
-          "pitchStart": { "min": 60, "max": 67 },
-          "dutyCycle": [0.25],
-          "velocityRange": [88, 110]
+          "pitchStart": {
+            "min": 60,
+            "max": 67
+          },
+          "dutyCycle": [
+            0.25
+          ],
+          "velocityRange": [
+            88,
+            110
+          ]
         },
         "square2": {
-          "pitchStart": { "min": 72, "max": 79 },
-          "dutyCycle": [0.125],
-          "velocityRange": [76, 100],
-          "startOffsetRange": [0.018, 0.035]
+          "pitchStart": {
+            "min": 72,
+            "max": 79
+          },
+          "dutyCycle": [
+            0.125
+          ],
+          "velocityRange": [
+            76,
+            100
+          ],
+          "startOffsetRange": [
+            0.018,
+            0.035
+          ]
         }
       },
       "noteSequence": {
-        "intervals": [0, 4, 7, 12],
-        "noteDurations": [0.07, 0.07, 0.07, 0.14]
+        "intervals": [
+          0,
+          4,
+          7,
+          12
+        ],
+        "noteDurations": [
+          0.07,
+          0.07,
+          0.07,
+          0.14
+        ]
       }
     },
     {
       "id": "SE_POWERUP_04",
       "type": "powerup",
       "description": "Soft confirm power-up sound (triangle arpeggio)",
-      "tags": ["pickup", "soft", "long"],
+      "tags": [
+        "pickup",
+        "soft",
+        "long"
+      ],
       "weight": 0.7,
-      "channels": ["triangle"],
-      "durationRange": [0.26, 0.38],
+      "channels": [
+        "triangle"
+      ],
+      "durationRange": [
+        0.26,
+        0.38
+      ],
       "channelParams": {
         "triangle": {
-          "pitchStart": { "min": 55, "max": 64 },
-          "velocityRange": [78, 104]
+          "pitchStart": {
+            "min": 55,
+            "max": 64
+          },
+          "velocityRange": [
+            78,
+            104
+          ]
         }
       },
       "noteSequence": {
-        "intervals": [0, 5, 9, 12],
-        "noteDurations": [0.06, 0.06, 0.06, 0.12]
+        "intervals": [
+          0,
+          5,
+          9,
+          12
+        ],
+        "noteDurations": [
+          0.06,
+          0.06,
+          0.06,
+          0.12
+        ]
       }
     },
     {
       "id": "SE_SELECT_01",
       "type": "select",
       "description": "Menu selection sound (short single tone)",
-      "tags": ["ui", "short", "soft"],
+      "tags": [
+        "ui",
+        "short",
+        "soft"
+      ],
       "weight": 1.5,
-      "channels": ["square1"],
-      "durationRange": [0.05, 0.08],
+      "channels": [
+        "square1"
+      ],
+      "durationRange": [
+        0.05,
+        0.08
+      ],
       "channelParams": {
         "square1": {
-          "pitchStart": { "min": 72, "max": 84 },
-          "dutyCycle": [0.25],
-          "velocityRange": [80, 106]
+          "pitchStart": {
+            "min": 72,
+            "max": 84
+          },
+          "dutyCycle": [
+            0.25
+          ],
+          "velocityRange": [
+            80,
+            106
+          ]
         }
       }
     },
@@ -452,54 +984,115 @@
       "id": "SE_SELECT_02",
       "type": "select",
       "description": "Selection sound (2-note ascending arpeggio)",
-      "tags": ["ui", "bright", "short"],
+      "tags": [
+        "ui",
+        "bright",
+        "short"
+      ],
       "weight": 1.0,
-      "channels": ["square1"],
-      "durationRange": [0.06, 0.10],
+      "channels": [
+        "square1"
+      ],
+      "durationRange": [
+        0.06,
+        0.1
+      ],
       "channelParams": {
         "square1": {
-          "pitchStart": { "min": 72, "max": 84 },
-          "dutyCycle": [0.5],
-          "velocityRange": [82, 108]
+          "pitchStart": {
+            "min": 72,
+            "max": 84
+          },
+          "dutyCycle": [
+            0.5
+          ],
+          "velocityRange": [
+            82,
+            108
+          ]
         }
       },
       "noteSequence": {
-        "intervals": [0, 4],
-        "noteDurations": [0.03, 0.04]
+        "intervals": [
+          0,
+          4
+        ],
+        "noteDurations": [
+          0.03,
+          0.04
+        ]
       }
     },
     {
       "id": "SE_SELECT_03",
       "type": "select",
       "description": "Cancel selection sound (soft descending pair)",
-      "tags": ["ui", "soft", "short"],
+      "tags": [
+        "ui",
+        "soft",
+        "short"
+      ],
       "weight": 1.0,
-      "channels": ["square2"],
-      "durationRange": [0.06, 0.10],
+      "channels": [
+        "square2"
+      ],
+      "durationRange": [
+        0.06,
+        0.1
+      ],
       "channelParams": {
         "square2": {
-          "pitchStart": { "min": 67, "max": 76 },
-          "dutyCycle": [0.25],
-          "velocityRange": [76, 100]
+          "pitchStart": {
+            "min": 67,
+            "max": 76
+          },
+          "dutyCycle": [
+            0.25
+          ],
+          "velocityRange": [
+            76,
+            100
+          ]
         }
       },
       "noteSequence": {
-        "intervals": [0, -3],
-        "noteDurations": [0.03, 0.04]
+        "intervals": [
+          0,
+          -3
+        ],
+        "noteDurations": [
+          0.03,
+          0.04
+        ]
       }
     },
     {
       "id": "SE_SELECT_04",
       "type": "select",
       "description": "Disabled selection sound (low muted triangle)",
-      "tags": ["ui", "soft", "short"],
+      "tags": [
+        "ui",
+        "soft",
+        "short"
+      ],
       "weight": 0.7,
-      "channels": ["triangle"],
-      "durationRange": [0.08, 0.12],
+      "channels": [
+        "triangle"
+      ],
+      "durationRange": [
+        0.08,
+        0.12
+      ],
       "channelParams": {
         "triangle": {
-          "pitchStart": { "min": 48, "max": 57 },
-          "velocityRange": [70, 94]
+          "pitchStart": {
+            "min": 48,
+            "max": 57
+          },
+          "velocityRange": [
+            96,
+            122
+          ]
         }
       }
     },
@@ -507,16 +1100,37 @@
       "id": "SE_LASER_01",
       "type": "laser",
       "description": "Laser fire sound (fast descending sweep)",
-      "tags": ["combat", "short", "bright"],
+      "tags": [
+        "combat",
+        "short",
+        "bright"
+      ],
       "weight": 1.5,
-      "channels": ["square1"],
-      "durationRange": [0.10, 0.15],
+      "channels": [
+        "square1"
+      ],
+      "durationRange": [
+        0.1,
+        0.15
+      ],
       "channelParams": {
         "square1": {
-          "pitchStart": { "min": 72, "max": 84 },
-          "pitchEnd": { "min": 48, "max": 60 },
-          "dutyCycle": [0.125, 0.25],
-          "velocityRange": [90, 116]
+          "pitchStart": {
+            "min": 72,
+            "max": 84
+          },
+          "pitchEnd": {
+            "min": 48,
+            "max": 60
+          },
+          "dutyCycle": [
+            0.125,
+            0.25
+          ],
+          "velocityRange": [
+            90,
+            116
+          ]
         }
       },
       "pitchSweep": {
@@ -528,16 +1142,36 @@
       "id": "SE_LASER_02",
       "type": "laser",
       "description": "Laser fire sound (linear descending sweep)",
-      "tags": ["combat", "long", "retro"],
+      "tags": [
+        "combat",
+        "long",
+        "retro"
+      ],
       "weight": 1.0,
-      "channels": ["square2"],
-      "durationRange": [0.12, 0.20],
+      "channels": [
+        "square2"
+      ],
+      "durationRange": [
+        0.12,
+        0.2
+      ],
       "channelParams": {
         "square2": {
-          "pitchStart": { "min": 76, "max": 88 },
-          "pitchEnd": { "min": 52, "max": 64 },
-          "dutyCycle": [0.125],
-          "velocityRange": [88, 114]
+          "pitchStart": {
+            "min": 76,
+            "max": 88
+          },
+          "pitchEnd": {
+            "min": 52,
+            "max": 64
+          },
+          "dutyCycle": [
+            0.125
+          ],
+          "velocityRange": [
+            88,
+            114
+          ]
         }
       },
       "pitchSweep": {
@@ -549,67 +1183,141 @@
       "id": "SE_LASER_03",
       "type": "laser",
       "description": "Charge shot sound (upward square sweep)",
-      "tags": ["combat", "long", "bright"],
+      "tags": [
+        "combat",
+        "long",
+        "bright"
+      ],
       "weight": 0.8,
-      "channels": ["square1"],
-      "durationRange": [0.22, 0.34],
+      "channels": [
+        "square1"
+      ],
+      "durationRange": [
+        0.22,
+        0.34
+      ],
       "channelParams": {
         "square1": {
-          "pitchStart": { "min": 48, "max": 60 },
-          "pitchEnd": { "min": 76, "max": 88 },
-          "dutyCycle": [0.25, 0.5],
-          "velocityRange": [86, 112]
+          "pitchStart": {
+            "min": 48,
+            "max": 60
+          },
+          "pitchEnd": {
+            "min": 76,
+            "max": 88
+          },
+          "dutyCycle": [
+            0.25,
+            0.5
+          ],
+          "velocityRange": [
+            86,
+            112
+          ]
         }
       },
       "pitchSweep": {
         "enabled": true,
         "curveType": "exponential",
-        "durationRange": [0.20, 0.32]
+        "durationRange": [
+          0.2,
+          0.32
+        ]
       }
     },
     {
       "id": "SE_LASER_04",
       "type": "laser",
       "description": "Noisy blaster sound (square sweep plus noise snap)",
-      "tags": ["combat", "short", "retro"],
+      "tags": [
+        "combat",
+        "short",
+        "retro"
+      ],
       "weight": 0.7,
-      "channels": ["square2", "noise"],
-      "durationRange": [0.12, 0.18],
+      "channels": [
+        "square2",
+        "noise"
+      ],
+      "durationRange": [
+        0.12,
+        0.18
+      ],
       "channelParams": {
         "square2": {
-          "pitchStart": { "min": 69, "max": 81 },
-          "pitchEnd": { "min": 43, "max": 55 },
-          "dutyCycle": [0.125],
-          "velocityRange": [92, 118]
+          "pitchStart": {
+            "min": 69,
+            "max": 81
+          },
+          "pitchEnd": {
+            "min": 43,
+            "max": 55
+          },
+          "dutyCycle": [
+            0.125
+          ],
+          "velocityRange": [
+            92,
+            118
+          ]
         },
         "noise": {
           "noiseMode": "short",
           "envelope": "percussive",
-          "velocityRange": [70, 96],
-          "releaseRange": [0.04, 0.08],
-          "startOffsetRange": [0.006, 0.016]
+          "velocityRange": [
+            70,
+            96
+          ],
+          "releaseRange": [
+            0.04,
+            0.08
+          ],
+          "startOffsetRange": [
+            0.006,
+            0.016
+          ]
         }
       },
       "pitchSweep": {
         "enabled": true,
         "curveType": "exponential",
-        "durationRange": [0.10, 0.16]
+        "durationRange": [
+          0.1,
+          0.16
+        ]
       }
     },
     {
       "id": "SE_CLICK_01",
       "type": "click",
       "description": "Crisp UI click (narrow duty-cycle, high-pitch)",
-      "tags": ["ui", "short", "bright"],
+      "tags": [
+        "ui",
+        "short",
+        "bright"
+      ],
       "weight": 1.5,
-      "channels": ["square1"],
-      "durationRange": [0.02, 0.03],
+      "channels": [
+        "square1"
+      ],
+      "durationRange": [
+        0.02,
+        0.03
+      ],
       "channelParams": {
         "square1": {
-          "pitchStart": { "min": 84, "max": 96 },
-          "dutyCycle": [0.125],
+          "pitchStart": {
+            "min": 84,
+            "max": 96
+          },
+          "dutyCycle": [
+            0.125
+          ],
           "envelope": "percussive",
-          "velocityRange": [84, 112]
+          "velocityRange": [
+            84,
+            112
+          ]
         }
       }
     },
@@ -617,16 +1325,33 @@
       "id": "SE_CLICK_02",
       "type": "click",
       "description": "Soft UI click (round duty-cycle, lower pitch)",
-      "tags": ["ui", "short", "soft"],
+      "tags": [
+        "ui",
+        "short",
+        "soft"
+      ],
       "weight": 1.0,
-      "channels": ["square1"],
-      "durationRange": [0.03, 0.04],
+      "channels": [
+        "square1"
+      ],
+      "durationRange": [
+        0.03,
+        0.04
+      ],
       "channelParams": {
         "square1": {
-          "pitchStart": { "min": 72, "max": 84 },
-          "dutyCycle": [0.5],
+          "pitchStart": {
+            "min": 72,
+            "max": 84
+          },
+          "dutyCycle": [
+            0.5
+          ],
           "envelope": "percussive",
-          "velocityRange": [70, 96]
+          "velocityRange": [
+            70,
+            96
+          ]
         }
       }
     },
@@ -634,16 +1359,33 @@
       "id": "SE_CLICK_03",
       "type": "click",
       "description": "Low UI click sound (muted square tick)",
-      "tags": ["ui", "soft", "short"],
+      "tags": [
+        "ui",
+        "soft",
+        "short"
+      ],
       "weight": 1.0,
-      "channels": ["square2"],
-      "durationRange": [0.025, 0.04],
+      "channels": [
+        "square2"
+      ],
+      "durationRange": [
+        0.025,
+        0.04
+      ],
       "channelParams": {
         "square2": {
-          "pitchStart": { "min": 66, "max": 78 },
-          "dutyCycle": [0.125],
+          "pitchStart": {
+            "min": 66,
+            "max": 78
+          },
+          "dutyCycle": [
+            0.125
+          ],
           "envelope": "percussive",
-          "velocityRange": [72, 98]
+          "velocityRange": [
+            72,
+            98
+          ]
         }
       }
     },
@@ -651,16 +1393,31 @@
       "id": "SE_CLICK_04",
       "type": "click",
       "description": "Noise tick click sound",
-      "tags": ["ui", "bright", "short"],
+      "tags": [
+        "ui",
+        "bright",
+        "short"
+      ],
       "weight": 0.7,
-      "channels": ["noise"],
-      "durationRange": [0.015, 0.03],
+      "channels": [
+        "noise"
+      ],
+      "durationRange": [
+        0.015,
+        0.03
+      ],
       "channelParams": {
         "noise": {
           "noiseMode": "short",
           "envelope": "snap",
-          "velocityRange": [62, 88],
-          "releaseRange": [0.012, 0.025]
+          "velocityRange": [
+            62,
+            88
+          ],
+          "releaseRange": [
+            0.012,
+            0.025
+          ]
         }
       }
     },
@@ -668,16 +1425,35 @@
       "id": "SE_SYNTH_01",
       "type": "synth",
       "description": "Synth single tone (square wave, sustained)",
-      "tags": ["retro", "bright", "long"],
+      "tags": [
+        "retro",
+        "bright",
+        "long"
+      ],
       "weight": 1.5,
-      "channels": ["square1"],
-      "durationRange": [0.15, 0.30],
+      "channels": [
+        "square1"
+      ],
+      "durationRange": [
+        0.15,
+        0.3
+      ],
       "channelParams": {
         "square1": {
-          "pitchStart": { "min": 48, "max": 72 },
-          "dutyCycle": [0.125, 0.25, 0.5],
+          "pitchStart": {
+            "min": 48,
+            "max": 72
+          },
+          "dutyCycle": [
+            0.125,
+            0.25,
+            0.5
+          ],
           "envelope": "sustained",
-          "velocityRange": [86, 114]
+          "velocityRange": [
+            86,
+            114
+          ]
         }
       }
     },
@@ -685,15 +1461,30 @@
       "id": "SE_SYNTH_02",
       "type": "synth",
       "description": "Synth single tone (triangle wave, sustained)",
-      "tags": ["soft", "long", "retro"],
+      "tags": [
+        "soft",
+        "long",
+        "retro"
+      ],
       "weight": 1.0,
-      "channels": ["triangle"],
-      "durationRange": [0.20, 0.40],
+      "channels": [
+        "triangle"
+      ],
+      "durationRange": [
+        0.2,
+        0.4
+      ],
       "channelParams": {
         "triangle": {
-          "pitchStart": { "min": 60, "max": 84 },
+          "pitchStart": {
+            "min": 60,
+            "max": 84
+          },
           "envelope": "sustained",
-          "velocityRange": [80, 108]
+          "velocityRange": [
+            80,
+            108
+          ]
         }
       }
     },
@@ -701,16 +1492,34 @@
       "id": "SE_SYNTH_03",
       "type": "synth",
       "description": "Pulse-width synth tone (variable duty-cycle, sustained)",
-      "tags": ["retro", "bright", "long"],
+      "tags": [
+        "retro",
+        "bright",
+        "long"
+      ],
       "weight": 0.8,
-      "channels": ["square2"],
-      "durationRange": [0.18, 0.36],
+      "channels": [
+        "square2"
+      ],
+      "durationRange": [
+        0.18,
+        0.36
+      ],
       "channelParams": {
         "square2": {
-          "pitchStart": { "min": 50, "max": 74 },
-          "dutyCycleRange": { "min": 0.125, "max": 0.5 },
+          "pitchStart": {
+            "min": 50,
+            "max": 74
+          },
+          "dutyCycleRange": {
+            "min": 0.125,
+            "max": 0.5
+          },
           "envelope": "sustained",
-          "velocityRange": [84, 112]
+          "velocityRange": [
+            84,
+            112
+          ]
         }
       }
     },
@@ -718,22 +1527,49 @@
       "id": "SE_SYNTH_04",
       "type": "synth",
       "description": "Layered short synth tone (square plus triangle)",
-      "tags": ["retro", "soft", "short"],
+      "tags": [
+        "retro",
+        "soft",
+        "short"
+      ],
       "weight": 0.7,
-      "channels": ["square1", "triangle"],
-      "durationRange": [0.12, 0.24],
+      "channels": [
+        "square1",
+        "triangle"
+      ],
+      "durationRange": [
+        0.12,
+        0.24
+      ],
       "channelParams": {
         "square1": {
-          "pitchStart": { "min": 55, "max": 67 },
-          "dutyCycle": [0.25],
+          "pitchStart": {
+            "min": 55,
+            "max": 67
+          },
+          "dutyCycle": [
+            0.25
+          ],
           "envelope": "sustained",
-          "velocityRange": [72, 96]
+          "velocityRange": [
+            72,
+            96
+          ]
         },
         "triangle": {
-          "pitchStart": { "min": 43, "max": 55 },
+          "pitchStart": {
+            "min": 43,
+            "max": 55
+          },
           "envelope": "fade",
-          "velocityRange": [76, 102],
-          "startOffsetRange": [0.012, 0.03]
+          "velocityRange": [
+            76,
+            102
+          ],
+          "startOffsetRange": [
+            0.012,
+            0.03
+          ]
         }
       }
     },
@@ -741,16 +1577,33 @@
       "id": "SE_TONE_01",
       "type": "tone",
       "description": "Basic tone (square wave, mid-range, sustained)",
-      "tags": ["retro", "bright", "short"],
+      "tags": [
+        "retro",
+        "bright",
+        "short"
+      ],
       "weight": 1.5,
-      "channels": ["square1"],
-      "durationRange": [0.10, 0.20],
+      "channels": [
+        "square1"
+      ],
+      "durationRange": [
+        0.1,
+        0.2
+      ],
       "channelParams": {
         "square1": {
-          "pitchStart": { "min": 60, "max": 72 },
-          "dutyCycle": [0.5],
+          "pitchStart": {
+            "min": 60,
+            "max": 72
+          },
+          "dutyCycle": [
+            0.5
+          ],
           "envelope": "sustained",
-          "velocityRange": [84, 112]
+          "velocityRange": [
+            84,
+            112
+          ]
         }
       }
     },
@@ -758,15 +1611,30 @@
       "id": "SE_TONE_02",
       "type": "tone",
       "description": "Basic tone (triangle wave, mid-range, sustained)",
-      "tags": ["soft", "long", "retro"],
+      "tags": [
+        "soft",
+        "long",
+        "retro"
+      ],
       "weight": 1.0,
-      "channels": ["triangle"],
-      "durationRange": [0.12, 0.30],
+      "channels": [
+        "triangle"
+      ],
+      "durationRange": [
+        0.12,
+        0.3
+      ],
       "channelParams": {
         "triangle": {
-          "pitchStart": { "min": 60, "max": 72 },
+          "pitchStart": {
+            "min": 60,
+            "max": 72
+          },
           "envelope": "sustained",
-          "velocityRange": [76, 104]
+          "velocityRange": [
+            76,
+            104
+          ]
         }
       }
     },
@@ -774,16 +1642,34 @@
       "id": "SE_TONE_03",
       "type": "tone",
       "description": "Pulse tone (narrow duty square wave, sustained)",
-      "tags": ["retro", "bright", "short"],
+      "tags": [
+        "retro",
+        "bright",
+        "short"
+      ],
       "weight": 1.0,
-      "channels": ["square2"],
-      "durationRange": [0.08, 0.16],
+      "channels": [
+        "square2"
+      ],
+      "durationRange": [
+        0.08,
+        0.16
+      ],
       "channelParams": {
         "square2": {
-          "pitchStart": { "min": 57, "max": 76 },
-          "dutyCycle": [0.125, 0.25],
+          "pitchStart": {
+            "min": 57,
+            "max": 76
+          },
+          "dutyCycle": [
+            0.125,
+            0.25
+          ],
           "envelope": "sustained",
-          "velocityRange": [82, 108]
+          "velocityRange": [
+            82,
+            108
+          ]
         }
       }
     },
@@ -791,16 +1677,153 @@
       "id": "SE_TONE_04",
       "type": "tone",
       "description": "Low soft triangle tone (fade envelope)",
-      "tags": ["soft", "long"],
+      "tags": [
+        "soft",
+        "long"
+      ],
       "weight": 0.7,
-      "channels": ["triangle"],
-      "durationRange": [0.18, 0.36],
+      "channels": [
+        "triangle"
+      ],
+      "durationRange": [
+        0.18,
+        0.36
+      ],
       "channelParams": {
         "triangle": {
-          "pitchStart": { "min": 43, "max": 60 },
+          "pitchStart": {
+            "min": 43,
+            "max": 60
+          },
           "envelope": "fade",
-          "velocityRange": [70, 98]
+          "velocityRange": [
+            70,
+            98
+          ]
         }
+      }
+    },
+    {
+      "id": "SE_JUMP_05",
+      "type": "jump",
+      "description": "NES hardware sweep jump - rapid pitch rise via APU sweep unit",
+      "tags": [
+        "retro",
+        "bright",
+        "short"
+      ],
+      "weight": 1,
+      "channels": [
+        "square1"
+      ],
+      "durationRange": [
+        0.15,
+        0.28
+      ],
+      "channelParams": {
+        "square1": {
+          "pitchStart": {
+            "min": 60,
+            "max": 72
+          },
+          "dutyCycleRange": {
+            "min": 0.25,
+            "max": 0.5
+          },
+          "envelope": "percussive",
+          "velocityRange": [
+            100,
+            127
+          ]
+        }
+      },
+      "hardwareSweep": {
+        "enabled": true,
+        "period": 1,
+        "shift": 2,
+        "negate": true
+      }
+    },
+    {
+      "id": "SE_HIT_05",
+      "type": "hit",
+      "description": "NES hardware sweep hit - sharp pitch drop via APU sweep unit",
+      "tags": [
+        "retro",
+        "combat",
+        "short"
+      ],
+      "weight": 1,
+      "channels": [
+        "square1"
+      ],
+      "durationRange": [
+        0.1,
+        0.2
+      ],
+      "channelParams": {
+        "square1": {
+          "pitchStart": {
+            "min": 66,
+            "max": 78
+          },
+          "dutyCycle": [
+            0.125,
+            0.25
+          ],
+          "envelope": "percussive",
+          "velocityRange": [
+            96,
+            122
+          ]
+        }
+      },
+      "hardwareSweep": {
+        "enabled": true,
+        "period": 1,
+        "shift": 3,
+        "negate": false
+      }
+    },
+    {
+      "id": "SE_LASER_05",
+      "type": "laser",
+      "description": "NES hardware sweep laser - fast pitch fall then auto-mute via APU sweep unit",
+      "tags": [
+        "retro",
+        "combat",
+        "bright"
+      ],
+      "weight": 1,
+      "channels": [
+        "square1"
+      ],
+      "durationRange": [
+        0.08,
+        0.18
+      ],
+      "channelParams": {
+        "square1": {
+          "pitchStart": {
+            "min": 72,
+            "max": 84
+          },
+          "dutyCycle": [
+            0.125,
+            0.25
+          ],
+          "envelope": "percussive",
+          "velocityRange": [
+            90,
+            116
+          ]
+        }
+      },
+      "hardwareSweep": {
+        "enabled": true,
+        "period": 0,
+        "shift": 3,
+        "negate": false
       }
     }
   ]
