@@ -72,16 +72,16 @@ export type StylePreset =
   | "lofiChillhop";
 
 export interface StyleIntent {
-  textureFocus: boolean;
-  loopCentric: boolean;
-  gradualBuild: boolean;
-  harmonicStatic: boolean;
-  percussiveLayering: boolean;
-  breakInsertion: boolean;
-  filterMotion: boolean;
-  syncopationBias: boolean;
-  atmosPad: boolean;
-  lofiFeel: boolean;
+  textureFocus: number;
+  loopCentric: number;
+  gradualBuild: number;
+  harmonicStatic: number;
+  percussiveLayering: number;
+  breakInsertion: number;
+  filterMotion: number;
+  syncopationBias: number;
+  atmosPad: number;
+  lofiFeel: number;
 }
 
 export interface StyleTags {

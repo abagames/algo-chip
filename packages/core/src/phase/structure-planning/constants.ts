@@ -47,66 +47,66 @@ export const DEFAULT_TEXTURE: TextureProfile = "steady";
 export const DEFAULT_PHRASE_LENGTH = 1;
 
 export const STYLE_INTENT_BASE: StyleIntent = {
-  textureFocus: false,
-  loopCentric: false,
-  gradualBuild: false,
-  harmonicStatic: false,
-  percussiveLayering: false,
-  breakInsertion: false,
-  filterMotion: false,
-  syncopationBias: false,
-  atmosPad: false,
-  lofiFeel: false
+  textureFocus: 0,
+  loopCentric: 0,
+  gradualBuild: 0,
+  harmonicStatic: 0,
+  percussiveLayering: 0,
+  breakInsertion: 0,
+  filterMotion: 0,
+  syncopationBias: 0,
+  atmosPad: 0,
+  lofiFeel: 0
 };
 
 export const STYLE_PRESET_MAP: Record<StylePreset, Partial<StyleIntent>> = {
   minimalTechno: {
-    textureFocus: true,
-    loopCentric: true,
-    harmonicStatic: true,
-    percussiveLayering: true,
-    filterMotion: true,
-    syncopationBias: true
+    textureFocus: 1.0,
+    loopCentric: 1.0,
+    harmonicStatic: 1.0,
+    percussiveLayering: 1.0,
+    filterMotion: 1.0,
+    syncopationBias: 1.0
   },
   progressiveHouse: {
-    textureFocus: true,
-    loopCentric: true,
-    gradualBuild: true,
-    percussiveLayering: true,
-    breakInsertion: true,
-    filterMotion: true,
-    syncopationBias: true
+    textureFocus: 1.0,
+    loopCentric: 1.0,
+    gradualBuild: 1.0,
+    percussiveLayering: 1.0,
+    breakInsertion: 1.0,
+    filterMotion: 1.0,
+    syncopationBias: 1.0
   },
   retroLoopwave: {
-    loopCentric: true,
-    textureFocus: true,
-    harmonicStatic: false,
-    percussiveLayering: true,
-    filterMotion: true,
-    syncopationBias: true,
-    atmosPad: false
+    loopCentric: 1.0,
+    textureFocus: 1.0,
+    harmonicStatic: 0,
+    percussiveLayering: 1.0,
+    filterMotion: 1.0,
+    syncopationBias: 1.0,
+    atmosPad: 0
   },
   breakbeatJungle: {
-    percussiveLayering: true,
-    syncopationBias: true,
-    breakInsertion: true,
-    textureFocus: false,
-    loopCentric: false,
-    gradualBuild: false,
-    harmonicStatic: false,
-    filterMotion: true
+    percussiveLayering: 1.0,
+    syncopationBias: 1.0,
+    breakInsertion: 1.0,
+    textureFocus: 0,
+    loopCentric: 0,
+    gradualBuild: 0,
+    harmonicStatic: 0,
+    filterMotion: 1.0
   },
   lofiChillhop: {
-    atmosPad: true,
-    loopCentric: true,
-    harmonicStatic: true,
-    lofiFeel: true,
-    textureFocus: false,
-    gradualBuild: false,
-    percussiveLayering: false,
-    breakInsertion: false,
-    filterMotion: false,
-    syncopationBias: false
+    atmosPad: 1.0,
+    loopCentric: 1.0,
+    harmonicStatic: 1.0,
+    lofiFeel: 1.0,
+    textureFocus: 0,
+    gradualBuild: 0,
+    percussiveLayering: 0,
+    breakInsertion: 0,
+    filterMotion: 0,
+    syncopationBias: 0
   }
 };
 
