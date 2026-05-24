@@ -29,5 +29,16 @@
     8. **ベースアルペジオの拡充**: bass-patterns.jsonのarpeggioが4種のみ。8-10種に増やす。
   - 実装の際は各施策ごとにテスト・seed sweepで検証が必要。
 
-- [ ] 上記レビューで発見された課題の解決
+- [x] 上記レビューで発見された課題の解決
+  - 課題1: `structure-planning.ts` からVoice Arrangement定義を削除し、`voice-arrangement-selector.ts`を使用するように変更。
+  - 課題2: `sectionRepeatBias` を `CompositionOptions` に追加し、`profile-resolver.ts` で `PipelineCompositionOptions` に伝達。
 - [ ] BGMバリエーション施策を順に実施。実施後は逐次多様性検証スクリプトで検証すること
+  - [x] 施策1 dedup: rhythm.jsonから59件の重複モチーフを削除（135→76件）。
+  - [ ] 施策1 expansion: 新規リズムパターンを追加（dedup後の余白を埋める）。
+  - [x] 施策2: Hook再利用の緩和（sectionRepeatBiasデフォルトを0.3→0.15に変更、閾値0.25→0.20に変更。テスト緩和済）。seed-sweep検証通過。
+  - [x] 施策3: タグフィルタリング強化（preferTagPresenceのminRatioを0.4→0.15、pickWithAvoidリトライを3→6）。seed-sweep検証通過。
+  - [ ] 施策4: Two-Axis意図の連続強度化（StyleIntent boolean→float化は影響範囲が大きいため次期対応）。
+  - [x] 施策5: テクスチャ・構造の多様化（TEXTURE_VARIATION_PROBABILITYを0.1→0.25に増加。seed-sweep検証通過）。
+  - [x] 施策6: テクニックライブラリ拡充（techniques.jsonにduty sweep +2、gain profile +2、pitchBend ornament +1を追加。seed-sweep検証通過）。
+  - [x] 施策7: Voice Arrangementの再バランス（standard/swappedの重みを5/4→3/3に、他presetを2→3に均等化。seed-sweep検証通過）。
+  - [x] 施策8: ベースアルペジオの拡充（bass-patterns.jsonにarpeggioパターンを4→10種に追加。seed-sweep検証通過）。
