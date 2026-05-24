@@ -42,3 +42,7 @@
   - [x] 施策6: テクニックライブラリ拡充（techniques.jsonにduty sweep +2、gain profile +2、pitchBend ornament +1を追加。seed-sweep検証通過）。
   - [x] 施策7: Voice Arrangementの再バランス（standard/swappedの重みを5/4→3/3に、他presetを2→3に均等化。seed-sweep検証通過）。
   - [x] 施策8: ベースアルペジオの拡充（bass-patterns.jsonにarpeggioパターンを4→10種に追加。seed-sweep検証通過）。
+
+- [ ] コードベースのTODOクリーンアップ
+  - `timeline-finalization.ts`: Section cleanup, verification module移行, timing analysis reusable化, postprocess module移行（4件）
+  - `test-utils.ts`: 不完全なテストユーティリティの補完（1件）
