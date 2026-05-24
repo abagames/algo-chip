@@ -13,6 +13,8 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": resolve(__dirname, "src"),
+      "@algo-chip/core": resolve(__dirname, "../../packages/core/src/index.ts"),
+      "@algo-chip/util": resolve(__dirname, "../../packages/util/src/index.ts"),
     },
   },
 });
