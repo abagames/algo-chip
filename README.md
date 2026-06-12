@@ -192,7 +192,7 @@ const session = createAudioSession({
   workletBasePath: "./worklets/",
 });
 
-await session.resumeAudioContext();
+session.resumeAudioContext();
 const bgm = await session.generateBgm({ seed: 9001 });
 await session.playBgm(bgm, { loop: true });
 
@@ -212,7 +212,7 @@ Both the core engine and util helpers ship prebuilt bundles on GitHub Pages:
   const session = createAudioSession({
     workletBasePath: "https://abagames.github.io/algo-chip/worklets/",
   });
-  await session.resumeAudioContext();
+  session.resumeAudioContext();
   const bgm = await session.generateBgm({ seed: 12 });
   await session.playBgm(bgm, { loop: true });
 </script>
@@ -235,7 +235,7 @@ npm install
 npm run build              # Build all packages
 npm run build:core         # Build core library only
 npm run build:demo         # Build demo app only
-npm run build:pages        # Build and deploy to docs/ (GitHub Pages)
+npm run build:pages        # Build packages and copy GitHub Pages assets to docs/
 ```
 
 ### Development Server

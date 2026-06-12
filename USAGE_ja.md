@@ -24,6 +24,36 @@ console.log(`BPM: ${bgm.meta.bpm}, events: ${bgm.events.length}`);
 - `seed` を指定すると生成結果を決定的に再現できます。
 - `twoAxisStyle` は打楽器/旋律軸と静穏/躍動軸で楽曲の雰囲気を指定します。
 
+### 1.1 スタイル上書きと診断情報
+
+明示的なジャンルプロファイルが必要な場合だけ `preset` を指定します。
+`mode`、`sectionRepeatBias`、部分的な `overrides` は独立して指定できます。
+
+```typescript
+const bgm = await generateComposition({
+  seed: 2026,
+  preset: "lofiChillhop",
+  mode: "minor",
+  sectionRepeatBias: 0,
+  overrides: {
+    tempo: "slow",
+    intent: { atmosPad: 0.9, lofiFeel: 1 },
+    randomizeUnsetIntent: false,
+  },
+});
+
+console.log(bgm.meta.replayOptions); // 再生成に使える解決済みオプション
+console.log(bgm.meta.sectionPattern);
+console.log(bgm.diagnostics.loopIntegrity);
+console.log(bgm.diagnostics.theoryAudit.errors);
+console.log(bgm.diagnostics.motifSelection.fallbackCount);
+```
+
+`sectionRepeatBias` がデフォルトの `0.25` 未満の場合、フック再現時に互換性のある
+メロディ変奏を許可します。`0.25` 以上ではフックを完全再利用します。診断情報には
+モチーフ使用数、セクション別モチーフ計画、候補プールの fallback、ループ末尾検査、
+生成後の音楽理論 warning/error も含まれます。
+
 ## 2. 効果音生成
 
 ```typescript
@@ -41,7 +71,8 @@ const jumpEffect = generator.generateSE({
 console.log(`Template used: ${jumpEffect.meta.templateId}`);
 ```
 
-効果音のイベントも BGM と同じ `Event[]` 形式なので、同じスケジューラでミックスできます。
+効果音のイベントも BGM と同じ `Event[]` 形式で、同じレンダラー実装を利用できます。
+BGM と SE の同時再生時は、次節のように別々のシンセサイザーインスタンスを使用します。
 
 ## 3. AlgoChipSynthesizer での最小再生
 
@@ -84,7 +115,7 @@ const session = createAudioSession({
 });
 
 // ブラウザの自動再生ポリシーにより、ユーザー操作ハンドラー内で呼び出す必要があります。
-await session.resumeAudioContext();
+session.resumeAudioContext();
 
 // BGM を生成してループ再生（効果音量子化用にアクティブなタイムラインを保持）
 const bgm = await session.generateBgm({
@@ -119,7 +150,7 @@ await session.playSe(coinSe, {
 - `configureSeDefaults({ duckingDb, volume, quantize })` で `playSe`（およびそれを内部で呼ぶ `triggerSe`）が参照するデフォルト値を調整できます。
 - `setBgmVolume(value)` はシンセを再構築せずにループ中の BGM 音量をスケールします。
 - `cancelScheduledSe()` は未再生の SE をすべてキャンセルします（ポーズ/停止時に有用）。
-- `triggerSe(options)` は `generateSe` と `playSe` を一括実行するラッパーとして使えます。
+- `triggerSe(options)` は `generateSe` と `playSe` を一括実行するラッパーです。現実装は生成側へ `type`、`seed`、`templateId`、`baseFrequency`、再生側へ `duckingDb`、`volume`、`quantize` を渡します。
 
 内部的には `AlgoChipSynthesizer` と `SoundEffectController` をラップしているため、より細かい制御が必要な場合は `algo-chip` の util エクスポート（または `algo-chip/util` サブパス）から個別に import して組み合わせられます。
 
@@ -168,10 +199,11 @@ session.stopBgm();
 session.stopAllAudio();
 session.cancelScheduledSe();
 
-// 共有 AudioContext の状態を直接確認・制御
+// 共有 AudioContext の状態を直接確認・制御。セッション API の戻り値は void で、
+// 実際の状態遷移はブラウザ内で非同期に完了する
 const ctx = session.getAudioContext();
-await session.suspendAudioContext();
-await session.resumeAudioContext();
+session.suspendAudioContext();
+session.resumeAudioContext();
 
 // アプリ終了時
 await session.close();

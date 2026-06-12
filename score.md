@@ -59,7 +59,7 @@ The final output is a time-series **`eventList`** (array of playback events) tha
     twoAxisStyle?: TwoAxisStyle;   // Two-axis style (default: {0, 0})
     preset?: StylePreset;          // Genre preset (must be set explicitly; not auto-inferred from axis)
     mode?: "major" | "minor";      // Tonal mode override (derived from axis if unset)
-    sectionRepeatBias?: number;   // Hook repeat bias 0.0=max variation, 1.0=exact repeat (default: 0.15)
+    sectionRepeatBias?: number;   // Hook repeat bias 0.0=max variation, 1.0=exact repeat (default: 0.25)
     overrides?: StyleOverrides;    // Style profile overrides
   }
   ```
@@ -87,12 +87,37 @@ The final output is a time-series **`eventList`** (array of playback events) tha
     description: string;
   }
 
-  // Pipeline Execution Result
+  // Pipeline Execution Result (representative fields; TypeDoc is authoritative)
   interface PipelineResult {
     events: Event[];                                 // Playback event list
     diagnostics: {
       voiceAllocation: Array<{ time: number; channel: string; activeCount: number }>;
       loopWindow: { head: Event[]; tail: Event[] };
+      loopIntegrity: {
+        unmatchedNoteOnCount: number;
+        unmatchedNoteOffCount: number;
+        lateReleaseCount: number;
+        noiseLateReleaseCount: number;
+        maxReleaseOverhangSeconds: number;
+      };
+      motifUsage: Record<"rhythm" | "melody" | "drums" | "melodyRhythm" | "bass" | "transitions", Record<string, number>>;
+      sectionMotifPlan: Array<{ sectionId: string; templateId: string; occurrenceIndex: number; hookReuse: "none" | "exact" | "varied" }>;
+      motifSelection: {
+        candidatePools: Array<{ category: string; stage: string; beforeCount: number; afterCount: number; fallback: boolean; selectedId?: string }>;
+        fallbackCount: number;
+        hookReuse: { exact: number; varied: number };
+        motifSequence: Array<{ sectionId: string; phraseIndex: number; measureIndex: number; rhythm: string; melody: string; melodyRhythm: string; bass?: string; drums?: string }>;
+        cacheEvents: Array<{ category: string; motifId: string; source: "new_selection" | "template_cache" | "hook_reuse" | "base_reuse" | "variation" }>;
+        melodyPitch: Array<{ degree: number; scaleMidi: number; correctedMidi: number; velocity: number; strongBeat: boolean; changed: boolean }>;
+      };
+      theoryAudit: {
+        notes: Array<{ startBeat: number; endBeat: number; measureIndex: number; sectionId: string; channel: string; role: string; chord: string; midi: number; toneClass: "chord_tone" | "tension" | "scale_tone" | "non_scale_tone" }>;
+        toneCounts: Record<string, number>;
+        collisionCounts: { minorSecondOrMajorSeventh: number; sustainedMinorSecond: number; voiceCrossing: number; denseUnisonRepeats: number };
+        boundaryCounts: { sectionWarnings: number; loopWarnings: number; loopErrors: number };
+        warnings: Array<{ rule: string; cause: string; beat: number; sectionId: string }>;
+        errors: Array<{ rule: string; cause: string; beat: number; sectionId: string }>;
+      };
     };
     meta: {
       bpm: number;
@@ -105,6 +130,7 @@ The final output is a time-series **`eventList`** (array of playback events) tha
       voiceArrangement: VoiceArrangement;
       profile: ResolvedStyleProfile;               // Resolved style profile
       replayOptions: CompositionOptions;           // Options for regeneration
+      sectionPattern: string;                      // Compact section/template signature
       loopInfo: {
         loopStartBeat: number;
         loopEndBeat: number;
@@ -124,6 +150,11 @@ Score generation is performed by sequentially executing the following 5 independ
 ##### **Phase 1: Structure Planning**
 
 **Purpose**: Determine the overall structure and musical context of the composition.
+
+**Canonical implementation path**: `pipeline.ts` imports `phase/structure-planning.ts` and
+`phase/motif-selection.ts` directly. These are the only phase implementations. Shared motif JSON
+loading and rhythm expansion live in `motif-library.ts`, which is also used by catalogue audits;
+it does not provide an alternative selection path.
 
 **Input Processing**: The input `CompositionOptions` is processed by `resolveGenerationContext()`, which derives mood, tempo, and `StyleIntent` based on the two-axis style (`twoAxisStyle`). If `twoAxisStyle` is unspecified, `{ percussiveMelodic: 0, calmEnergetic: 0 }` is applied.
 
@@ -157,6 +188,8 @@ Score generation is performed by sequentially executing the following 5 independ
 4. **Musical Structure Selection**:
    - Select section templates optimized for measure count (16/32/64, etc.)
    - Example: 32-measure upbeat → A(8) - B(8) - C(8) - D(8)
+   - Each mood/length pair has three equally selected candidates. Texture sequences apply 25%
+     seed-driven variation with separately mixed deterministic selection among alternatives.
    - Structure considering loop integrity (`loop_safe` tagged motifs placed at endings)
 
 5. **Chord Progression Selection**:
@@ -179,7 +212,7 @@ Score generation is performed by sequentially executing the following 5 independ
 - **Processing**:
   1. **Melody Track Generation**:
       a. Select melody note-duration motifs (`melody-rhythm.json`) in phrase units (1-2 measures). Consider functional tags (`start`/`middle`/`end`) and mood-specific tags (`drive`, `legato`, `rest_heavy`, `staccato`, etc.), ensuring ending integrity with `loop_safe`/`cadence` tags. Note-duration motifs include rest information and are validated to total exactly 4 or 8 beats per phrase.
-      b. Per-measure rhythm motifs (`rhythm.json`) continue to be selected for accompaniment/accent purposes, cached per template/section. Selected independently from melody note-duration motifs, phrases that first appear in A-section are saved as hooks and reused when reappearing. By default (`sectionRepeatBias` ≥ 0.25) the exact same rhythm, melody, and note-duration motifs are reused. When `sectionRepeatBias` < 0.25 a varied hook may be chosen: the rhythm and note-duration motifs are kept but the pitch-degree motif (`melody.json`) is replaced with a close alternative, producing a recognisably similar but not identical reprise.
+      b. Per-measure rhythm motifs (`rhythm.json`) continue to be selected for accompaniment/accent purposes, cached per template/section. Selected independently from melody note-duration motifs, phrases that first appear in A-section are saved as hooks and reused when reappearing. By default (`sectionRepeatBias` ≥ 0.25) the exact same rhythm, melody, and note-duration motifs are reused. When `sectionRepeatBias` < 0.25 a varied hook may be chosen: the rhythm and note-duration motifs are kept but the pitch-degree motif (`melody.json`) is replaced with a declared compatible `variations` link when available, then falls back to the existing deterministic melody selection if no valid link exists, producing a recognisably similar but not identical reprise.
       c. Map scale degree motifs (`melody.json`) sequentially to the note schedule expanded from note-duration motifs. Don't advance degree on rest steps; only advance when generating notes to create breathing space.
       d. Retro game BGM motif design guidelines:
          - 16th-note based + rests: Always include rests (or long tones of 2+ beats) within phrases to avoid mechanical repetition.
@@ -224,7 +257,7 @@ Score generation is performed by sequentially executing the following 5 independ
         - `octaveOffset`: Octave shift -1/0/+1. bassAlt(octave -1) generates sub-bass (D1-E2 range)
         - `seedOffset`: Seed addition value for varying patterns within same role
       - **Selection Logic**: Weighted selection in Phase 1 based on `seed` and `stylePreset`. `stylePreset` must be explicitly supplied via `CompositionOptions.preset`; it is never auto-inferred from axis coordinates. minimalTechno prioritizes minimal/bassLed, progressiveHouse prioritizes layeredBass, retroLoopwave prioritizes retroPulse, breakbeatJungle emphasizes breakLayered/dualBass, lofiChillhop prioritizes lofiPadLead/minimal, reflecting genre characteristics.
-      - **Velocity Adjustment**: `adjustVelocityForChannel()` implements scaling according to role and channel. Bass-type roles reduced to 70%, with additional 0.85 multiplication for MIDI below 52 to control ultra-low range. `triangle` attenuates to 85% of base value (non-bass roles use full strength), `square` carrying bass applies ×0.66, and melody on any channel applies ×0.4 to prevent the melody from overpowering the mix.
+      - **Velocity Adjustment**: `adjustVelocityForChannel()` implements scaling according to role and channel. Bass-type roles use a 70% base scale. `triangle` stays at full channel strength and receives ×1.1 compensation below MIDI 52 so its low fundamental remains audible. `square` carrying bass applies ×0.66 and retains an additional ×0.85 low-range attenuation, while square melody applies ×0.4 to prevent it from overpowering the mix.
       - **Backward Compatibility**: `standard`/`swapped` arrangements call legacy Phase 2 logic (`selectMotifsLegacy`), ensuring existing music generation behavior.
 
 2. **Rhythm Track Special Conversion**:
@@ -259,6 +292,7 @@ Score generation is performed by sequentially executing the following 5 independ
   2. **Duty Cycle Sweep Application**:
       - Detect square wave channel notes with certain duration or longer.
       - Insert multiple `setParam` events periodically changing duty ratio between note's `noteOn` and `noteOff`.
+      - Duty, gain, pitch-bend, and hardware sweep automation are enabled only for explicit `stylePreset` compositions. Non-preset two-axis generation emits only the initial square duty settings, avoiding constant tremolo-like motion.
 
   3. **Style-Linked Automation**:
       - When `filterMotion` enabled, add style-specific patterns to duty sweep presets.
@@ -293,9 +327,11 @@ When adding motifs, keep the JSON library deterministic, tag-searchable, and saf
 - **Bass Motifs (`bass-patterns.json`)**: Keep low-register motion sparse enough to avoid muddy loops. Battle and breakbeat patterns may use octave or approach motion, but `loop_safe` bass should end on or clearly approach the next root. Avoid sustained low notes with long release at the final step.
 - **Drum and Transition Motifs (`drums.json`, `transitions.json`)**: Respect the monophonic `noise` channel. Short hats, kicks, snares, toms, and FX should not require simultaneous noise hits at the same 16th step. Use `fill`, `build`, `break`, `loop_out`, and preset-specific tags to describe placement rather than encoding placement in IDs only.
 - **Technique Motifs (`techniques.json`)**: Emit only parameters supported by the synthesizer/worklet. New ornaments should have a narrow trigger condition (`channels`, duration threshold, `styleFlag`, or cadence/boundary use) so decoration does not become dense across all notes.
-- **Variation Links**: Use `variations` for related alternatives that can replace each other in repeated sections. Variants should preserve phrase length and broad function while changing one musical dimension: rhythm, contour, register, or density.
+- **Variation Links**: Use `variations` for related alternatives that can replace each other in repeated sections. Melody variants must preserve pitch-token length, share a phrase-function tag (`start`/`middle`/`end`/`cadence`/`pickup`), and share at least one broad contour tag (`ascending`/`descending`/`arch`/`valley`/`stepwise`/`leaping`/`static`/`sequence`/`neighbor`/`complex`). Melody degree motifs have no rest tokens, so rest-density compatibility is enforced by keeping the paired melody-rhythm motif unchanged during varied hook reprises. Variants should change one musical dimension, such as final degree, contour detail, register implication, or density.
 - **Patterns to Avoid**: Avoid motifs that rely on more simultaneous voices than available hardware channels, long final releases that overlap loop head, tags that contradict their behavior, very high square-wave lead jumps repeated every beat, and duplicate IDs or near-duplicate musical content.
-- **Required Verification**: After motif edits, run `npm test`, `npm run build:core`, `npm run report:seed-sweep -- --seeds=101,202,303 --assert`, and `git diff --check`. The `--assert` flag enforces automated thresholds (fallback rate ≤ 0.40 per run, melody motif kinds ≥ 2 per run, unique voice arrangements ≥ 3 across all runs, zero loop/noise-tail issues) and exits with code 1 on violation. Thresholds can be tightened with `--max-fallback-rate=`, `--min-melody-kinds=`, and `--min-arrangement-variety=`. For melody-rhythm changes, confirm the duration sanity test covers every new motif. For drums/noise changes, confirm `noise-collision` remains clean. For style-specific motifs, inspect `diagnostics.motifSelection.candidatePools` and `motifUsage` in the seed sweep to confirm the new tags are reachable without excessive fallback.
+- **Required Verification**: After motif edits, run `npm test`, `npm run build:core`, `npm run report:seed-sweep -- --seeds=101,202,303 --assert`, and `git diff --check`. The `--assert` flag enforces automated thresholds (fallback rate ≤ 0.40 per run, melody motif kinds ≥ 2 per run, unique voice arrangements ≥ 3 across all runs, zero loop/noise-tail issues, zero theory errors) and exits with code 1 on violation. Thresholds can be tightened with `--max-fallback-rate=`, `--min-melody-kinds=`, `--min-arrangement-variety=`, and `--max-theory-errors=`. Add `--output=<path>` to save the Markdown or JSON report. The report separates fallback counts by category, stage, and reason, and uses `stage: "selection"` diagnostics (`afterCount`, `selectedId`) to record effective candidate counts and top motif concentration by mood/style. For melody-rhythm changes, confirm the duration sanity test covers every new motif. For drums/noise changes, confirm `noise-collision` remains clean. For style-specific motifs, inspect `diagnostics.motifSelection.candidatePools` and `motifUsage` in the seed sweep to confirm the new tags are reachable without excessive fallback.
+
+- **Post-generation Theory Audit**: Timeline finalization reconstructs pitched notes from the final event list and records beat, measure, section, channel, voice role, and chord in `diagnostics.theoryAudit`. Notes are classified as chord tones, allowed scale tensions, other scale tones, or non-scale tones. Errors are limited to high-confidence failures: a measure-opening bass outside both chord and key, a sustained minor-second collision between independent voices, an unresolved extreme leap across the loop boundary, or a release tail beyond that boundary. Brief dissonance, sevenths, voice crossing, unresolved leading tones, dense unison repeats, non-chord scale tones, and style-appropriate tension remain warnings or aggregate counts; tense, atmospheric, and lofi intent use relaxed thresholds. The audit never requantizes notes or substitutes seeds. Each issue names a likely owner (`motif`, `quantization`, `bass_generation`, `accompaniment_generation`, or `timeline_finalization`), and fixes belong at that source rather than in blanket final-stage correction.
 
 #### **Appendix: Post-Generation Verification Loop and Checkpoints**
 
@@ -315,6 +351,6 @@ In production specification, output generated music with multiple random seeds a
 - **Texture Plan Audit**: Heatmap voice_allocation to detect deviation when section-specific textures (broken chords, 8th arpeggios, etc.) defined in Phase 1 aren't reflected in actual square2/square1 event density.
 - **Dynamics Profile Comparison**: Record average velocity and peak difference per section; re-adjust Phase 3 envelope generation when mismatching expected peaks/valleys (e.g., A=mf, B=f, Outro=mp).
 - **Transition Diagnostics**: Verify drum fills/pickup events before section switching and Phase 4 duty/gain sweeps fire at expected timestamps; return transition design when missing.
-- **Melody Note-Duration Validation**: Analyze whether `melody-rhythm` motif length totals match measure length, whether rests/long-tones overlap loop head; correct motif definition and application logic when deviated. Periodically run `npm run check:melody-rhythm` to obtain length verification and motif usage frequency heatmaps.
+- **Melody Note-Duration Validation**: Analyze whether `melody-rhythm` motif length totals match measure length and whether rests/long tones overlap the loop head; correct motif definitions and application logic when they deviate. Run `npm run audit:motifs` for catalogue integrity, `npm test` for duration regression coverage, and the seed sweep for motif usage distribution.
 
 When analysis phase finds problems, improve corresponding phases (motif selection, harmony correction, technique application pace, etc.) and re-run seed scanning. Final outputs are auditioned with browser demo to eliminate sensory discomfort, confirming regression with same checklist. Thoroughly implement this PDCA loop throughout development cycle.

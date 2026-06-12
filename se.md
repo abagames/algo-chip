@@ -83,6 +83,7 @@ export interface SETemplate {
       pitchStart?: PitchRange;
       pitchEnd?: PitchRange;
       dutyCycle?: number[];      // Random selection from [0.25, 0.5]
+      dutyCycleRange?: { min: number; max: number }; // Continuous sampling range
       noiseMode?: "short" | "long"; // noise channel only
       envelope?: "percussive" | "sustained" | "pluck" | "snap" | "fade";
       velocityRange?: [number, number];
@@ -102,6 +103,7 @@ export interface SETemplate {
     enabled: boolean;
     curveType?: "linear" | "exponential";
     curveOptions?: Array<"linear" | "exponential">;
+    curveWeights?: Record<string, number>; // Relative weight per curve option
     durationRange?: [number, number];
   };
 
@@ -425,18 +427,17 @@ All parameters selected by deterministic RNG based on `seed`, ensuring complete 
 
 ### **7. Web Audio Integration**
 
-BGM and SE share the same `Event[]` format, enabling playback with the same Web Audio synthesizer:
+BGM and SE share the same `Event[]` format and can be rendered by the same synthesizer implementation. For simultaneous playback, use separate synthesizer instances because `play()` stops playback already scheduled on that instance.
 
 **Shared Components**:
-- `ChipSynthesizer`: Event scheduler
+- `AlgoChipSynthesizer`: Event scheduler and Web Audio renderer
 - Channel classes (`SquareChannel`, `TriangleChannel`, `NoiseChannel`)
 - Audio Worklet processors
 
-**Integration Patterns**:
-1. **Independent Playback**: Use separate synthesizer instances for BGM and SE (simpler implementation)
-2. **Channel Sharing**: Dynamically manage channels with single synthesizer (4-channel configuration compliant)
+**Integration Pattern**:
+1. **Independent Playback**: Use separate `AlgoChipSynthesizer` instances for BGM and SE. `createAudioSession()` configures this arrangement automatically and adds quantization and ducking.
 
-Current `packages/demo` adopts independent playback method, enabling parallel BGM and SE playback.
+The current demo uses `createAudioSession()` from `packages/util`, enabling parallel BGM and SE playback without stopping the active loop.
 
 ---
 

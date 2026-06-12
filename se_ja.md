@@ -81,6 +81,7 @@ export interface SETemplate {
       pitchStart?: PitchRange;
       pitchEnd?: PitchRange;
       dutyCycle?: number[];      // [0.25, 0.5] からランダム選択
+      dutyCycleRange?: { min: number; max: number }; // 連続値のサンプリング範囲
       noiseMode?: "short" | "long"; // noise チャンネル専用
       envelope?: "percussive" | "sustained" | "pluck" | "snap" | "fade";
       velocityRange?: [number, number];
@@ -100,6 +101,7 @@ export interface SETemplate {
     enabled: boolean;
     curveType?: "linear" | "exponential";
     curveOptions?: Array<"linear" | "exponential">;
+    curveWeights?: Record<string, number>; // curve option ごとの相対ウェイト
     durationRange?: [number, number];
   };
 
@@ -423,18 +425,17 @@ SEジェネレーターは以下のパラメータをテンプレートから動
 
 ### **7. Web Audio統合**
 
-BGMとSEは同じ`Event[]`形式を共有しているため、同じWeb Audioシンセサイザーで再生可能です：
+BGMとSEは同じ`Event[]`形式を共有し、同じシンセサイザー実装で描画できます。同時再生時は、`play()` が同一インスタンスでスケジュール済みの再生を停止するため、別々のシンセサイザーインスタンスを使用します。
 
 **共有コンポーネント**:
-- `ChipSynthesizer`: イベントスケジューラー
+- `AlgoChipSynthesizer`: イベントスケジューラー兼 Web Audio レンダラー
 - チャンネルクラス（`SquareChannel`, `TriangleChannel`, `NoiseChannel`）
 - Audio Worklet プロセッサー
 
 **統合パターン**:
-1. **独立再生**: BGMとSE用に別々のシンセサイザーインスタンスを使用（実装がシンプル）
-2. **チャンネル共有**: 単一のシンセサイザーでチャンネルを動的に管理（4チャンネル構成準拠）
+1. **独立再生**: BGM と SE に別々の `AlgoChipSynthesizer` インスタンスを使用する。`createAudioSession()` はこの構成を自動的に組み、量子化とダッキングも提供する。
 
-現在の`packages/demo`では独立再生方式を採用し、BGMとSEを並行して再生できます。
+現在の demo は `packages/util` の `createAudioSession()` を使用し、再生中のループを停止せずに BGM と SE を並行再生します。
 
 ---
 

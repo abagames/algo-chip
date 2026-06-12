@@ -165,7 +165,7 @@ await synth.play(jump.events, {
 - 範囲: `0.0+`（例: `0.5` = 50%、`1.5` = 150%）
 - 生成時ではなく再生時に適用
 
-**注意**: `AlgoChipSynthesizer`はブラウザ環境（Web Audio API）が必要です。ループ再生は `playLoop()` を呼び出して `await` しないようにし、単発再生や SE には `await play()` を使用してください。BGM ダッキングやクオンタイゼーションを含む高度な SE 再生パターンは、[USAGE_ja.md](https://github.com/abagames/algo-chip/blob/master/USAGE_ja.md)および demo パッケージ（`packages/demo/src/playback.ts`）を参照してください。
+**注意**: `AlgoChipSynthesizer`はブラウザ環境（Web Audio API）が必要です。ループ再生は `playLoop()` を呼び出して `await` しないようにし、単発再生や SE には `await play()` を使用してください。BGM ダッキングやクオンタイゼーションを含む高度な SE 再生パターンは、[USAGE_ja.md](https://github.com/abagames/algo-chip/blob/master/USAGE_ja.md)および util パッケージ（`packages/util/src/`）を参照してください。
 
 ### セッションヘルパー（util エクスポート）
 
@@ -181,7 +181,7 @@ const session = createAudioSession({
   workletBasePath: "./worklets/",
 });
 
-await session.resumeAudioContext();
+session.resumeAudioContext();
 const bgm = await session.generateBgm({ seed: 9001 });
 await session.playBgm(bgm, { loop: true });
 
@@ -201,7 +201,7 @@ const detachVisibility = createVisibilityController(session);
   const session = createAudioSession({
     workletBasePath: "https://abagames.github.io/algo-chip/worklets/",
   });
-  await session.resumeAudioContext();
+  session.resumeAudioContext();
   const bgm = await session.generateBgm({ seed: 12 });
   await session.playBgm(bgm, { loop: true });
 </script>
@@ -223,7 +223,7 @@ npm install
 npm run build              # 全パッケージをビルド
 npm run build:core         # coreライブラリのみビルド
 npm run build:demo         # demoアプリのみビルド
-npm run build:pages        # docs/にビルド・デプロイ（GitHub Pages用）
+npm run build:pages        # 各パッケージをビルドし GitHub Pages 用アセットを docs/ へコピー
 ```
 
 ### 開発サーバー
@@ -277,7 +277,7 @@ algo-chip/
 
 - `score_ja.md` ([English](https://github.com/abagames/algo-chip/blob/master/score.md)) - プロダクション仕様（主要リファレンス）
 - `se_ja.md` ([English](https://github.com/abagames/algo-chip/blob/master/se.md)) - 効果音生成仕様
-- `CLAUDE.md` - 開発ガイドラインとコーディング規約
+- `AGENTS.md` - 開発ガイドラインとコーディング規約
 - `docs/` - GitHub Pages デプロイ先（`npm run build:pages`で同期）
 
 ## 🔗 リンク

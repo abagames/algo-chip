@@ -29,6 +29,36 @@ console.log(`BPM: ${bgm.meta.bpm}, events: ${bgm.events.length}`);
 - `twoAxisStyle` sketches the musical feel along the percussive/melodic and
   calm/energetic axes.
 
+### 1.1 Style Overrides and Diagnostics
+
+Use `preset` only when you want an explicit genre profile. `mode`,
+`sectionRepeatBias`, and partial `overrides` remain independent controls.
+
+```typescript
+const bgm = await generateComposition({
+  seed: 2026,
+  preset: "lofiChillhop",
+  mode: "minor",
+  sectionRepeatBias: 0,
+  overrides: {
+    tempo: "slow",
+    intent: { atmosPad: 0.9, lofiFeel: 1 },
+    randomizeUnsetIntent: false,
+  },
+});
+
+console.log(bgm.meta.replayOptions); // Fully resolved options for regeneration
+console.log(bgm.meta.sectionPattern);
+console.log(bgm.diagnostics.loopIntegrity);
+console.log(bgm.diagnostics.theoryAudit.errors);
+console.log(bgm.diagnostics.motifSelection.fallbackCount);
+```
+
+`sectionRepeatBias` values below the default `0.25` allow compatible melody
+variation on hook reprises. Values at or above `0.25` reuse the hook exactly.
+The diagnostics object also exposes motif usage, section motif plans, candidate
+pool fallback details, loop-tail checks, and post-generation theory warnings.
+
 ## 2. Sound Effect Generation
 
 ```typescript
@@ -46,8 +76,9 @@ const jumpEffect = generator.generateSE({
 console.log(`Template used: ${jumpEffect.meta.templateId}`);
 ```
 
-Sound effect events share the same `Event[]` structure as BGM, so they can be
-mixed or scheduled together.
+Sound effect events share the same `Event[]` structure as BGM and use the same
+renderer. Simultaneous BGM/SE playback uses separate synthesizer instances, as
+shown below.
 
 ## 3. Minimal Playback with AlgoChipSynthesizer
 
@@ -99,7 +130,7 @@ const session = createAudioSession({
 });
 
 // Must be invoked from a user-initiated event handler (click/touch) due to browser autoplay policy.
-await session.resumeAudioContext();
+session.resumeAudioContext();
 
 // Generate and start looping BGM (stores active timeline for SE quantitation)
 const bgm = await session.generateBgm({
@@ -138,7 +169,9 @@ await session.playSe(coinSe, {
 - `cancelScheduledSe()` clears any queued-but-not-yet-fired SEs (useful when
   pausing or stopping playback).
 - `triggerSe(options)` remains available as a convenience wrapper that calls
-  `generateSe` + `playSe` in a single step.
+  `generateSe` + `playSe` in a single step. The current implementation forwards
+  `type`, `seed`, `templateId`, and `baseFrequency` to generation, plus the
+  playback options `duckingDb`, `volume`, and `quantize`.
 
 Under the hood the session wraps `AlgoChipSynthesizer` and the
 `SoundEffectController`; if you need deeper customization you can import and
@@ -196,10 +229,11 @@ session.stopBgm();
 session.stopAllAudio();
 session.cancelScheduledSe();
 
-// Inspect and manage the shared AudioContext
+// Inspect and manage the shared AudioContext. These session methods return void;
+// AudioContext state changes complete asynchronously in the browser.
 const ctx = session.getAudioContext();
-await session.suspendAudioContext();
-await session.resumeAudioContext();
+session.suspendAudioContext();
+session.resumeAudioContext();
 
 // When shutting down the app
 await session.close();

@@ -58,7 +58,7 @@
     twoAxisStyle?: TwoAxisStyle;   // 2軸スタイル（デフォルト: {0, 0}）
     preset?: StylePreset;          // ジャンルプリセット（明示的に設定必須; 軸座標から自動推定しない）
     mode?: "major" | "minor";      // 調性モード上書き（未設定時は軸から導出）
-    sectionRepeatBias?: number;   // フック再現の再使用度 0.0=最大変化、1.0=完全再現（デフォルト: 0.15）
+    sectionRepeatBias?: number;   // フック再現の再使用度 0.0=最大変化、1.0=完全再現（デフォルト: 0.25）
     overrides?: StyleOverrides;    // スタイルプロファイル上書き
   }
   ```
@@ -85,12 +85,37 @@
     description: string;
   }
 
-  // パイプライン実行結果
+  // パイプライン実行結果（代表フィールド。厳密な型は TypeDoc を正本とする）
   interface PipelineResult {
     events: Event[];                                 // 再生イベントリスト
     diagnostics: {
       voiceAllocation: Array<{ time: number; channel: string; activeCount: number }>;
       loopWindow: { head: Event[]; tail: Event[] };
+      loopIntegrity: {
+        unmatchedNoteOnCount: number;
+        unmatchedNoteOffCount: number;
+        lateReleaseCount: number;
+        noiseLateReleaseCount: number;
+        maxReleaseOverhangSeconds: number;
+      };
+      motifUsage: Record<"rhythm" | "melody" | "drums" | "melodyRhythm" | "bass" | "transitions", Record<string, number>>;
+      sectionMotifPlan: Array<{ sectionId: string; templateId: string; occurrenceIndex: number; hookReuse: "none" | "exact" | "varied" }>;
+      motifSelection: {
+        candidatePools: Array<{ category: string; stage: string; beforeCount: number; afterCount: number; fallback: boolean; selectedId?: string }>;
+        fallbackCount: number;
+        hookReuse: { exact: number; varied: number };
+        motifSequence: Array<{ sectionId: string; phraseIndex: number; measureIndex: number; rhythm: string; melody: string; melodyRhythm: string; bass?: string; drums?: string }>;
+        cacheEvents: Array<{ category: string; motifId: string; source: "new_selection" | "template_cache" | "hook_reuse" | "base_reuse" | "variation" }>;
+        melodyPitch: Array<{ degree: number; scaleMidi: number; correctedMidi: number; velocity: number; strongBeat: boolean; changed: boolean }>;
+      };
+      theoryAudit: {
+        notes: Array<{ startBeat: number; endBeat: number; measureIndex: number; sectionId: string; channel: string; role: string; chord: string; midi: number; toneClass: "chord_tone" | "tension" | "scale_tone" | "non_scale_tone" }>;
+        toneCounts: Record<string, number>;
+        collisionCounts: { minorSecondOrMajorSeventh: number; sustainedMinorSecond: number; voiceCrossing: number; denseUnisonRepeats: number };
+        boundaryCounts: { sectionWarnings: number; loopWarnings: number; loopErrors: number };
+        warnings: Array<{ rule: string; cause: string; beat: number; sectionId: string }>;
+        errors: Array<{ rule: string; cause: string; beat: number; sectionId: string }>;
+      };
     };
     meta: {
       bpm: number;
@@ -103,6 +128,7 @@
       voiceArrangement: VoiceArrangement;
       profile: ResolvedStyleProfile;               // 解決済みスタイルプロファイル
       replayOptions: CompositionOptions;           // 再生成用オプション
+      sectionPattern: string;                      // セクション／テンプレートの短縮シグネチャ
       loopInfo: {
         loopStartBeat: number;
         loopEndBeat: number;
@@ -122,6 +148,11 @@
 ##### **フェーズ 1: 設計図の構築 (Structure Planning)**
 
 **目的**: 楽曲全体の構造と音楽的コンテキストを決定する。
+
+**正本実装経路**: `pipeline.ts` は `phase/structure-planning.ts` と
+`phase/motif-selection.ts` を直接 import し、この2ファイルだけを各phaseの実装とする。
+motif JSONのロードとrhythm展開は、カタログ監査からも使う共通処理として
+`motif-library.ts` に置く。このモジュールは別の選択経路を提供しない。
 
 **入力処理**: 入力された `CompositionOptions` は `resolveGenerationContext()` によって、二軸スタイル (`twoAxisStyle`) を基にムード、テンポ、`StyleIntent` を導出する。`twoAxisStyle` が未指定の場合は `{ percussiveMelodic: 0, calmEnergetic: 0 }` が適用される。
 **主要処理**:
@@ -154,6 +185,8 @@
 4. **楽曲構成選択**:
    - 小節数（16/32/64など）に最適化されたセクションテンプレートを選択
    - 例: 32小節のupbeat → A(8) - B(8) - C(8) - D(8)
+   - 各mood・曲長にはseedで均等選択する3候補を持つ。texture系列には25%のseed依存
+     variationを適用し、代替候補の選択には独立に混合した決定的seedを使う。
    - ループ整合性を考慮した構成（`loop_safe`タグ付きモチーフを終端に配置）
 
 5. **コード進行選択**:
@@ -175,7 +208,7 @@
 - **処理**:
   1.  **メロディトラック生成**:
       a. フレーズ単位（1〜2小節）でメロディ音価モチーフ (`melody-rhythm.json`) を選択する。`start` / `middle` / `end` などの機能タグとムード別タグ（`drive`, `legato`, `rest_heavy`, `staccato` など）を考慮し、`loop_safe` / `cadence` タグで終端整合性を確保する。音価モチーフは休符情報を含み、フレーズ全体で正確に 4 or 8 拍となるよう検証する。
-      b. 小節ごとのリズムモチーフ (`rhythm.json`) は引き続き伴奏・アクセント用途で選択し、テンプレート／セクション単位でキャッシュする。メロディ音価モチーフとは独立に選びつつ、A セクション初出のフレーズはフックとして保存し、再登場時に再利用する。デフォルト（`sectionRepeatBias` ≥ 0.25）ではリズム・メロディ・音価モチーフの完全同一を再利用する。`sectionRepeatBias` < 0.25 の場合はバリエーションフックが選択され、リズムと音価モチーフは保持しつつ音程度数モチーフ（`melody.json`）のみ近い別案に差し替えられ、同質ながら完全同一ではない再現になる。
+      b. 小節ごとのリズムモチーフ (`rhythm.json`) は引き続き伴奏・アクセント用途で選択し、テンプレート／セクション単位でキャッシュする。メロディ音価モチーフとは独立に選びつつ、A セクション初出のフレーズはフックとして保存し、再登場時に再利用する。デフォルト（`sectionRepeatBias` ≥ 0.25）ではリズム・メロディ・音価モチーフの完全同一を再利用する。`sectionRepeatBias` < 0.25 の場合はバリエーションフックが選択され、リズムと音価モチーフは保持しつつ音程度数モチーフ（`melody.json`）のみ、互換性のある宣言済み `variations` リンクがあればそれへ差し替え、なければ既存の決定的なメロディ選択へフォールバックする。これにより同質ながら完全同一ではない再現になる。
       c. 音価モチーフを展開した結果のノートスケジュールに対し、スケール度数モチーフ (`melody.json`) を逐次マッピングする。休符ステップでは度数を進めず、ノート生成時のみ進行させることで息継ぎ・間を作る。
       d. レトロゲームBGMのモチーフ設計指針:
          - 16分主体＋間: フレーズ内に必ず休符（または 2 拍以上のロングトーン）を含め、機械的連打を避ける。
@@ -216,7 +249,7 @@
         - `octaveOffset`: -1/0/+1のオクターブ移動。bassAlt(octave -1)でサブベース（D1-E2域）生成
         - `seedOffset`: 同role内でパターンを変えるためのseed加算値
       - **選択ロジック**: フェーズ1で`seed`と`stylePreset`に基づき重み付き抽選。`stylePreset`は `CompositionOptions.preset` で明示的に指定する必要があり、軸座標から自動推定されることはない。minimalTechnoはminimal/bassLed優先、progressiveHouseはlayeredBass優先、retroLoopwaveはretroPulse優先、breakbeatJungleはbreakLayered/dualBassを重視、lofiChillhopはlofiPadLead/minimalを優先するなど、ジャンル特性を反映。
-      - **velocity調整**: `adjustVelocityForChannel()` がロールとチャンネルに応じたスケーリングを実施。ベース系ロールは70%に抑え、さらにMIDI 52未満では0.85を乗算して超低域を制御。`triangle`は基準値の85%に減衰（非ベース時はフルストレングス）、ベースを担当する`square`は0.66倍、メロディは0.4倍を掛けてミックスを支配しないよう調整する。
+      - **velocity調整**: `adjustVelocityForChannel()` がロールとチャンネルに応じたスケーリングを実施。ベース系ロールは70%を基準とする。`triangle`はチャンネル強度を等倍で維持し、MIDI 52未満では低い基音の聴感を補うため1.1倍する。ベースを担当する`square`は0.66倍かつ低域では追加で0.85倍し、squareメロディは0.4倍としてミックスを支配しないよう調整する。
       - **後方互換性**: `standard`/`swapped` arrangementではフェーズ2の従来ロジック（`selectMotifsLegacy`）を呼び出し、既存の楽曲生成動作を保証。
 2.  **リズムトラックの特殊変換**:
      - **キック (K)**: 長 LFSR モード（`mode: "long"`）＋短めのディケイで `noise` チャンネルに `noteOn` を送出し、低域ランブルを得る。さらにヒット時点で triangle チャンネルが空いている場合は、G2→C2 への 12 ms ピッチスライド（velocity 75）を triangle チャンネルに同時発音し、NES 定番のノイズ＋三角波レイヤーによるキックボディを再現する。
@@ -247,6 +280,7 @@
   2.  **デューティサイクル・スイープ適用**:
       - 矩形波チャンネルのノートで、持続時間が一定以上のものを検出。
       - そのノートの`noteOn`から`noteOff`の間に、デューティ比を周期的に変更する複数の`setParam`イベントを挿入する。
+      - duty / gain / pitch bend / hardware sweep のオートメーションは、明示的な `stylePreset` を持つ曲でのみ有効化する。プリセットなしの two-axis 生成では初期デューティ設定だけを出力し、常時トレモロのような揺れを避ける。
   3.  **スタイル連動オートメーション**:
       - `filterMotion` が有効な場合は duty スイーププリセットにスタイル専用パターンを追加する。
       - `percussiveLayering` や `atmosPad` などのフラグに応じてノイズ／三角波のゲインプロファイルを補強し、`breakInsertion` が成立する小節ではノイズとスクエアのゲインを一時的に下げてブレイクを演出する。
@@ -278,9 +312,11 @@
 - **ベースモチーフ (`bass-patterns.json`)**: 低域が濁らないよう、動きは必要十分に抑える。battle や breakbeat ではオクターブ反復や approach を使ってよいが、`loop_safe` bass は終端で次の root に着地または明確に接近させる。最終ステップに長い release の低音を残さない。
 - **ドラムとトランジションモチーフ (`drums.json`, `transitions.json`)**: モノフォニックな `noise` チャンネル制約を守る。ハット、キック、スネア、タム、FX は同じ 16 分ステップで同時 noise 発音を要求しない。配置意図は ID だけでなく、`fill`, `build`, `break`, `loop_out`, プリセット固有タグで表す。
 - **テクニックモチーフ (`techniques.json`)**: synthesizer / worklet が対応している param だけを出力する。新しい装飾は `channels`、持続時間しきい値、`styleFlag`、cadence / boundary 用途など狭い発火条件を持たせ、全ノートに過密適用されないようにする。
-- **Variation リンク**: 繰り返しセクションで置換可能な近縁案は `variations` で結ぶ。変形はフレーズ長と大まかな機能を保ちつつ、リズム、輪郭、音域、密度のどれか 1 要素を変える。
+- **Variation リンク**: 繰り返しセクションで置換可能な近縁案は `variations` で結ぶ。melody の変形はピッチトークン数を保ち、フレーズ機能タグ（`start`/`middle`/`end`/`cadence`/`pickup`）を少なくとも 1 つ共有し、広義の輪郭タグ（`ascending`/`descending`/`arch`/`valley`/`stepwise`/`leaping`/`static`/`sequence`/`neighbor`/`complex`）も少なくとも 1 つ共有する。melody 度数モチーフ自体に休符トークンはないため、変奏フックでは melody-rhythm モチーフを保持することで休符密度の互換性を担保する。変形は終端度数、輪郭の細部、音域感、密度など 1 要素を変える。
 - **避けるべきパターン**: 使用可能なハードウェアチャンネル数を超える同時発音を前提にしたモチーフ、ループ頭へ重なる長い終端 release、実態と矛盾するタグ、毎拍反復される極端な高音跳躍、重複 ID、音楽的にほぼ同じ重複項目は避ける。
-- **必須検証**: モチーフ編集後は `npm test`、`npm run build:core`、`npm run report:seed-sweep -- --seeds=101,202,303 --assert`、`git diff --check` を実行する。`--assert` フラグは自動閾値チェックを有効にし（fallback 率 ≤ 0.40/実行、melody モチーフ種類数 ≥ 2/実行、ユニークなアレンジメント数 ≥ 3/全実行、ループ・ノイズテール問題 = 0）、違反があれば終了コード 1 を返す。閾値は `--max-fallback-rate=`、`--min-melody-kinds=`、`--min-arrangement-variety=` で個別に上書きできる。melody-rhythm 変更時は duration sanity テストが全新規モチーフを対象にしていることを確認する。drums/noise 変更時は `noise-collision` が clean であることを確認する。スタイル固有モチーフを追加した場合は seed sweep の `diagnostics.motifSelection.candidatePools` と `motifUsage` を見て、新タグが過剰 fallback なしで到達可能か確認する。
+- **必須検証**: モチーフ編集後は `npm test`、`npm run build:core`、`npm run report:seed-sweep -- --seeds=101,202,303 --assert`、`git diff --check` を実行する。`--assert` フラグは自動閾値チェックを有効にし（fallback 率 ≤ 0.40/実行、melody モチーフ種類数 ≥ 2/実行、ユニークなアレンジメント数 ≥ 3/全実行、ループ・ノイズテール問題 = 0、theory error = 0）、違反があれば終了コード 1 を返す。閾値は `--max-fallback-rate=`、`--min-melody-kinds=`、`--min-arrangement-variety=`、`--max-theory-errors=` で個別に上書きできる。`--output=<path>` を指定すると Markdown または JSON レポートを保存できる。レポートは fallback を category、stage、reason 別に分離し、`stage: "selection"` の診断値（`afterCount`、`selectedId`）から mood/style 別の実効候補数と上位 motif 集中度を記録する。melody-rhythm 変更時は duration sanity テストが全新規モチーフを対象にしていることを確認する。drums/noise 変更時は `noise-collision` が clean であることを確認する。スタイル固有モチーフを追加した場合は seed sweep の `diagnostics.motifSelection.candidatePools` と `motifUsage` を見て、新タグが過剰 fallback なしで到達可能か確認する。
+
+- **生成後の音楽理論監査**: timeline finalization は最終 event list から発音を復元し、beat、measure、section、channel、voice role、chord を `diagnostics.theoryAudit` に記録する。各音は chord tone、許容する scale tension、その他の scale tone、non-scale tone に分類する。error は、コードとキーの両方から外れた小節頭 bass、独立 voice 間で長く持続する短2度、未解決音から極端な跳躍で loop 接続する場合、release tail が loop 境界を越える場合に限定する。短い不協和、7度、voice crossing、未解決導音、過密な同音反復、コード外 scale tone、style に沿う tension は warning または集計値に留め、tense、atmospheric、lofi intent では閾値を緩和する。監査は音の再量子化や seed 差し替えを行わない。各 issue は原因候補（`motif`、`quantization`、`bass_generation`、`accompaniment_generation`、`timeline_finalization`）を持ち、一律な最終補正ではなく該当箇所へ戻して修正する。
 
 #### **付録: 生成後検証ループとチェックポイント**
 
@@ -300,6 +336,6 @@
 - **テクスチャプラン監査**: フェーズ1で定義したセクション別テクスチャ（ブロークンコード、8 分アルペジオ等）が実際の square2/square1 イベント密度に反映されているか、voice_allocation をヒートマップ化して乖離を検知する。
 - **ダイナミクスプロファイル比較**: セクションごとの平均 velocity・ピーク差を記録し、想定した山谷（例: A=mf, B=f, Outro=mp）と一致しない場合はフェーズ3のエンベロープ生成を再調整する。
 - **トランジション診断**: セクション切り替え直前のドラムフィル/ pickup イベントや phase4 の duty・gain スイープが想定タイムスタンプで発火したかを検証し、欠落時はトランジション設計を差し戻す。
-- **メロディ音価検証**: `melody-rhythm` モチーフの長さ合計が小節長と一致しているか、休符／ロングトーンがループ頭と重なっていないかを解析し、逸脱があればモチーフ定義と適用ロジックを修正する。定期的に `npm run check:melody-rhythm` を実行し、長さ検証とモチーフ使用頻度のヒートマップを取得する。
+- **メロディ音価検証**: `melody-rhythm` モチーフの長さ合計が小節長と一致しているか、休符／ロングトーンがループ頭と重なっていないかを解析し、逸脱があればモチーフ定義と適用ロジックを修正する。カタログ整合性には `npm run audit:motifs`、音価の回帰検証には `npm test`、使用頻度の確認には seed sweep を実行する。
 
 解析フェーズで問題が見つかった場合は、対応するフェーズ（モチーフ選択、ハーモニー補正、テクニック適用ペースなど）を改良し、再度シード走査を行う。最終成果物はブラウザデモで試聴して感覚的な違和感を排除し、同じチェックリストで回帰を確認する。この PDCA ループを開発サイクル全体で徹底する。
