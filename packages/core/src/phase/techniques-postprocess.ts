@@ -1,4 +1,4 @@
-import { EventRealizationResult, StyleIntent, TimedEvent, TechniqueLibrary } from "../types.js";
+import { EventRealizationResult, StyleIntent, StylePreset, TimedEvent, TechniqueLibrary } from "../types.js";
 import { BEATS_PER_MEASURE } from "../musicUtils.js";
 import techniqueLibraryJson from "../../motifs/techniques.json" with { type: "json" };
 
@@ -15,10 +15,15 @@ const GRADUAL_BUILD_GAIN_RAMP: Record<TimedEvent["channel"], { base: number; pea
   noise: { base: 0.74, peak: 0.82 }
 };
 
-export function applyTechniques(phase3: EventRealizationResult, styleIntent: StyleIntent): TechniquesPostprocessResult {
+export function applyTechniques(
+  phase3: EventRealizationResult,
+  styleIntent: StyleIntent,
+  stylePreset?: StylePreset
+): TechniquesPostprocessResult {
   const additionalEvents: TimedEvent[] = [];
   const totalTrackBeats = phase3.events.reduce((max, event) => Math.max(max, event.beatTime), 0);
   const totalMeasures = Math.max(1, Math.ceil(totalTrackBeats / BEATS_PER_MEASURE));
+  const enableExpressiveAutomation = Boolean(stylePreset);
 
   for (const preset of techniqueLibrary.initialParams ?? []) {
     additionalEvents.push({
@@ -29,18 +34,30 @@ export function applyTechniques(phase3: EventRealizationResult, styleIntent: Sty
     });
   }
 
-  const dutySweeps = [...(techniqueLibrary.dutySweeps ?? [])];
-  const gainProfiles = [...(techniqueLibrary.gainProfiles ?? [])];
-  const pitchBendOrnaments = (techniqueLibrary.pitchBendOrnaments ?? []).filter((ornament) =>
-    ornament.styleFlag ? styleIntent[ornament.styleFlag] : true
-  );
-  const sweepOrnaments = (techniqueLibrary.sweepOrnaments ?? []).filter((ornament) =>
-    ornament.styleFlag ? styleIntent[ornament.styleFlag] : true
-  );
+  const dutySweeps = enableExpressiveAutomation
+    ? (techniqueLibrary.dutySweeps ?? []).filter((sweep) =>
+        sweep.styleFlag ? styleIntent[sweep.styleFlag] > 0.5 : false
+      )
+    : [];
+  const gainProfiles = enableExpressiveAutomation
+    ? (techniqueLibrary.gainProfiles ?? []).filter((profile) =>
+        profile.styleFlag ? styleIntent[profile.styleFlag] > 0.5 : false
+      )
+    : [];
+  const pitchBendOrnaments = enableExpressiveAutomation
+    ? (techniqueLibrary.pitchBendOrnaments ?? []).filter((ornament) =>
+        ornament.styleFlag ? styleIntent[ornament.styleFlag] > 0.5 : false
+      )
+    : [];
+  const sweepOrnaments = enableExpressiveAutomation
+    ? (techniqueLibrary.sweepOrnaments ?? []).filter((ornament) =>
+        ornament.styleFlag ? styleIntent[ornament.styleFlag] > 0.5 : false
+      )
+    : [];
   const ornamentCounters: Partial<Record<TimedEvent["channel"], number>> = {};
   const sweepOrnamentCounters: Partial<Record<TimedEvent["channel"], number>> = {};
 
-  if (styleIntent.filterMotion > 0.5) {
+  if (enableExpressiveAutomation && styleIntent.filterMotion > 0.5) {
     dutySweeps.push({
       id: "STYLE_FILTER_SWELL",
       param: "duty",
@@ -50,7 +67,7 @@ export function applyTechniques(phase3: EventRealizationResult, styleIntent: Sty
     });
   }
 
-  if (styleIntent.percussiveLayering > 0.5) {
+  if (enableExpressiveAutomation && styleIntent.percussiveLayering > 0.5) {
     gainProfiles.push({
       id: "STYLE_NOISE_PUNCH",
       channel: "noise",
@@ -60,7 +77,7 @@ export function applyTechniques(phase3: EventRealizationResult, styleIntent: Sty
     });
   }
 
-  if (styleIntent.percussiveLayering && !styleIntent.breakInsertion) {
+  if (enableExpressiveAutomation && styleIntent.percussiveLayering && !styleIntent.breakInsertion) {
     gainProfiles.push(
       {
         id: "STYLE_MINIMAL_SIDECHAIN_SQ1",
@@ -79,7 +96,7 @@ export function applyTechniques(phase3: EventRealizationResult, styleIntent: Sty
     );
   }
 
-  if (styleIntent.atmosPad > 0.5) {
+  if (enableExpressiveAutomation && styleIntent.atmosPad > 0.5) {
     gainProfiles.push({
       id: "STYLE_TRIANGLE_PAD",
       channel: "triangle",
@@ -89,7 +106,7 @@ export function applyTechniques(phase3: EventRealizationResult, styleIntent: Sty
     });
   }
 
-  if (styleIntent.gradualBuild && styleIntent.breakInsertion) {
+  if (enableExpressiveAutomation && styleIntent.gradualBuild && styleIntent.breakInsertion) {
     dutySweeps.push({
       id: "STYLE_PROGRESSIVE_DUTY_SWELL",
       param: "duty",
@@ -99,7 +116,7 @@ export function applyTechniques(phase3: EventRealizationResult, styleIntent: Sty
     });
   }
 
-  if (styleIntent.gradualBuild && styleIntent.breakInsertion) {
+  if (enableExpressiveAutomation && styleIntent.gradualBuild && styleIntent.breakInsertion) {
     gainProfiles.push({
       id: "STYLE_PROGRESSIVE_TRI_RISE",
       channel: "triangle",
@@ -224,7 +241,7 @@ export function applyTechniques(phase3: EventRealizationResult, styleIntent: Sty
       }
     }
 
-    if (styleIntent.breakInsertion && event.channel === "noise") {
+    if (enableExpressiveAutomation && styleIntent.breakInsertion && event.channel === "noise") {
       const measureIndex = Math.floor(event.beatTime / BEATS_PER_MEASURE);
       if (!breakMeasures.has(measureIndex) && measureIndex > 0 && (measureIndex + 1) % 8 === 0) {
         breakMeasures.add(measureIndex);
@@ -259,7 +276,7 @@ export function applyTechniques(phase3: EventRealizationResult, styleIntent: Sty
     }
   }
 
-  if (styleIntent.gradualBuild && totalMeasures > 1) {
+  if (enableExpressiveAutomation && styleIntent.gradualBuild && totalMeasures > 1) {
     const measureStep = Math.max(1, Math.floor(totalMeasures / 8));
     for (const [channel, ramp] of Object.entries(GRADUAL_BUILD_GAIN_RAMP)) {
       const typedChannel = channel as TimedEvent["channel"];

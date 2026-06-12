@@ -31,6 +31,7 @@ const SE_TEMPLATE_TAGS = new Set<SETemplateTag>([
   "retro"
 ]);
 const SE_ENVELOPES = new Set(["percussive", "sustained", "pluck", "snap", "fade"]);
+const SE_SWEEP_CURVES = new Set(["linear", "exponential"]);
 
 const SE_TYPE_BUDGETS: Record<SEType, { maxDuration: number; maxVelocity: number }> = {
   jump: { maxDuration: 0.42, maxVelocity: 124 },
@@ -112,6 +113,15 @@ function assertTemplateSchema(templates: SETemplate[]) {
         assert(maxOffset >= minOffset, `${template.id}.${channel}.startOffsetRange should be ordered`);
         assert(maxOffset <= 0.05, `${template.id}.${channel}.startOffsetRange should stay tight`);
       }
+      if (params.dutyCycleRange) {
+        const { min, max } = params.dutyCycleRange;
+        assert(
+          Number.isFinite(min) && Number.isFinite(max),
+          `${template.id}.${channel}.dutyCycleRange should be finite`
+        );
+        assert(min > 0 && max <= 1, `${template.id}.${channel}.dutyCycleRange should be within (0, 1]`);
+        assert(max >= min, `${template.id}.${channel}.dutyCycleRange should be ordered`);
+      }
       if (params.envelope) {
         assert(SE_ENVELOPES.has(params.envelope), `${template.id}.${channel}.envelope should be known`);
       }
@@ -139,6 +149,32 @@ function assertTemplateSchema(templates: SETemplate[]) {
       assert(minSweep > 0, `${template.id} pitchSweep duration minimum should be positive`);
       assert(maxSweep >= minSweep, `${template.id} pitchSweep durationRange should be ordered`);
     }
+    if (template.pitchSweep?.curveOptions) {
+      const curveOptions = template.pitchSweep.curveOptions;
+      assert(curveOptions.length > 0, `${template.id} pitchSweep curveOptions should not be empty`);
+      assert.strictEqual(
+        new Set(curveOptions).size,
+        curveOptions.length,
+        `${template.id} pitchSweep curveOptions should not contain duplicates`
+      );
+      for (const curve of curveOptions) {
+        assert(SE_SWEEP_CURVES.has(curve), `${template.id} has unknown pitchSweep curve option: ${curve}`);
+      }
+    }
+    if (template.pitchSweep?.curveWeights) {
+      const curveOptions = template.pitchSweep.curveOptions;
+      assert(curveOptions, `${template.id} curveWeights requires curveOptions`);
+      const weightKeys = Object.keys(template.pitchSweep.curveWeights);
+      assert.deepEqual(
+        new Set(weightKeys),
+        new Set(curveOptions),
+        `${template.id} curveWeights keys should match curveOptions`
+      );
+      for (const [curve, weight] of Object.entries(template.pitchSweep.curveWeights)) {
+        assert(Number.isFinite(weight), `${template.id} pitchSweep curve weight for ${curve} should be finite`);
+        assert(weight > 0, `${template.id} pitchSweep curve weight for ${curve} should be positive`);
+      }
+    }
   }
 
   for (const type of SE_TYPES) {
@@ -147,6 +183,26 @@ function assertTemplateSchema(templates: SETemplate[]) {
       `${type} should have at least two SE templates`
     );
   }
+}
+
+function cloneTemplates(templates: SETemplate[]): SETemplate[] {
+  return structuredClone(templates);
+}
+
+function assertInvalidTemplateFixture(
+  templates: SETemplate[],
+  mutate: (fixture: SETemplate[]) => void,
+  expectedMessage: RegExp
+) {
+  const fixture = cloneTemplates(templates);
+  mutate(fixture);
+  assert.throws(() => assertTemplateSchema(fixture), expectedMessage);
+}
+
+function generatorWithTemplates(templates: SETemplate[]): SEGenerator {
+  const generator = new SEGenerator();
+  (generator as unknown as { templates: SETemplate[] }).templates = templates;
+  return generator;
 }
 
 function assertGeneratedSEInvariants(result: SEGenerationResult, label: string) {
@@ -213,6 +269,24 @@ async function run() {
   const templates = loadSETemplates();
 
   assertTemplateSchema(templates);
+  assertInvalidTemplateFixture(templates, (fixture) => {
+    fixture.find((template) => template.id === "SE_SYNTH_03")!
+      .channelParams.square2!.dutyCycleRange = { min: 0.75, max: 0.25 };
+  }, /dutyCycleRange should be ordered/);
+  assertInvalidTemplateFixture(templates, (fixture) => {
+    fixture.find((template) => template.id === "SE_SYNTH_03")!
+      .channelParams.square2!.dutyCycleRange = { min: Number.NaN, max: 0.5 };
+  }, /dutyCycleRange should be finite/);
+  assertInvalidTemplateFixture(templates, (fixture) => {
+    const pitchSweep = fixture.find((template) => template.id === "SE_JUMP_01")!.pitchSweep!;
+    pitchSweep.curveOptions = ["linear", "exponential"];
+    pitchSweep.curveWeights = { linear: 1, exponential: -1 };
+  }, /curve weight for exponential should be positive/);
+  assertInvalidTemplateFixture(templates, (fixture) => {
+    const pitchSweep = fixture.find((template) => template.id === "SE_JUMP_01")!.pitchSweep!;
+    pitchSweep.curveOptions = ["linear", "exponential"];
+    pitchSweep.curveWeights = { linear: 1 };
+  }, /curveWeights keys should match curveOptions/);
   console.log("SE template schema validated");
 
   const scenarios = [
@@ -253,6 +327,50 @@ async function run() {
     });
     assertGeneratedSEInvariants(result, `${template.id}-forced`);
   }
+
+  const dutyTemplate = templates.find((template) => template.id === "SE_SYNTH_03")!;
+  const dutyResult = generator.generateSE({
+    type: dutyTemplate.type,
+    seed: 4242,
+    templateId: dutyTemplate.id
+  });
+  const dutyEvent = dutyResult.events.find(
+    (event) => event.command === "setParam" && event.data.param === "duty"
+  );
+  assert(dutyEvent, "forced dutyCycleRange template should emit a duty parameter event");
+  const sampledDuty = dutyEvent.data.value;
+  assert(typeof sampledDuty === "number", "sampled duty cycle should be numeric");
+  const dutyRange = dutyTemplate.channelParams.square2!.dutyCycleRange!;
+  assert(
+    sampledDuty >= dutyRange.min && sampledDuty <= dutyRange.max,
+    "sampled duty cycle should stay within the template range"
+  );
+
+  const curveTemplate = cloneTemplates(templates)
+    .find((template) => template.id === "SE_JUMP_01")!;
+  curveTemplate.pitchSweep!.curveOptions = ["linear", "exponential"];
+  const generateWeightedCurve = (curveWeights: Record<string, number>) => {
+    const fixture = structuredClone(curveTemplate);
+    fixture.pitchSweep!.curveWeights = curveWeights;
+    const result = generatorWithTemplates([fixture]).generateSE({
+      type: fixture.type,
+      seed: 4242,
+      templateId: fixture.id
+    });
+    return result.events.find(
+      (event) => event.command === "setParam" && event.data.param === "pitchBend"
+    )?.data.curve;
+  };
+  assert.strictEqual(
+    generateWeightedCurve({ linear: 1e12, exponential: 1 }),
+    "linear",
+    "curveWeights should strongly prefer the weighted linear curve"
+  );
+  assert.strictEqual(
+    generateWeightedCurve({ linear: 1, exponential: 1e12 }),
+    "exponential",
+    "curveWeights should strongly prefer the weighted exponential curve"
+  );
 
   const brightCoin = generator.generateSE({ type: "coin", seed: 7, variantIntent: "bright" });
   assert(
@@ -300,13 +418,14 @@ async function run() {
     quantizeToChord: "C"
   });
   const chordPitchClasses = new Set([0, 4, 7]);
-  for (const event of quantizedSynth.events.filter(isNoteOnEvent)) {
-    if (typeof event.data.midi === "number") {
-      assert(
-        chordPitchClasses.has(event.data.midi % 12),
-        `quantizeToChord should snap MIDI ${event.data.midi} to a C chord tone`
-      );
-    }
+  const quantizedNotes = quantizedSynth.events.filter(isNoteOnEvent);
+  assert(quantizedNotes.length > 0, "quantizeToChord fixture should generate pitched notes");
+  for (const event of quantizedNotes) {
+    assert.strictEqual(typeof event.data.midi, "number", "noteOn should include MIDI");
+    assert(
+      chordPitchClasses.has(event.data.midi! % 12),
+      `quantizeToChord should snap MIDI ${event.data.midi} to a C chord tone`
+    );
   }
   const replayQuantizedSynth = generator.generateSE(quantizedSynth.meta.replayOptions);
   assert.deepEqual(
@@ -343,13 +462,13 @@ async function run() {
   const shiftedPitches = getNotePitches(shiftedResult);
 
   // If there are pitches, verify shift was applied (pitches should differ if shift was applied)
-  if (basePitches.length > 0 && shiftedPitches.length > 0) {
-    assert.strictEqual(
-      basePitches.length,
-      shiftedPitches.length,
-      "baseFrequency should preserve number of notes"
-    );
-  }
+  assert(basePitches.length > 0, "base fixture should generate pitched notes");
+  assert(shiftedPitches.length > 0, "shifted fixture should generate pitched notes");
+  assert.strictEqual(
+    basePitches.length,
+    shiftedPitches.length,
+    "baseFrequency should preserve number of notes"
+  );
 
   // Test 2: Different baseFrequency values produce different pitches
   const result440 = generator.generateSE({ type: "coin", seed: 123, baseFrequency: 440.0 });

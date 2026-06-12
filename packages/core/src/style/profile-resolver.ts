@@ -64,6 +64,7 @@
  */
 
 import {
+  DEFAULT_SECTION_REPEAT_BIAS,
   type CompositionOptions,
   type PipelineCompositionOptions,
   type MoodSetting,
@@ -290,7 +291,7 @@ export function resolveGenerationContext(options: CompositionOptions): ResolveRe
     seed: resolvedSeed,
     stylePreset: options.preset ?? undefined,
     styleOverrides: axisStyleOverrides,
-    sectionRepeatBias: options.sectionRepeatBias
+    sectionRepeatBias: options.sectionRepeatBias ?? DEFAULT_SECTION_REPEAT_BIAS
   };
 
   const resolvedProfile: ResolvedStyleProfile = {
@@ -305,7 +306,8 @@ export function resolveGenerationContext(options: CompositionOptions): ResolveRe
   const replayOptions: CompositionOptions = {
     lengthInMeasures: resolvedLength,
     seed: resolvedSeed,
-    twoAxisStyle: { ...axis }
+    twoAxisStyle: { ...axis },
+    sectionRepeatBias: options.sectionRepeatBias ?? DEFAULT_SECTION_REPEAT_BIAS
   };
 
   if (options.overrides) {
@@ -318,10 +320,6 @@ export function resolveGenerationContext(options: CompositionOptions): ResolveRe
 
   if (options.mode) {
     replayOptions.mode = options.mode;
-  }
-
-  if (typeof options.sectionRepeatBias === "number") {
-    replayOptions.sectionRepeatBias = options.sectionRepeatBias;
   }
 
   return {

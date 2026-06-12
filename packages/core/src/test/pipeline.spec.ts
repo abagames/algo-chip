@@ -45,7 +45,8 @@ async function run() {
   assert(motifPlan.length > 0, "Section motif plan should be captured");
 
   const aSections = motifPlan.filter((plan) => plan.templateId === "A");
-  if (aSections.length > 1) {
+  assert(aSections.length > 1, "Expected repeated A sections for hook reuse validation");
+  {
     const hookSignature = new Set(aSections.map((plan) => `${plan.primaryRhythm}|${plan.primaryMelody}`));
     assert.strictEqual(hookSignature.size, 1, "A sections should reuse the same hook motifs");
     const reprisesHook = aSections.filter((plan) => plan.occurrenceIndex > 1);
@@ -96,6 +97,17 @@ async function run() {
     motifSelectionDiagnostics.candidatePools.some((entry) => entry.category === "melodyRhythm"),
     "Melody rhythm candidate diagnostics should be present"
   );
+  for (const category of ["rhythm", "melody", "melodyRhythm", "bass", "drums"] as const) {
+    assert(
+      motifSelectionDiagnostics.candidatePools.some((entry) =>
+        entry.category === category &&
+        entry.stage === "selection" &&
+        entry.afterCount > 0 &&
+        typeof entry.selectedId === "string"
+      ),
+      `${category} final selection diagnostics should include candidate count and selected ID`
+    );
+  }
   assert(
     motifSelectionDiagnostics.fallbackCount >= 0,
     "Motif fallback count should be numeric"
@@ -103,6 +115,28 @@ async function run() {
   assert(
     motifSelectionDiagnostics.hookReuse.exact >= 0 && motifSelectionDiagnostics.hookReuse.varied >= 0,
     "Hook reuse diagnostics should be numeric"
+  );
+
+  const expressiveAutomation = result.events.filter((event) =>
+    event.command === "setParam" &&
+    (event.channel === "square1" || event.channel === "square2" || event.channel === "triangle") &&
+    (event.data.param === "gain" || event.data.param === "pitchBend" || event.data.param === "sweep")
+  );
+  assert.deepStrictEqual(
+    expressiveAutomation,
+    [],
+    "Non-preset compositions should not add continuous gain or pitch automation"
+  );
+
+  const dutyAutomation = result.events.filter((event) =>
+    event.command === "setParam" &&
+    (event.channel === "square1" || event.channel === "square2") &&
+    event.data.param === "duty"
+  );
+  assert.strictEqual(
+    dutyAutomation.length,
+    2,
+    "Non-preset compositions should only emit initial square duty settings"
   );
 
   const loopIntegrity = result.diagnostics.loopIntegrity;
@@ -119,12 +153,17 @@ async function run() {
   const triangleRangeResult = await generateComposition(
     buildTwoAxisOptions({
       lengthInMeasures: 16,
-      seed: 99999,
+      seed: 5,
       preset: "minimal-techno"
     })
   );
 
-  if (triangleRangeResult.meta.voiceArrangement.id === "bassLed") {
+  assert.strictEqual(
+    triangleRangeResult.meta.voiceArrangement.id,
+    "bassLed",
+    "Fixture must exercise the bassLed triangle range"
+  );
+  {
     const triangleMidis = triangleRangeResult.events
       .filter(isNoteOnEvent)
       .filter((e: Event<"noteOn">) => e.channel === "triangle")
@@ -138,11 +177,29 @@ async function run() {
       0,
       `Triangle channel should not exceed C4 (MIDI 60) in bassLed arrangement. Found ${highPitchNotes.length} high notes.`
     );
-
-    console.log(`Triangle range check passed for bassLed (${triangleMidis.length} notes, all <= C4)`);
-  } else {
-    console.log(`Triangle range check skipped (arrangement: ${triangleRangeResult.meta.voiceArrangement.id})`);
   }
+
+  const triangleBassAudibility = await generateComposition({
+    seed: 101,
+    lengthInMeasures: 16,
+    twoAxisStyle: { percussiveMelodic: 0, calmEnergetic: 0 }
+  });
+  assert.strictEqual(triangleBassAudibility.meta.voiceArrangement.id, "swapped");
+  const lowTriangleBassVelocities = triangleBassAudibility.events
+    .filter((event): event is Event<"noteOn"> =>
+      event.command === "noteOn" &&
+      event.channel === "triangle" &&
+      typeof event.data.midi === "number" &&
+      event.data.midi < 52 &&
+      typeof event.data.velocity === "number" &&
+      event.data.velocity !== 75
+    )
+    .map((event) => event.data.velocity!);
+  assert.ok(lowTriangleBassVelocities.length > 0, "Should generate low triangle bass notes");
+  assert.ok(
+    lowTriangleBassVelocities.every((velocity) => velocity >= 49),
+    `Low triangle bass should remain audible, got minimum ${Math.min(...lowTriangleBassVelocities)}`
+  );
 
   const defaultLengthResult = await generateComposition({ seed: 24680 });
   assert.strictEqual(
@@ -163,7 +220,6 @@ async function run() {
     "Replay composition should preserve style intent"
   );
 
-  console.log("All pipeline assertions passed");
 }
 
 run().catch((err) => {

@@ -112,7 +112,8 @@ describe("Fixed Length Generation", () => {
       // Check that events span the full duration for each channel
       const checkChannelSpan = (channel: string) => {
         const events = result.events.filter(e => e.channel === channel && e.command === "noteOn");
-        if (events.length > 0) {
+        assert.ok(events.length > 0, `${channel} should contain noteOn events`);
+        {
           const firstTime = events[0].time;
           const lastTime = events[events.length - 1].time;
           const span = lastTime - firstTime;
@@ -150,7 +151,8 @@ describe("Fixed Length Generation", () => {
 
       // Check A section consistency
       const aSections = motifPlan.filter(plan => plan.templateId === "A");
-      if (aSections.length > 1) {
+      assert.ok(aSections.length > 1, "Should include a reprised A section");
+      {
         const firstASection = aSections[0];
         const reprisedASections = aSections.slice(1);
 
@@ -206,11 +208,17 @@ describe("Fixed Length Generation", () => {
         ...baseOptions,
         sectionRepeatBias: 0
       };
+      const boundaryOptions: PipelineCompositionOptions = {
+        ...baseOptions,
+        sectionRepeatBias: 0.25
+      };
 
       const exactPlan = planStructure(exactOptions);
       const variedPlan = planStructure(variedOptions);
+      const boundaryPlan = planStructure(boundaryOptions);
       const exactMotifs = selectMotifs(exactOptions, exactPlan);
       const variedMotifs = selectMotifs(variedOptions, variedPlan);
+      const boundaryMotifs = selectMotifs(boundaryOptions, boundaryPlan);
 
       assert.strictEqual(
         exactMotifs.motifSelection.hookReuse.exact,
@@ -232,6 +240,15 @@ describe("Fixed Length Generation", () => {
         1,
         "Low repeat bias should report one varied reprised hook"
       );
+      assert.strictEqual(
+        boundaryMotifs.motifSelection.hookReuse.exact,
+        1,
+        "Repeat bias at 0.25 should keep reprised A hook exact"
+      );
+      assert.ok(
+        boundaryMotifs.motifSelection.cacheEvents.some((event) => event.source === "hook_reuse"),
+        "Cache diagnostics should distinguish hook reuse"
+      );
 
       const variedASections = variedMotifs.sectionMotifPlan.filter((section) => section.templateId === "A");
       assert.ok(variedASections.length >= 2, "Should have reprised A sections");
@@ -244,6 +261,62 @@ describe("Fixed Length Generation", () => {
         variedASections[1].primaryMelody,
         variedASections[0].primaryMelody,
         "Low-bias hook variation should change the pitch motif"
+      );
+      assert.strictEqual(
+        variedASections[1].hookVariationSource,
+        "melody_variation",
+        "Low-bias hook variation should use a declared melody variation when available"
+      );
+      assert.strictEqual(
+        variedASections[1].hookOriginalMelody,
+        variedASections[0].primaryMelody,
+        "Varied hook diagnostics should record the original melody"
+      );
+    });
+
+    it("should use 0.25 as the default repeat bias and expose post-generation diagnostics", () => {
+      const options = buildOptions({
+        lengthInMeasures: 32,
+        seed: 12345,
+        twoAxisStyle: {
+          percussiveMelodic: -0.2,
+          calmEnergetic: 0.3
+        }
+      });
+      const implicit = runPipeline(options);
+      const explicit = runPipeline({ ...options, sectionRepeatBias: 0.25 });
+
+      assert.strictEqual(implicit.meta.replayOptions.sectionRepeatBias, 0.25);
+      assert.deepStrictEqual(
+        implicit.diagnostics.sectionMotifPlan,
+        explicit.diagnostics.sectionMotifPlan,
+        "Omitted repeat bias should behave exactly like an explicit 0.25"
+      );
+      assert.strictEqual(
+        implicit.diagnostics.motifSelection.motifSequence.length,
+        32,
+        "Motif sequence diagnostics should contain one entry per measure"
+      );
+      assert.ok(
+        implicit.diagnostics.motifSelection.cacheEvents.some((event) => event.source === "new_selection"),
+        "Cache diagnostics should distinguish new selections"
+      );
+      assert.ok(
+        implicit.diagnostics.motifSelection.cacheEvents.some((event) => event.source === "template_cache"),
+        "Cache diagnostics should distinguish template cache hits"
+      );
+      assert.ok(
+        implicit.diagnostics.motifSelection.melodyPitch.length > 0,
+        "Pitch diagnostics should include generated melody notes"
+      );
+      assert.ok(
+        implicit.diagnostics.motifSelection.melodyPitch.every((note) =>
+          Number.isFinite(note.degree) &&
+          Number.isFinite(note.scaleMidi) &&
+          Number.isFinite(note.correctedMidi) &&
+          note.changed === (note.scaleMidi !== note.correctedMidi)
+        ),
+        "Pitch diagnostics should preserve degree and before/after MIDI values"
       );
     });
   });
@@ -373,13 +446,13 @@ describe("Fixed Length Generation", () => {
         const totalMelodyMotifs = melodyUsageValues.reduce((sum, value) => sum + value, 0);
         const maxMelodyUsage = melodyUsageValues.length ? Math.max(...melodyUsageValues) : 0;
 
-        if (totalMelodyMotifs > 0 && maxMelodyUsage > 0) {
-          const recurrence = maxMelodyUsage / totalMelodyMotifs;
-          assert.ok(
-            recurrence >= 0.2,
-            `Expected dominant motif recurrence >= 0.2, got ${recurrence.toFixed(2)}`
-          );
-        }
+        assert.ok(totalMelodyMotifs > 0, "Expected melody motif usage diagnostics");
+        assert.ok(maxMelodyUsage > 0, "Expected a dominant melody motif");
+        const recurrence = maxMelodyUsage / totalMelodyMotifs;
+        assert.ok(
+          recurrence >= 0.2,
+          `Expected dominant motif recurrence >= 0.2, got ${recurrence.toFixed(2)}`
+        );
       };
 
       checkRecurrence(result16);

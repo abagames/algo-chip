@@ -51,6 +51,7 @@ describe("Electronica Style Validation", () => {
 
       for (const testCase of cases) {
         const observedTags = new Set<string>();
+        let bassNoteCount = 0;
         for (const seed of [101, 202, 303, 54321]) {
           const result = runPipeline(buildTwoAxisOptions({
             lengthInMeasures: 16,
@@ -79,14 +80,14 @@ describe("Electronica Style Validation", () => {
             .filter((event: Event<"noteOn">) => bassChannels.has(event.channel))
             .map((event: Event<"noteOn">) => event.data.velocity)
             .filter((value): value is number => typeof value === "number");
-          if (bassVelocities.length) {
-            assert.ok(
-              Math.max(...bassVelocities) <= 100,
-              `${testCase.preset} bass velocity should remain capped`
-            );
-          }
+          bassNoteCount += bassVelocities.length;
+          assert.ok(
+            bassVelocities.every((velocity) => velocity <= 100),
+            `${testCase.preset} bass velocity should remain capped`
+          );
         }
 
+        assert.ok(bassNoteCount > 0, `${testCase.preset} sweep should generate bass notes`);
         assert.ok(
           testCase.expectedTags.some((tag) => observedTags.has(tag)),
           `${testCase.preset} should reach at least one preset tag; observed=${Array.from(observedTags).join(",")}`
@@ -245,7 +246,8 @@ describe("Electronica Style Validation", () => {
         .filter((e: Event<"noteOn">) => melodyChannelSet.has(e.channel))
         .sort((a: Event<"noteOn">, b: Event<"noteOn">) => a.time - b.time);
 
-      if (melodyEvents.length >= 4) {
+      assert.ok(melodyEvents.length >= 4, "Progressive build fixture should generate melody notes");
+      {
         const quarterSize = Math.floor(melodyEvents.length / 4);
         const firstQuarterVel = melodyEvents
           .slice(0, quarterSize)

@@ -1,5 +1,23 @@
 import { runPipeline } from "../packages/core/src/pipeline.js";
-import type { Channel, CompositionOptions, Event } from "../packages/core/src/types.js";
+import { writeFileSync } from "node:fs";
+import type {
+  Channel,
+  CompositionOptions,
+  Event,
+  MotifCandidatePoolDiagnostic,
+  MotifSelectionDiagnosticCategory
+} from "../packages/core/src/types.js";
+
+type TrackedMotifCategory = Exclude<MotifSelectionDiagnosticCategory, "transitions">;
+type FallbackReason = NonNullable<MotifCandidatePoolDiagnostic["fallbackReason"]>;
+
+const TRACKED_MOTIF_CATEGORIES: TrackedMotifCategory[] = [
+  "rhythm",
+  "melody",
+  "melodyRhythm",
+  "bass",
+  "drums"
+];
 
 interface Scenario {
   name: string;
@@ -14,6 +32,7 @@ interface AssertThresholds {
   minTransitionKindsPerRun: number;
   minSectionPatternVarietyPerScenario: number;
   minMelodyIdSpreadPerScenario: number;
+  maxTheoryErrorsPerRun: number;
 }
 
 interface AssertViolation {
@@ -36,11 +55,90 @@ interface SweepSummary {
   noiseHitsPerMeasure: number;
   midiRange: string;
   motifKinds: Record<string, number>;
-  motifIds: { melody: string[]; rhythm: string[] };
+  motifIds: Record<TrackedMotifCategory, string[]>;
+  motifUsage: Record<TrackedMotifCategory, Record<string, number>>;
+  candidatePools: MotifCandidatePoolDiagnostic[];
   fallbackCount: number;
   candidatePoolChecks: number;
   loopIssues: number;
   noiseTailIssues: number;
+  theoryErrors: number;
+  theoryWarnings: number;
+  theoryErrorRules: string[];
+  theoryErrorCauses: string[];
+  theoryWarningRules: string[];
+}
+
+interface CategoryAggregate {
+  checks: number;
+  fallbacks: number;
+  reasons: Record<FallbackReason, number>;
+  selectionChecks: number;
+  candidateTotal: number;
+  candidateMin: number | undefined;
+  candidateMax: number | undefined;
+}
+
+function createCategoryAggregate(): CategoryAggregate {
+  return {
+    checks: 0,
+    fallbacks: 0,
+    reasons: { empty_match: 0, empty_pool: 0, min_ratio: 0 },
+    selectionChecks: 0,
+    candidateTotal: 0,
+    candidateMin: undefined,
+    candidateMax: undefined
+  };
+}
+
+function aggregateCategories(summaries: SweepSummary[]): Record<TrackedMotifCategory, CategoryAggregate> {
+  const result = Object.fromEntries(
+    TRACKED_MOTIF_CATEGORIES.map((category) => [category, createCategoryAggregate()])
+  ) as Record<TrackedMotifCategory, CategoryAggregate>;
+
+  for (const summary of summaries) {
+    for (const pool of summary.candidatePools) {
+      if (!TRACKED_MOTIF_CATEGORIES.includes(pool.category as TrackedMotifCategory)) continue;
+      const aggregate = result[pool.category as TrackedMotifCategory];
+      if (pool.stage === "selection") {
+        aggregate.selectionChecks += 1;
+        aggregate.candidateTotal += pool.afterCount;
+        aggregate.candidateMin = aggregate.candidateMin === undefined
+          ? pool.afterCount
+          : Math.min(aggregate.candidateMin, pool.afterCount);
+        aggregate.candidateMax = aggregate.candidateMax === undefined
+          ? pool.afterCount
+          : Math.max(aggregate.candidateMax, pool.afterCount);
+        continue;
+      }
+      aggregate.checks += 1;
+      if (pool.fallback) {
+        aggregate.fallbacks += 1;
+        if (pool.fallbackReason) aggregate.reasons[pool.fallbackReason] += 1;
+      }
+    }
+  }
+  return result;
+}
+
+function formatRate(numerator: number, denominator: number): string {
+  return denominator > 0 ? (numerator / denominator).toFixed(3) : "0.000";
+}
+
+function topMotif(
+  summaries: SweepSummary[],
+  category: TrackedMotifCategory
+): { id: string; count: number; rate: number } | undefined {
+  const counts = new Map<string, number>();
+  for (const summary of summaries) {
+    for (const [id, count] of Object.entries(summary.motifUsage[category])) {
+      counts.set(id, (counts.get(id) ?? 0) + count);
+    }
+  }
+  const sorted = [...counts.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
+  if (!sorted.length) return undefined;
+  const total = sorted.reduce((sum, [, count]) => sum + count, 0);
+  return { id: sorted[0][0], count: sorted[0][1], rate: sorted[0][1] / total };
 }
 
 const DEFAULT_SEEDS = [101, 202, 303, 404, 505];
@@ -98,7 +196,8 @@ function parseThresholds(argv: string[]): AssertThresholds {
     minKeyVarietyPerScenario: parseNumericArg(argv, "min-key-variety", 2),
     minTransitionKindsPerRun: parseNumericArg(argv, "min-transition-kinds", 2),
     minSectionPatternVarietyPerScenario: parseNumericArg(argv, "min-section-variety", 2),
-    minMelodyIdSpreadPerScenario: parseNumericArg(argv, "min-melody-id-spread", 8)
+    minMelodyIdSpreadPerScenario: parseNumericArg(argv, "min-melody-id-spread", 8),
+    maxTheoryErrorsPerRun: parseNumericArg(argv, "max-theory-errors", 0)
   };
 }
 
@@ -132,6 +231,13 @@ function assertSweep(summaries: SweepSummary[], thresholds: AssertThresholds): A
       violations.push({
         rule: "maxNoiseTailIssues",
         detail: `${s.name} seed=${s.seed}: noiseTailIssues=${s.noiseTailIssues}`
+      });
+    }
+
+    if (s.theoryErrors > thresholds.maxTheoryErrorsPerRun) {
+      violations.push({
+        rule: "maxTheoryErrorsPerRun",
+        detail: `${s.name} seed=${s.seed}: theoryErrors=${s.theoryErrors} rules=${s.theoryErrorRules.join(",") || "none"} causes=${s.theoryErrorCauses.join(",") || "none"}`
       });
     }
   }
@@ -262,15 +368,31 @@ function summarizeScenario(scenario: Scenario, seed: number): SweepSummary {
     },
     motifIds: {
       melody: Object.keys(result.diagnostics.motifUsage.melody),
-      rhythm: Object.keys(result.diagnostics.motifUsage.rhythm)
+      rhythm: Object.keys(result.diagnostics.motifUsage.rhythm),
+      melodyRhythm: Object.keys(result.diagnostics.motifUsage.melodyRhythm),
+      bass: Object.keys(result.diagnostics.motifUsage.bass),
+      drums: Object.keys(result.diagnostics.motifUsage.drums)
     },
+    motifUsage: {
+      rhythm: result.diagnostics.motifUsage.rhythm,
+      melody: result.diagnostics.motifUsage.melody,
+      melodyRhythm: result.diagnostics.motifUsage.melodyRhythm,
+      bass: result.diagnostics.motifUsage.bass,
+      drums: result.diagnostics.motifUsage.drums
+    },
+    candidatePools: result.diagnostics.motifSelection.candidatePools,
     fallbackCount: result.diagnostics.motifSelection.fallbackCount,
-    candidatePoolChecks: result.diagnostics.motifSelection.candidatePools.length,
+    candidatePoolChecks: result.diagnostics.motifSelection.candidatePools.filter((pool) => pool.stage !== "selection").length,
     loopIssues:
       result.diagnostics.loopIntegrity.unmatchedNoteOnCount +
       result.diagnostics.loopIntegrity.unmatchedNoteOffCount +
       result.diagnostics.loopIntegrity.lateReleaseCount,
-    noiseTailIssues: result.diagnostics.loopIntegrity.noiseLateReleaseCount
+    noiseTailIssues: result.diagnostics.loopIntegrity.noiseLateReleaseCount,
+    theoryErrors: result.diagnostics.theoryAudit.errors.length,
+    theoryWarnings: result.diagnostics.theoryAudit.warnings.length,
+    theoryErrorRules: [...new Set(result.diagnostics.theoryAudit.errors.map((issue) => issue.rule))].sort(),
+    theoryErrorCauses: [...new Set(result.diagnostics.theoryAudit.errors.map((issue) => issue.cause))].sort(),
+    theoryWarningRules: [...new Set(result.diagnostics.theoryAudit.warnings.map((issue) => issue.rule))].sort()
   };
 }
 
@@ -278,8 +400,8 @@ function renderMarkdown(summaries: SweepSummary[]): string {
   const lines = [
     "# Seed Sweep Report",
     "",
-    "| Scenario | Seed | BPM | Key | Mood | Tempo | Arrangement | Section Pattern | Notes/Measure | Noise/Measure | MIDI | Motif Kinds | Fallbacks | Candidate Checks | Loop Issues | Noise Tail Issues |",
-    "| --- | ---: | ---: | --- | --- | --- | --- | --- | ---: | ---: | --- | --- | ---: | ---: | ---: | ---: |"
+    "| Scenario | Seed | BPM | Key | Mood | Tempo | Arrangement | Section Pattern | Notes/Measure | Noise/Measure | MIDI | Motif Kinds | Fallbacks | Candidate Checks | Loop Issues | Noise Tail Issues | Theory Errors | Warnings |",
+    "| --- | ---: | ---: | --- | --- | --- | --- | --- | ---: | ---: | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: |"
   ];
 
   for (const summary of summaries) {
@@ -287,8 +409,114 @@ function renderMarkdown(summaries: SweepSummary[]): string {
       .map(([key, value]) => `${key}:${value}`)
       .join(" ");
     lines.push(
-      `| ${summary.name} | ${summary.seed} | ${summary.bpm} | ${summary.key} | ${summary.mood} | ${summary.tempo} | ${summary.voiceArrangement} | ${summary.sectionPattern} | ${summary.notesPerMeasure} | ${summary.noiseHitsPerMeasure} | ${summary.midiRange} | ${motifKinds} | ${summary.fallbackCount} | ${summary.candidatePoolChecks} | ${summary.loopIssues} | ${summary.noiseTailIssues} |`
+      `| ${summary.name} | ${summary.seed} | ${summary.bpm} | ${summary.key} | ${summary.mood} | ${summary.tempo} | ${summary.voiceArrangement} | ${summary.sectionPattern} | ${summary.notesPerMeasure} | ${summary.noiseHitsPerMeasure} | ${summary.midiRange} | ${motifKinds} | ${summary.fallbackCount} | ${summary.candidatePoolChecks} | ${summary.loopIssues} | ${summary.noiseTailIssues} | ${summary.theoryErrors} | ${summary.theoryWarnings} |`
     );
+  }
+
+  const theoryRules = new Map<string, { severity: string; count: number }>();
+  for (const summary of summaries) {
+    for (const rule of summary.theoryErrorRules) {
+      const key = `error\t${rule}`;
+      theoryRules.set(key, { severity: "error", count: (theoryRules.get(key)?.count ?? 0) + 1 });
+    }
+    for (const rule of summary.theoryWarningRules) {
+      const key = `warning\t${rule}`;
+      theoryRules.set(key, { severity: "warning", count: (theoryRules.get(key)?.count ?? 0) + 1 });
+    }
+  }
+  lines.push("", "## Theory Audit", "", "| Severity | Rule | Runs |", "| --- | --- | ---: |");
+  for (const [key, value] of [...theoryRules.entries()].sort((a, b) => a[0].localeCompare(b[0]))) {
+    lines.push(`| ${value.severity} | ${key.split("\t")[1]} | ${value.count} |`);
+  }
+
+  const categoryAggregates = aggregateCategories(summaries);
+  lines.push(
+    "",
+    "## Fallbacks by Category",
+    "",
+    "| Category | Checks | Fallbacks | Rate | empty_match | empty_pool | min_ratio | Avg Effective Candidates | Min | Max |",
+    "| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |"
+  );
+  for (const category of TRACKED_MOTIF_CATEGORIES) {
+    const aggregate = categoryAggregates[category];
+    const average = aggregate.selectionChecks > 0
+      ? (aggregate.candidateTotal / aggregate.selectionChecks).toFixed(2)
+      : "n/a";
+    lines.push(
+      `| ${category} | ${aggregate.checks} | ${aggregate.fallbacks} | ${formatRate(aggregate.fallbacks, aggregate.checks)} | ${aggregate.reasons.empty_match} | ${aggregate.reasons.empty_pool} | ${aggregate.reasons.min_ratio} | ${average} | ${aggregate.candidateMin ?? "n/a"} | ${aggregate.candidateMax ?? "n/a"} |`
+    );
+  }
+
+  const fallbackDetails = new Map<string, number>();
+  for (const summary of summaries) {
+    for (const pool of summary.candidatePools) {
+      if (!pool.fallback || !pool.fallbackReason) continue;
+      const key = `${pool.category}\t${pool.stage}\t${pool.fallbackReason}`;
+      fallbackDetails.set(key, (fallbackDetails.get(key) ?? 0) + 1);
+    }
+  }
+  lines.push(
+    "",
+    "## Fallbacks by Stage and Reason",
+    "",
+    "| Category | Stage | Reason | Count |",
+    "| --- | --- | --- | ---: |"
+  );
+  for (const [key, count] of [...fallbackDetails.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))) {
+    const [category, stage, reason] = key.split("\t");
+    lines.push(`| ${category} | ${stage} | ${reason} | ${count} |`);
+  }
+
+  const styleGroups = new Map<string, SweepSummary[]>();
+  for (const summary of summaries) {
+    const key = `${summary.name}\t${summary.mood}`;
+    const group = styleGroups.get(key) ?? [];
+    group.push(summary);
+    styleGroups.set(key, group);
+  }
+  lines.push(
+    "",
+    "## Effective Candidates and Motif Concentration",
+    "",
+    "| Style Scenario | Mood | Category | Selections | Avg Candidates | Min | Max | Top Motif | Top Rate |",
+    "| --- | --- | --- | ---: | ---: | ---: | ---: | --- | ---: |"
+  );
+  for (const [key, group] of [...styleGroups.entries()].sort((a, b) => a[0].localeCompare(b[0]))) {
+    const [scenario, mood] = key.split("\t");
+    const aggregates = aggregateCategories(group);
+    for (const category of TRACKED_MOTIF_CATEGORIES) {
+      const aggregate = aggregates[category];
+      const average = aggregate.selectionChecks > 0
+        ? (aggregate.candidateTotal / aggregate.selectionChecks).toFixed(2)
+        : "n/a";
+      const top = topMotif(group, category);
+      lines.push(
+        `| ${scenario} | ${mood} | ${category} | ${aggregate.selectionChecks} | ${average} | ${aggregate.candidateMin ?? "n/a"} | ${aggregate.candidateMax ?? "n/a"} | ${top?.id ?? "n/a"} | ${top ? top.rate.toFixed(3) : "n/a"} |`
+      );
+    }
+  }
+
+  const shortageSignals = new Map<string, number>();
+  for (const summary of summaries) {
+    for (const pool of summary.candidatePools) {
+      if (!pool.fallback || pool.fallbackReason === "min_ratio") continue;
+      const tags = pool.requestedTags.length ? pool.requestedTags.join(",") : "(none)";
+      const key = `${summary.name}\t${summary.mood}\t${pool.category}\t${pool.stage}\t${pool.fallbackReason ?? "unknown"}\t${tags}`;
+      shortageSignals.set(key, (shortageSignals.get(key) ?? 0) + 1);
+    }
+  }
+  lines.push(
+    "",
+    "## Material Shortage Signals",
+    "",
+    "`min_ratio` is excluded because it intentionally preserves a broader candidate pool.",
+    "",
+    "| Style Scenario | Mood | Category | Stage | Reason | Requested Tags | Count |",
+    "| --- | --- | --- | --- | --- | --- | ---: |"
+  );
+  for (const [key, count] of [...shortageSignals.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))) {
+    const [scenario, mood, category, stage, reason, tags] = key.split("\t");
+    lines.push(`| ${scenario} | ${mood} | ${category} | ${stage} | ${reason} | ${tags} | ${count} |`);
   }
 
   return `${lines.join("\n")}\n`;
@@ -298,11 +526,17 @@ const argv = process.argv.slice(2);
 const seeds = parseSeeds(argv);
 const assertMode = argv.includes("--assert");
 const summaries = SCENARIOS.flatMap((scenario) => seeds.map((seed) => summarizeScenario(scenario, seed)));
+const outputArg = argv.find((arg) => arg.startsWith("--output="));
+const outputPath = outputArg?.slice("--output=".length);
+const rendered = argv.includes("--json")
+  ? `${JSON.stringify(summaries, null, 2)}\n`
+  : renderMarkdown(summaries);
 
-if (argv.includes("--json")) {
-  console.log(JSON.stringify(summaries, null, 2));
+if (outputPath) {
+  writeFileSync(outputPath, rendered, "utf8");
+  console.error(`Wrote seed sweep report to ${outputPath}`);
 } else {
-  console.log(renderMarkdown(summaries));
+  console.log(rendered);
 }
 
 if (assertMode) {

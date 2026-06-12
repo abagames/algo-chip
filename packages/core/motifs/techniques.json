@@ -10,6 +10,7 @@
       "channels": ["square1", "square2"],
       "minDurationBeats": 1.5,
       "requireMeasureBoundary": true,
+      "styleFlag": "filterMotion",
       "steps": [0.5, 0.75, 0.25]
     },
     {
@@ -18,6 +19,7 @@
       "channels": ["square1", "square2"],
       "minDurationBeats": 2,
       "requireMeasureBoundary": true,
+      "styleFlag": "percussiveLayering",
       "steps": [0.18, 0.38, 0.24]
     },
     {
@@ -25,6 +27,7 @@
       "param": "duty",
       "channels": ["square2"],
       "minDurationBeats": 4,
+      "styleFlag": "gradualBuild",
       "steps": [0.28, 0.46, 0.62, 0.76]
     },
     {
@@ -32,6 +35,7 @@
       "param": "duty",
       "channels": ["square1"],
       "minDurationBeats": 3,
+      "styleFlag": "gradualBuild",
       "steps": [0.22, 0.4, 0.56]
     },
     {
@@ -39,6 +43,7 @@
       "param": "duty",
       "channels": ["square1", "square2"],
       "minDurationBeats": 0.5,
+      "styleFlag": "syncopationBias",
       "steps": [0.12, 0.75, 0.12, 0.75]
     },
     {
@@ -46,6 +51,7 @@
       "param": "duty",
       "channels": ["square2"],
       "minDurationBeats": 2,
+      "styleFlag": "lofiFeel",
       "steps": [0.3, 0.5, 0.3, 0.5]
     }
   ],
@@ -55,56 +61,64 @@
       "channel": "triangle",
       "param": "gain",
       "measureBoundaryValue": 0.9,
-      "defaultValue": 0.7
+      "defaultValue": 0.7,
+      "styleFlag": "percussiveLayering"
     },
     {
       "id": "GP_NOISE_BREAK_SPILL",
       "channel": "noise",
       "param": "gain",
       "measureBoundaryValue": 0.82,
-      "defaultValue": 0.7
+      "defaultValue": 0.7,
+      "styleFlag": "breakInsertion"
     },
     {
       "id": "GP_MINIMAL_BASS_SIDECHAIN",
       "channel": "square2",
       "param": "gain",
       "measureBoundaryValue": 0.68,
-      "defaultValue": 0.56
+      "defaultValue": 0.56,
+      "styleFlag": "percussiveLayering"
     },
     {
       "id": "GP_MINIMAL_PERC_FADE",
       "channel": "noise",
       "param": "gain",
       "measureBoundaryValue": 0.7,
-      "defaultValue": 0.58
+      "defaultValue": 0.58,
+      "styleFlag": "percussiveLayering"
     },
     {
       "id": "GP_PROGRESSIVE_PAD_SWELL",
       "channel": "triangle",
       "param": "gain",
       "measureBoundaryValue": 0.88,
-      "defaultValue": 0.74
+      "defaultValue": 0.74,
+      "styleFlag": "gradualBuild"
     },
     {
       "id": "GP_PROGRESSIVE_SQUARE_GLIDE",
       "channel": "square1",
       "param": "gain",
       "measureBoundaryValue": 0.8,
-      "defaultValue": 0.66
+      "defaultValue": 0.66,
+      "styleFlag": "gradualBuild"
     },
     {
       "id": "GP_BREAKBEAT_CRASH",
       "channel": "noise",
       "param": "gain",
       "measureBoundaryValue": 0.92,
-      "defaultValue": 0.78
+      "defaultValue": 0.78,
+      "styleFlag": "breakInsertion"
     },
     {
       "id": "GP_LOFI_TAPE_DROP",
       "channel": "square1",
       "param": "gain",
       "measureBoundaryValue": 0.72,
-      "defaultValue": 0.62
+      "defaultValue": 0.62,
+      "styleFlag": "lofiFeel"
     }
   ],
   "sweepOrnaments": [

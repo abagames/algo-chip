@@ -114,15 +114,6 @@
     ]
   },
   {
-    "id": "DP013",
-    "length_beats": 4,
-    "type": "beat",
-    "pattern": "K-H-K-H-S-H-K-H-",
-    "tags": [
-      "loop_safe"
-    ]
-  },
-  {
     "id": "DP014",
     "length_beats": 4,
     "type": "beat",

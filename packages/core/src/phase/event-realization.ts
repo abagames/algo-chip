@@ -105,18 +105,19 @@ function adjustVelocityForChannel(
   const isBassRole = role === "bass" || role === "bassAlt";
   const isMelodyRole = role === "melody" || role === "melodyAlt";
   const isSquare = channel === "square1" || channel === "square2";
+  const isLowBass = isBassRole && midi < VELOCITY_PITCH_THRESHOLD.BASS_LOW_RANGE;
 
   // Apply bass role scaling
   if (isBassRole) {
     scale *= VELOCITY_CHANNEL_SCALE.BASS_BASE;
-    if (midi < VELOCITY_PITCH_THRESHOLD.BASS_LOW_RANGE) {
-      scale *= VELOCITY_CHANNEL_SCALE.BASS_LOW_RANGE;
-    }
   }
 
   // Apply triangle channel scaling
   if (channel === "triangle") {
     scale *= VELOCITY_CHANNEL_SCALE.TRIANGLE_BASE;
+    if (isLowBass) {
+      scale *= VELOCITY_CHANNEL_SCALE.TRIANGLE_LOW_RANGE_BOOST;
+    }
     if (!isBassRole) {
       scale *= VELOCITY_CHANNEL_SCALE.TRIANGLE_NON_BASS;
     }
@@ -125,6 +126,9 @@ function adjustVelocityForChannel(
   // Apply square bass scaling
   if (isSquare && isBassRole) {
     scale *= VELOCITY_CHANNEL_SCALE.SQUARE_BASS;
+    if (isLowBass) {
+      scale *= VELOCITY_CHANNEL_SCALE.BASS_LOW_RANGE;
+    }
   }
 
   // Apply melody channel scaling

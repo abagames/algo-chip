@@ -1,4 +1,4 @@
-import { CompositionOptions, PipelineCompositionOptions, PipelineResult, ResolvedStyleProfile } from "./types.js";
+import { CompositionOptions, GenerationExperiments, PipelineCompositionOptions, PipelineResult, ResolvedStyleProfile } from "./types.js";
 import { planStructure } from "./phase/structure-planning.js";
 import { selectMotifs } from "./phase/motif-selection.js";
 import { realizeEvents } from "./phase/event-realization.js";
@@ -28,6 +28,23 @@ export function runPipeline(options: CompositionOptions): PipelineResult {
   // Convert modern TwoAxisStyle API to pipeline-friendly options while preserving
   // the simplified mood/tempo/seed parameters used internally.
   const { pipeline, profile, replayOptions } = resolveOptions(options);
+  return runResolvedPipeline(pipeline, profile, replayOptions);
+}
+
+/** Runs isolated report experiments without adding experimental fields to the public API. */
+export function runPipelineExperiment(
+  options: CompositionOptions,
+  experiments: GenerationExperiments
+): PipelineResult {
+  const { pipeline, profile, replayOptions } = resolveOptions(options);
+  return runResolvedPipeline({ ...pipeline, experiments }, profile, replayOptions);
+}
+
+function runResolvedPipeline(
+  pipeline: PipelineCompositionOptions,
+  profile: ResolvedStyleProfile,
+  replayOptions: CompositionOptions
+): PipelineResult {
 
   // Phase execution is strictly sequential because each phase depends on the previous.
   // Phase 1 must determine BPM before Phase 2 can select tempo-appropriate motifs.
@@ -45,7 +62,7 @@ export function runPipeline(options: CompositionOptions): PipelineResult {
   // Techniques are applied after basic notes are generated so they can
   // scan the complete note timeline and make context-aware decisions
   // (e.g., duty sweeps only on sustained notes, gain automation across sections).
-  const techniquesApplied = applyTechniques(eventRealization, structurePlan.styleIntent);
+  const techniquesApplied = applyTechniques(eventRealization, structurePlan.styleIntent, pipeline.stylePreset);
 
   // Timeline finalization is the last step because it converts beat-time to
   // absolute seconds, which requires knowing the final BPM and validating loop integrity.

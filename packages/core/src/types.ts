@@ -1,6 +1,8 @@
 export type TempoSetting = "slow" | "medium" | "fast";
 export type MoodSetting = "upbeat" | "sad" | "tense" | "peaceful";
 
+export const DEFAULT_SECTION_REPEAT_BIAS = 0.25;
+
 /**
  * Two-axis style specification for intuitive composition control
  */
@@ -134,7 +136,8 @@ export interface CompositionOptions {
   mode?: "major" | "minor";
   /**
    * Controls whether reprised hooks repeat exactly or use varied pitch motifs.
-   * 0.0 = Maximum variation, 1.0 = Always repeat exactly. Default: 0.3.
+   * 0.0 = Maximum variation, 1.0 = Always repeat exactly. Default: 0.25.
+   * Values below 0.25 may choose a varied hook; values 0.25 or above repeat exactly.
    */
   sectionRepeatBias?: number;
 }
@@ -155,12 +158,20 @@ export interface PipelineCompositionOptions {
    * Controls whether reprised hooks (e.g. A2) repeat exactly or use a varied pitch motif.
    * 0.0 = Maximum variation (pitch motif always replaced on reprise)
    * 1.0 = Always repeat exactly (maximum coherence)
-   * Default: 0.15 — usually varied (hook variation fires when value <= 0.20)
+   * Default: 0.25 (hook variation may fire only when value is below 0.25)
    *
    * When variation fires, only the pitch-degree motif changes; rhythm and
    * note-duration motifs are preserved from the original hook.
    */
   sectionRepeatBias?: number;
+  /** Internal report-only switches used for isolated generation experiments. */
+  experiments?: GenerationExperiments;
+}
+
+export interface GenerationExperiments {
+  templateCacheScope?: "template" | "section";
+  varyNonInitialPhraseMelody?: boolean;
+  weakBeatQuantization?: "chord" | "scale";
 }
 
 /**
@@ -229,6 +240,7 @@ export interface AbstractNote {
   degree: number;
   velocity: number;
   sectionId: string;
+  motifId?: string;
 }
 
 export interface DrumHit {
@@ -271,6 +283,8 @@ export interface SectionMotifPlan {
   primaryMelodyRhythm: string;
   reprisesHook: boolean;
   hookReuse: "none" | "exact" | "varied";
+  hookVariationSource?: "melody_variation" | "fallback";
+  hookOriginalMelody?: string;
 }
 
 export interface TechniqueStrategy {
@@ -322,6 +336,7 @@ export interface MotifCandidatePoolDiagnostic {
   afterCount: number;
   fallback: boolean;
   fallbackReason?: "empty_match" | "min_ratio" | "empty_pool";
+  selectedId?: string;
 }
 
 export interface MotifSelectionDiagnostics {
@@ -331,6 +346,55 @@ export interface MotifSelectionDiagnostics {
     exact: number;
     varied: number;
   };
+  motifSequence: MotifSequenceDiagnostic[];
+  cacheEvents: MotifCacheDiagnostic[];
+  melodyPitch: MelodyPitchDiagnostic[];
+}
+
+export type MotifCacheSource =
+  | "new_selection"
+  | "template_cache"
+  | "hook_reuse"
+  | "base_reuse"
+  | "variation";
+
+export interface MotifCacheDiagnostic {
+  sectionId: string;
+  phraseIndex: number;
+  measureIndex?: number;
+  category: "rhythm" | "melody" | "melodyRhythm" | "bass" | "drums";
+  motifId: string;
+  source: MotifCacheSource;
+}
+
+export interface MotifSequenceDiagnostic {
+  sectionId: string;
+  templateId: string;
+  occurrenceIndex: number;
+  phraseIndex: number;
+  measureIndex: number;
+  measureInSection: number;
+  texture: TextureProfile;
+  chord: string;
+  rhythm: string;
+  melody: string;
+  melodyRhythm: string;
+  bass?: string;
+  drums?: string;
+}
+
+export interface MelodyPitchDiagnostic {
+  sectionId: string;
+  measureIndex: number;
+  startBeat: number;
+  durationBeats: number;
+  motifId?: string;
+  degree: number;
+  scaleMidi: number;
+  correctedMidi: number;
+  velocity: number;
+  strongBeat: boolean;
+  changed: boolean;
 }
 
 export interface LoopIntegrityDiagnostics {
@@ -352,6 +416,70 @@ export interface LoopIntegrityDiagnostics {
   maxReleaseOverhangSeconds: number;
 }
 
+export type TheoryNoteRole = VoiceRole | "drums" | "unknown";
+export type TheoryToneClass = "chord_tone" | "tension" | "scale_tone" | "non_scale_tone";
+export type TheoryIssueSeverity = "warning" | "error";
+export type TheoryIssueCause =
+  | "motif"
+  | "quantization"
+  | "bass_generation"
+  | "accompaniment_generation"
+  | "timeline_finalization";
+
+export interface TheoryNoteDiagnostic {
+  startBeat: number;
+  endBeat: number;
+  durationBeats: number;
+  measureIndex: number;
+  beatInMeasure: number;
+  sectionId: string;
+  channel: Channel;
+  role: TheoryNoteRole;
+  chord: string;
+  midi: number;
+  toneClass: TheoryToneClass;
+  chordInterval: number;
+  strongBeat: boolean;
+}
+
+export interface TheoryIssueDiagnostic {
+  severity: TheoryIssueSeverity;
+  rule: string;
+  cause: TheoryIssueCause;
+  message: string;
+  beat: number;
+  measureIndex: number;
+  sectionId: string;
+  channels: Channel[];
+  roles: TheoryNoteRole[];
+  midi: number[];
+}
+
+export interface TheoryAuditDiagnostics {
+  notes: TheoryNoteDiagnostic[];
+  toneCounts: Record<TheoryToneClass, number>;
+  roleCounts: Partial<Record<TheoryNoteRole, number>>;
+  bassFunctions: {
+    root: number;
+    fifth: number;
+    approach: number;
+    other: number;
+  };
+  collisionCounts: {
+    minorSecondOrMajorSeventh: number;
+    sustainedMinorSecond: number;
+    voiceCrossing: number;
+    denseUnisonRepeats: number;
+  };
+  boundaryCounts: {
+    sectionWarnings: number;
+    loopWarnings: number;
+    loopErrors: number;
+  };
+  warnings: TheoryIssueDiagnostic[];
+  errors: TheoryIssueDiagnostic[];
+}
+
 export interface Diagnostics {
   voiceAllocation: Array<{
     time: number;
@@ -363,6 +491,7 @@ export interface Diagnostics {
     tail: Event[];
   };
   loopIntegrity: LoopIntegrityDiagnostics;
+  theoryAudit: TheoryAuditDiagnostics;
   motifUsage: {
     rhythm: Record<string, number>;
     melody: Record<string, number>;
@@ -435,15 +564,22 @@ export interface MotifLibraries {
 export interface RhythmMotif {
   id: string;
   length: number;
-  pattern: number[];
+  pattern: RhythmPatternStep[];
   tags: string[];
   variations: string[];
 }
+
+export type RhythmPatternStep = number | {
+  value: number;
+  accent?: boolean;
+  rest?: boolean;
+};
 
 export interface MelodyFragment {
   id: string;
   pattern: number[];
   tags: string[];
+  variations?: string[];
 }
 
 export interface DrumPattern {
@@ -492,6 +628,7 @@ export interface TechniqueLibrary {
     minDurationBeats: number;
     requireMeasureBoundary?: boolean;
     steps: number[];
+    styleFlag?: keyof StyleIntent;
   }>;
   gainProfiles: Array<{
     id: string;
@@ -499,6 +636,7 @@ export interface TechniqueLibrary {
     param: string;
     measureBoundaryValue: number;
     defaultValue: number;
+    styleFlag?: keyof StyleIntent;
   }>;
   pitchBendOrnaments?: Array<{
     id: string;

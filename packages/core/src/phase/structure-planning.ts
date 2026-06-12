@@ -7,13 +7,13 @@ import {
   StylePreset,
   TexturePlan,
   TextureProfile,
-  VoiceArrangement
+  VoiceArrangement,
+  VoiceArrangementPreset
 } from "../types.js";
-import { selectVoiceArrangement } from "./structure-planning/voice-arrangement-selector.js";
-import { TEXTURE_VARIATION_PROBABILITY } from "./structure-planning/constants.js";
 import chordsJson from "../../motifs/chords.json" with { type: "json" };
 
 const chords = chordsJson as Record<string, Record<string, string[][]>>;
+const TEXTURE_VARIATION_PROBABILITY = 0.25;
 // Note: texture-profiles.json removed per REFACTOR_PLAN.md Step 1-E
 // Texture sequences now defined inline (see TEMPLATE_TEXTURE_SEQUENCE below)
 
@@ -29,6 +29,112 @@ const TEMPO_BASE: Record<PipelineCompositionOptions["tempo"], number> = {
   slow: 90,
   medium: 120,
   fast: 150
+};
+
+export const VOICE_ARRANGEMENTS: Record<VoiceArrangementPreset, VoiceArrangement> = {
+  standard: {
+    id: "standard",
+    description: "Classic melody + accompaniment + bass",
+    voices: [
+      { role: "melody", channel: "square1", priority: 1.0, octaveOffset: 0 },
+      { role: "accompaniment", channel: "square2", priority: 1.0, octaveOffset: 0 },
+      { role: "bass", channel: "triangle", priority: 1.0, octaveOffset: 0 }
+    ]
+  },
+  swapped: {
+    id: "swapped",
+    description: "Swapped square channels for tonal variety",
+    voices: [
+      { role: "melody", channel: "square2", priority: 1.0, octaveOffset: 0 },
+      { role: "accompaniment", channel: "square1", priority: 1.0, octaveOffset: 0 },
+      { role: "bass", channel: "triangle", priority: 1.0, octaveOffset: 0 }
+    ]
+  },
+  dualBass: {
+    id: "dualBass",
+    description: "Melody with dual bass (thick low end)",
+    voices: [
+      { role: "melody", channel: "square1", priority: 1.0, octaveOffset: 0 },
+      { role: "bass", channel: "square2", priority: 1.0, octaveOffset: 0, seedOffset: 0 },
+      { role: "bassAlt", channel: "triangle", priority: 0.7, octaveOffset: -1, seedOffset: 100 }
+    ]
+  },
+  bassLed: {
+    id: "bassLed",
+    description: "Bass-focused with sparse melodic decoration",
+    voices: [
+      { role: "bass", channel: "triangle", priority: 1.0, octaveOffset: -1, seedOffset: 0 },
+      { role: "bassAlt", channel: "square2", priority: 0.8, octaveOffset: 0, seedOffset: 200 },
+      { role: "melody", channel: "square1", priority: 0.3, octaveOffset: 0 }
+    ]
+  },
+  layeredBass: {
+    id: "layeredBass",
+    description: "Layered bass with complementary square/triangle movement",
+    voices: [
+      { role: "bass", channel: "square1", priority: 1.0, octaveOffset: 0, seedOffset: 0 },
+      { role: "bassAlt", channel: "triangle", priority: 0.85, octaveOffset: 0, seedOffset: 160 },
+      { role: "melody", channel: "square2", priority: 1.0, octaveOffset: 0 }
+    ]
+  },
+  minimal: {
+    id: "minimal",
+    description: "Minimal techno: bass + sparse pad only",
+    voices: [
+      { role: "bass", channel: "square1", priority: 1.0, octaveOffset: 0 },
+      { role: "pad", channel: "triangle", priority: 0.4, octaveOffset: 0 }
+    ]
+  },
+  breakLayered: {
+    id: "breakLayered",
+    description: "Breakbeat layering: dual bass pressure with agile lead",
+    voices: [
+      { role: "bass", channel: "square1", priority: 1.0, octaveOffset: 0, seedOffset: 0 },
+      { role: "bassAlt", channel: "triangle", priority: 0.95, octaveOffset: -1, seedOffset: 140 },
+      { role: "melody", channel: "square2", priority: 0.85, octaveOffset: 0, seedOffset: 240 }
+    ]
+  },
+  lofiPadLead: {
+    id: "lofiPadLead",
+    description: "Lo-fi pad-first texture with gentle lead flourishes",
+    voices: [
+      { role: "pad", channel: "triangle", priority: 0.9, octaveOffset: -1 },
+      { role: "accompaniment", channel: "square2", priority: 1.0, octaveOffset: -1, seedOffset: 60 },
+      { role: "melody", channel: "square1", priority: 0.45, octaveOffset: 0, seedOffset: 180 }
+    ]
+  },
+  retroPulse: {
+    id: "retroPulse",
+    description: "Retro loopwave pulse arpeggios with anchored bass",
+    voices: [
+      { role: "melody", channel: "square1", priority: 1.0, octaveOffset: 0, seedOffset: 80 },
+      { role: "accompaniment", channel: "square2", priority: 0.85, octaveOffset: 0, seedOffset: 140 },
+      { role: "bass", channel: "triangle", priority: 0.9, octaveOffset: -1, seedOffset: 40 }
+    ]
+  }
+};
+
+export const ARRANGEMENT_WEIGHTS_BY_STYLE: Record<
+  StylePreset,
+  Partial<Record<VoiceArrangementPreset, number>>
+> = {
+  minimalTechno: { standard: 2, minimal: 5, bassLed: 3, dualBass: 2, swapped: 1, layeredBass: 1 },
+  progressiveHouse: { standard: 4, swapped: 3, layeredBass: 3, dualBass: 2, bassLed: 1, minimal: 0 },
+  retroLoopwave: { standard: 2, swapped: 3, retroPulse: 5, layeredBass: 1, minimal: 0, bassLed: 1 },
+  breakbeatJungle: { breakLayered: 5, dualBass: 3, layeredBass: 2, bassLed: 2, standard: 1, swapped: 1, minimal: 0 },
+  lofiChillhop: { lofiPadLead: 5, minimal: 3, standard: 2, swapped: 1, bassLed: 1, layeredBass: 0, dualBass: 1 }
+};
+
+export const DEFAULT_ARRANGEMENT_WEIGHTS: Record<VoiceArrangementPreset, number> = {
+  standard: 3,
+  swapped: 3,
+  dualBass: 3,
+  bassLed: 3,
+  layeredBass: 3,
+  minimal: 2,
+  breakLayered: 3,
+  lofiPadLead: 3,
+  retroPulse: 3
 };
 
 /**
@@ -433,6 +539,36 @@ function randomFromSeed(seed: number | undefined, salt: number): number {
   return value / 0xffffffff;
 }
 
+function selectVoiceArrangement(
+  seed: number | undefined,
+  stylePreset: StylePreset | undefined
+): VoiceArrangement {
+  const weights = stylePreset
+    ? { ...DEFAULT_ARRANGEMENT_WEIGHTS, ...ARRANGEMENT_WEIGHTS_BY_STYLE[stylePreset] }
+    : DEFAULT_ARRANGEMENT_WEIGHTS;
+  const entries = Object.entries(weights) as [VoiceArrangementPreset, number][];
+  const totalWeight = entries.reduce((sum, [, weight]) => sum + weight, 0);
+  const roll = randomFromSeed(seed, 100);
+  let cumulative = 0;
+
+  for (const [preset, weight] of entries) {
+    cumulative += weight / totalWeight;
+    if (roll < cumulative) {
+      return VOICE_ARRANGEMENTS[preset];
+    }
+  }
+
+  return VOICE_ARRANGEMENTS.standard;
+}
+
+function randomTextureAlternative(seed: number | undefined, salt: number): number {
+  let value = ((seed ?? 0) ^ salt ^ 0x9e3779b9) >>> 0;
+  value = Math.imul(value ^ (value >>> 16), 0x21f0aaad) >>> 0;
+  value = Math.imul(value ^ (value >>> 15), 0x735a2d97) >>> 0;
+  value ^= value >>> 15;
+  return (value >>> 0) / 0xffffffff;
+}
+
 function selectChordProgressions(
   key: string,
   moodTags: string[],
@@ -721,7 +857,7 @@ function resolveTexture(
   if (variationRoll < TEXTURE_VARIATION_PROBABILITY) {
     const allTextures: TextureProfile[] = ["steady", "broken", "arpeggio"];
     const alternatives = allTextures.filter((t) => t !== plannedTexture);
-    const index = Math.floor(randomFromSeed(seed, 3000 + variationSalt) * alternatives.length);
+    const index = Math.floor(randomTextureAlternative(seed, 3000 + variationSalt) * alternatives.length);
     return alternatives[index] ?? plannedTexture;
   }
 

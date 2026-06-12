@@ -3067,6 +3067,7 @@
       "legato",
       "cadence",
       "loop_safe",
+      "peaceful",
       "simple"
     ]
   },
@@ -3324,33 +3325,6 @@
       "grid16",
       "simple",
       "syncopated"
-    ]
-  },
-  {
-    "id": "MR074",
-    "length": 4,
-    "pattern": [
-      {
-        "value": 4
-      },
-      {
-        "value": 8
-      },
-      {
-        "value": 8
-      },
-      {
-        "value": 2,
-        "accent": true
-      }
-    ],
-    "tags": [
-      "end",
-      "cadence",
-      "loop_safe",
-      "legato",
-      "peaceful",
-      "simple"
     ]
   },
   {
@@ -3908,6 +3882,94 @@
       "breakbeat",
       "grid16",
       "percussive_layer"
+    ]
+  },
+  {
+    "id": "MR088",
+    "length": 8,
+    "pattern": [
+      {
+        "value": 4
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 8,
+        "rest": true
+      },
+      {
+        "value": 2
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 8,
+        "rest": true
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 4
+      }
+    ],
+    "tags": [
+      "start",
+      "middle",
+      "peaceful",
+      "simple",
+      "legato",
+      "lofi",
+      "texture_loop",
+      "loop_safe"
+    ]
+  },
+  {
+    "id": "MR089",
+    "length": 8,
+    "pattern": [
+      {
+        "value": 2
+      },
+      {
+        "value": 8,
+        "rest": true
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 4
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 8
+      },
+      {
+        "value": 4,
+        "rest": true
+      },
+      {
+        "value": 2,
+        "accent": true
+      }
+    ],
+    "tags": [
+      "middle",
+      "end",
+      "peaceful",
+      "simple",
+      "legato",
+      "lofi",
+      "cadence",
+      "loop_safe"
     ]
   }
 ]

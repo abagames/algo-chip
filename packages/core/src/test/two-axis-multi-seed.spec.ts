@@ -16,6 +16,8 @@ describe("Two-Axis Multi-Seed Test", () => {
     it("should consistently return harmonicStatic=true across all seeds", () => {
       let failedSeeds: number[] = [];
       let wrongTempoSeeds: number[] = [];
+      let wrongEnergySeeds: number[] = [];
+      let outOfRangeBpmSeeds: number[] = [];
 
       for (const seed of SEEDS) {
         const result = runPipeline({
@@ -32,19 +34,19 @@ describe("Two-Axis Multi-Seed Test", () => {
         // Check harmonicStatic
         if (!intent.harmonicStatic) {
           failedSeeds.push(seed);
-          console.log(`❌ Seed ${seed}: harmonicStatic=${intent.harmonicStatic}`);
         }
 
         // Check tempo
         if (result.meta.tempo !== "slow") {
           wrongTempoSeeds.push(seed);
-          console.log(`❌ Seed ${seed}: tempo=${result.meta.tempo} (expected: slow)`);
+        }
+        if (result.meta.profile.tags.energy !== "low") {
+          wrongEnergySeeds.push(seed);
+        }
+        if (result.meta.bpm < 75 || result.meta.bpm > 105) {
+          outOfRangeBpmSeeds.push(seed);
         }
       }
-
-      console.log(`\n✅ Tested ${SEEDS.length} seeds`);
-      console.log(`✅ harmonicStatic=true: ${SEEDS.length - failedSeeds.length}/${SEEDS.length}`);
-      console.log(`✅ tempo=slow: ${SEEDS.length - wrongTempoSeeds.length}/${SEEDS.length}`);
 
       assert.strictEqual(
         failedSeeds.length,
@@ -57,6 +59,8 @@ describe("Two-Axis Multi-Seed Test", () => {
         0,
         `tempo should be slow for all seeds. Failed seeds: ${wrongTempoSeeds.join(", ")}`
       );
+      assert.strictEqual(wrongEnergySeeds.length, 0, `energy should be low for all seeds`);
+      assert.strictEqual(outOfRangeBpmSeeds.length, 0, `BPM should remain in the 75-105 slow range`);
     });
   });
 
@@ -81,26 +85,18 @@ describe("Two-Axis Multi-Seed Test", () => {
         // Check percussive flags
         if (!intent.percussiveLayering || !intent.syncopationBias) {
           failedPercussive.push(seed);
-          console.log(`❌ Seed ${seed}: percussiveLayering=${intent.percussiveLayering}, syncopationBias=${intent.syncopationBias}`);
         }
 
         // Check energetic flags
         if (!intent.gradualBuild) {
           failedEnergetic.push(seed);
-          console.log(`❌ Seed ${seed}: gradualBuild=${intent.gradualBuild}`);
         }
 
         // Check tempo
         if (result.meta.tempo !== "fast") {
           wrongTempoSeeds.push(seed);
-          console.log(`❌ Seed ${seed}: tempo=${result.meta.tempo} (expected: fast)`);
         }
       }
-
-      console.log(`\n✅ Tested ${SEEDS.length} seeds`);
-      console.log(`✅ Percussive flags correct: ${SEEDS.length - failedPercussive.length}/${SEEDS.length}`);
-      console.log(`✅ Energetic flags correct: ${SEEDS.length - failedEnergetic.length}/${SEEDS.length}`);
-      console.log(`✅ tempo=fast: ${SEEDS.length - wrongTempoSeeds.length}/${SEEDS.length}`);
 
       assert.strictEqual(failedPercussive.length, 0, `Percussive flags should be consistent`);
       assert.strictEqual(failedEnergetic.length, 0, `Energetic flags should be consistent`);
@@ -135,8 +131,6 @@ describe("Two-Axis Multi-Seed Test", () => {
             failedSeeds.push(seed);
           }
         }
-
-        console.log(`${testCase.name} (${testCase.pm}, ${testCase.ce}): ${SEEDS.length - failedSeeds.length}/${SEEDS.length} correct`);
 
         assert.strictEqual(
           failedSeeds.length,

@@ -84,6 +84,7 @@
  */
 
 import {
+  DEFAULT_SECTION_REPEAT_BIAS,
   AbstractNote,
   PipelineCompositionOptions,
   StructurePlanResult,
@@ -104,7 +105,9 @@ import {
   StylePreset,
   VoiceArrangementPreset,
   MotifSelectionDiagnostics,
-  MotifSelectionDiagnosticCategory
+  MotifSelectionDiagnosticCategory,
+  MotifCacheSource,
+  MelodyFragment
 } from "../types.js";
 import {
   BEATS_PER_MEASURE,
@@ -126,51 +129,25 @@ import {
   establishesHook,
   repriseHook
 } from "./structure-planning.js";
-import rhythmMotifsJson from "../../motifs/rhythm.json" with { type: "json" };
-import melodyFragmentsJson from "../../motifs/melody.json" with { type: "json" };
-import melodyRhythmsJson from "../../motifs/melody-rhythm.json" with { type: "json" };
-import drumPatternsJson from "../../motifs/drums.json" with { type: "json" };
-import bassPatternsJson from "../../motifs/bass-patterns.json" with { type: "json" };
-import transitionsJson from "../../motifs/transitions.json" with { type: "json" };
-
-const rhythmMotifs = rhythmMotifsJson;
-const melodyFragments = melodyFragmentsJson;
-const melodyRhythms = melodyRhythmsJson;
-const drumPatterns = drumPatternsJson;
-const bassPatternLibrary = bassPatternsJson;
-const transitionPatternLibrary = transitionsJson;
-
-const rhythmList = rhythmMotifs as any as {
-  id: string;
-  length: number;
-  pattern: number[];
-  tags: string[];
-  variations: string[];
-}[];
-const melodyList = melodyFragments as any as {
-  id: string;
-  pattern: number[];
-  tags: string[];
-}[];
-const melodyById = new Map(melodyList.map((fragment) => [fragment.id, fragment]));
-const melodyRhythmList = melodyRhythms as MelodyRhythmMotif[];
-const melodyRhythmById = new Map(melodyRhythmList.map((motif) => [motif.id, motif]));
-const drumList = drumPatterns as any as {
-  id: string;
-  length_beats: number;
-  type: "beat" | "fill";
-  pattern: string;
-  tags?: string[];
-}[];
-const drumById = new Map(drumList.map((pattern) => [pattern.id, pattern]));
-const bassPatternList = (bassPatternLibrary.patterns ?? []) as BassPatternMotif[];
-const bassPatternsByTexture = bassPatternList.reduce<Map<string, BassPatternMotif[]>>((acc, motif) => {
-  const list = acc.get(motif.texture) ?? [];
-  list.push(motif);
-  acc.set(motif.texture, list);
-  return acc;
-}, new Map());
-const transitionList = (transitionPatternLibrary.transitions ?? []) as TransitionMotif[];
+import {
+  bassPatternList,
+  bassPatternsByTexture,
+  convertToBeats,
+  drumById,
+  drumList,
+  expandMelodyRhythmPattern,
+  expandRhythmPattern,
+  melodyById,
+  melodyList,
+  melodyRhythmById,
+  melodyRhythmList,
+  rhythmList,
+  transitionList
+} from "../motif-library.js";
+import type {
+  ExpandedMelodyRhythmStep,
+  ExpandedRhythmStep
+} from "../motif-library.js";
 const DEFAULT_BASS_STEPS: BassPatternMotif["steps"] = [
   "root",
   "root",
@@ -512,7 +489,10 @@ function createMotifSelectionDiagnostics(): MotifSelectionDiagnostics {
     hookReuse: {
       exact: 0,
       varied: 0
-    }
+    },
+    motifSequence: [],
+    cacheEvents: [],
+    melodyPitch: []
   };
 }
 
@@ -525,7 +505,8 @@ function recordCandidatePool(
   matchedCount: number,
   afterCount: number,
   fallback: boolean,
-  fallbackReason?: "empty_match" | "min_ratio" | "empty_pool"
+  fallbackReason?: "empty_match" | "min_ratio" | "empty_pool",
+  selectedId?: string
 ): void {
   if (!diagnostics) {
     return;
@@ -538,11 +519,35 @@ function recordCandidatePool(
     matchedCount,
     afterCount,
     fallback,
-    fallbackReason
+    fallbackReason,
+    selectedId
   });
   if (fallback) {
     diagnostics.fallbackCount += 1;
   }
+}
+
+function pickWithSelectionDiagnostics<T extends { id?: string }>(
+  candidates: T[],
+  rng: () => number,
+  avoidId: string | undefined,
+  diagnostics: MotifSelectionDiagnostics | undefined,
+  category: MotifSelectionDiagnosticCategory
+): T {
+  const selected = pickWithAvoid(candidates, rng, avoidId);
+  recordCandidatePool(
+    diagnostics,
+    category,
+    "selection",
+    [],
+    candidates.length,
+    candidates.length,
+    candidates.length,
+    false,
+    undefined,
+    selected.id
+  );
+  return selected;
 }
 
 function preferTagPresenceWithDiagnostics<T extends { tags?: string[] }>(
@@ -837,11 +842,11 @@ function selectRhythmMotif(
       .filter((motif): motif is (typeof rhythmList)[number] => Boolean(motif));
     if (variationCandidates.length && rng() < 0.5) {
       const variationPool = preferUnused(variationCandidates, used);
-      return pickWithAvoid(variationPool, rng, last.id);
+      return pickWithSelectionDiagnostics(variationPool, rng, last.id, diagnostics, "rhythm");
     }
   }
   const pool = preferUnused(candidates, used);
-  return pickWithAvoid(pool, rng, last?.id);
+  return pickWithSelectionDiagnostics(pool, rng, last?.id, diagnostics, "rhythm");
 }
 
 function selectMelodyFragment(
@@ -905,7 +910,7 @@ function selectMelodyFragment(
   }
 
   const pool = preferUnused(candidates, used);
-  return pickWithAvoid(pool, rng, lastFragment?.id);
+  return pickWithSelectionDiagnostics(pool, rng, lastFragment?.id, diagnostics, "melody");
 }
 
 function selectMelodyRhythmMotif(
@@ -970,7 +975,7 @@ function selectMelodyRhythmMotif(
   moodFiltered = filterHumanizedMelodyRhythms(moodFiltered, totalBeats);
 
   const pool = preferUnused(moodFiltered, used);
-  return pickWithAvoid(pool, rng, lastId);
+  return pickWithSelectionDiagnostics(pool, rng, lastId, diagnostics, "melodyRhythm");
 }
 
 function resolveMelodyVelocity(
@@ -1172,7 +1177,8 @@ function maybeAddPickupNote(
     durationBeats: 0.25,
     degree,
     velocity: VELOCITY_MELODY.PICKUP_BASE,
-    sectionId
+    sectionId,
+    motifId: baseMelody.id
   });
 }
 
@@ -1208,6 +1214,52 @@ function pickRhythmVariation(
     .map((id) => rhythmById.get(id))
     .filter((motif): motif is (typeof rhythmList)[number] => Boolean(motif))
     .filter((motif) => motif.tags.includes(functionTag) && hasAllTags(motif, requiredTags));
+  if (!variations.length) {
+    return undefined;
+  }
+  const pool = preferUnused(variations, used);
+  return pickWithAvoid(pool, rng, base.id);
+}
+
+const MELODY_FUNCTION_TAGS = ["start", "middle", "end", "cadence", "pickup"] as const;
+const MELODY_CONTOUR_TAGS = [
+  "ascending",
+  "descending",
+  "arch",
+  "valley",
+  "stepwise",
+  "leaping",
+  "static",
+  "sequence",
+  "neighbor",
+  "complex"
+] as const;
+
+function sharesAnyTag(base: MelodyFragment, candidate: MelodyFragment, tags: readonly string[]): boolean {
+  return tags.some((tag) => base.tags.includes(tag) && candidate.tags.includes(tag));
+}
+
+function isMelodyVariationCompatible(base: MelodyFragment, candidate: MelodyFragment): boolean {
+  return base.pattern.length === candidate.pattern.length &&
+    sharesAnyTag(base, candidate, MELODY_FUNCTION_TAGS) &&
+    sharesAnyTag(base, candidate, MELODY_CONTOUR_TAGS);
+}
+
+function pickMelodyVariation(
+  base: MelodyFragment,
+  requiredTags: string[],
+  rng: () => number,
+  used: Set<string>
+): MelodyFragment | undefined {
+  const variationIds = base.variations ?? [];
+  if (!variationIds.length) {
+    return undefined;
+  }
+  const variations = variationIds
+    .map((id) => melodyById.get(id))
+    .filter((motif): motif is MelodyFragment => Boolean(motif))
+    .filter((motif) => hasAllTags(motif, requiredTags))
+    .filter((motif) => isMelodyVariationCompatible(base, motif));
   if (!variations.length) {
     return undefined;
   }
@@ -1409,7 +1461,7 @@ function selectBassPattern(
     return undefined;
   }
   const pool = preferUnused(candidates, used);
-  return pickWithAvoid(pool, rng, avoidId);
+  return pickWithSelectionDiagnostics(pool, rng, avoidId, diagnostics, "bass");
 }
 
 /**
@@ -1570,28 +1622,6 @@ function bassStepToMidi(step: BassStep, chord: string, nextChord: string, baseMi
  * Expand rhythm motif pattern into beat durations
  * (Similar to expandMelodyRhythmPattern)
  */
-interface ExpandedRhythmStep {
-  durationBeats: number;
-}
-
-function expandRhythmPattern(motif: RhythmMotif): ExpandedRhythmStep[] {
-  const steps: ExpandedRhythmStep[] = motif.pattern.map((entry) => {
-    const noteValue = typeof entry === "number" ? entry : (entry as { value: number }).value;
-    return { durationBeats: convertToBeats(noteValue) };
-  });
-
-  // Validate that pattern sum matches declared length
-  const total = steps.reduce((sum, step) => sum + step.durationBeats, 0);
-  const tolerance = 1e-6;
-  if (Math.abs(total - motif.length) > tolerance) {
-    throw new Error(
-      `Rhythm motif ${motif.id} length mismatch. expected=${motif.length}, got=${total}`
-    );
-  }
-
-  return steps;
-}
-
 /**
  * Resolve accompaniment degree based on texture and position
  */
@@ -1738,26 +1768,6 @@ function buildAccompanimentSeeds(
   return seeds;
 }
 
-interface ExpandedMelodyRhythmStep {
-  durationBeats: number;
-  rest: boolean;
-  accent?: boolean;
-}
-
-function expandMelodyRhythmPattern(motif: MelodyRhythmMotif): ExpandedMelodyRhythmStep[] {
-  const steps: ExpandedMelodyRhythmStep[] = motif.pattern.map((entry) => ({
-    durationBeats: convertToBeats(entry.value),
-    rest: Boolean(entry.rest),
-    accent: entry.accent
-  }));
-  const total = steps.reduce((sum, step) => sum + step.durationBeats, 0);
-  const tolerance = 1e-6;
-  if (Math.abs(total - motif.length) > tolerance) {
-    throw new Error(`Melody rhythm motif ${motif.id} length mismatch. expected=${motif.length}, got=${total}`);
-  }
-  return steps;
-}
-
 function motifPassesHumanization(motif: MelodyRhythmMotif, totalBeats: number): boolean {
   const pattern = motif.pattern ?? [];
   if (!pattern.length) {
@@ -1833,6 +1843,7 @@ interface MotifContext {
   voiceArrangement: StructurePlanResult["voiceArrangement"];
   totalMeasures: number;
   motifSelectionDiagnostics: MotifSelectionDiagnostics;
+  experiments: PipelineCompositionOptions["experiments"];
 
   // Used motif tracking
   usedMotifs: {
@@ -1894,6 +1905,13 @@ function getOrCreateTemplateCache(
     templateMap.set(cacheKey, {});
   }
   return templateMap.get(cacheKey)!;
+}
+
+function templateCacheNamespace(
+  section: SectionDefinition,
+  experiments: PipelineCompositionOptions["experiments"]
+): string {
+  return experiments?.templateCacheScope === "section" ? section.id : section.templateId;
 }
 
 /**
@@ -1979,6 +1997,7 @@ function initializeMotifContext(
     voiceArrangement: phase1.voiceArrangement,
     totalMeasures: options.lengthInMeasures,
     motifSelectionDiagnostics: createMotifSelectionDiagnostics(),
+    experiments: options.experiments,
 
     usedMotifs: {
       rhythms: new Set<string>(),
@@ -2017,6 +2036,7 @@ interface PhraseContext {
   phraseMeasures: number;
   isFirstPhrase: boolean;
   phraseStartMeasureIndex: number;
+  phraseIndex: number;
   cachedHook: HookMotifs | undefined;
   baseRhythm: (typeof rhythmList)[number];
   baseMelody: (typeof melodyList)[number];
@@ -2035,6 +2055,7 @@ interface MeasureContext {
   requiredTags: string[];
   isHookMeasure: boolean;
   phraseOffset: number;
+  phraseIndex: number;
   rhythmMotif: (typeof rhythmList)[number];
 }
 
@@ -2101,7 +2122,16 @@ function createPhraseContext(
     context.rng
   );
 
-  const baseFunctionTag = functionalTagForMeasure(0, section.measures);
+  const phraseStartInSection = phraseStartMeasureIndex - section.startMeasure;
+  const phraseIndex = Math.floor(
+    phraseStartInSection / Math.max(1, getPhraseLengthForSection(section))
+  );
+  const phraseEndsSection = phraseStartInSection + phraseMeasures >= section.measures;
+  const baseFunctionTag = phraseStartInSection === 0
+    ? "start"
+    : phraseEndsSection
+      ? "end"
+      : "middle";
   const baseRequiredTags: string[] = [];
   if (phraseStartMeasureIndex === context.totalMeasures - 1) {
     baseRequiredTags.push("loop_safe");
@@ -2112,10 +2142,17 @@ function createPhraseContext(
   let baseRhythm: (typeof rhythmList)[number] | undefined;
   let baseMelody: (typeof melodyList)[number] | undefined;
   let baseMelodyRhythm: MelodyRhythmMotif | undefined;
+  let rhythmSource: MotifCacheSource = "new_selection";
+  let melodySource: MotifCacheSource = "new_selection";
+  let melodyRhythmSource: MotifCacheSource = "new_selection";
 
   const rhythmKey = cacheKey(baseFunctionTag, baseRequiredTags);
   const melodyKey = cacheKey(baseFunctionTag, baseRequiredTags);
-  const cache = getOrCreateTemplateCache(context.caches.template, section.templateId, rhythmKey);
+  const cache = getOrCreateTemplateCache(
+    context.caches.template,
+    templateCacheNamespace(section, options.experiments),
+    rhythmKey
+  );
 
   // Retrieve from hook cache if reprising
   if (repriseHook(section) && isFirstPhrase && cachedHook) {
@@ -2123,9 +2160,11 @@ function createPhraseContext(
     const hookMelody = melodyById.get(cachedHook.melodyId);
     if (hookRhythm) {
       baseRhythm = hookRhythm;
+      rhythmSource = "hook_reuse";
     }
     if (hookMelody) {
       baseMelody = hookMelody;
+      melodySource = "hook_reuse";
     }
   }
 
@@ -2133,6 +2172,7 @@ function createPhraseContext(
   if (!baseRhythm) {
     const cachedRhythmId = cache.rhythm;
     baseRhythm = cachedRhythmId ? rhythmById.get(cachedRhythmId) : undefined;
+    if (baseRhythm) rhythmSource = "template_cache";
     if (!baseRhythm) {
       baseRhythm = selectRhythmMotif(
         options,
@@ -2150,8 +2190,13 @@ function createPhraseContext(
 
   // Select base melody
   if (!baseMelody) {
-    const cachedMelodyId = cache.melody;
+    const varyPhraseMelody =
+      options.experiments?.varyNonInitialPhraseMelody === true &&
+      !isFirstPhrase &&
+      !repriseHook(section);
+    const cachedMelodyId = varyPhraseMelody ? undefined : cache.melody;
     baseMelody = cachedMelodyId ? melodyById.get(cachedMelodyId) : undefined;
+    if (baseMelody) melodySource = "template_cache";
     if (!baseMelody) {
       baseMelody = selectMelodyFragment(
         options,
@@ -2166,19 +2211,27 @@ function createPhraseContext(
     }
   }
 
-  // Hook variation fires when repeatBias <= 0.20 (default 0.15 = usually varied).
+  let hookVariationSource: SectionMotifPlan["hookVariationSource"] | undefined;
+
+  // Hook variation may fire only when repeatBias is explicitly below the default boundary.
   // Only the pitch-degree motif (melody.json) is replaced; rhythm and note-duration
   // motifs are still restored from the cached hook below.
-  const repeatBias = options.sectionRepeatBias ?? 0.15;
+  const repeatBias = options.sectionRepeatBias ?? DEFAULT_SECTION_REPEAT_BIAS;
   const shouldVaryReprisedHook =
     repriseHook(section) &&
     isFirstPhrase &&
     Boolean(cachedHook) &&
-    repeatBias <= 0.20 &&
+    repeatBias < 0.25 &&
     context.rng() > repeatBias;
 
   if (shouldVaryReprisedHook) {
-    const variedMelody = selectMelodyFragment(
+    const linkedVariation = pickMelodyVariation(
+      baseMelody,
+      baseRequiredTags,
+      context.rng,
+      context.usedMotifs.melodies
+    );
+    const variedMelody = linkedVariation ?? selectMelodyFragment(
       options,
       context.styleIntent,
       baseRequiredTags,
@@ -2188,7 +2241,9 @@ function createPhraseContext(
       context.motifSelectionDiagnostics
     );
     if (variedMelody.id !== baseMelody.id) {
+      hookVariationSource = linkedVariation ? "melody_variation" : "fallback";
       baseMelody = variedMelody;
+      melodySource = "variation";
     }
   }
 
@@ -2197,11 +2252,13 @@ function createPhraseContext(
     const hookMelodyRhythm = melodyRhythmById.get(cachedHook.melodyRhythmId);
     if (hookMelodyRhythm) {
       baseMelodyRhythm = hookMelodyRhythm;
+      melodyRhythmSource = "hook_reuse";
     }
   }
   if (!baseMelodyRhythm) {
     const cachedMelodyRhythmId = cache.melodyRhythm;
     baseMelodyRhythm = cachedMelodyRhythmId ? melodyRhythmById.get(cachedMelodyRhythmId) : undefined;
+    if (baseMelodyRhythm) melodyRhythmSource = "template_cache";
     if (!baseMelodyRhythm) {
       baseMelodyRhythm = selectMelodyRhythmMotif(
         options,
@@ -2231,6 +2288,12 @@ function createPhraseContext(
   context.usedMotifs.melodies.add(baseMelody.id);
   context.usedMotifs.melodyRhythms.add(baseMelodyRhythm.id);
 
+  context.motifSelectionDiagnostics.cacheEvents.push(
+    { sectionId: section.id, phraseIndex, category: "rhythm", motifId: baseRhythm.id, source: rhythmSource },
+    { sectionId: section.id, phraseIndex, category: "melody", motifId: baseMelody.id, source: melodySource },
+    { sectionId: section.id, phraseIndex, category: "melodyRhythm", motifId: baseMelodyRhythm.id, source: melodyRhythmSource }
+  );
+
   // Track usage count for diagnostics
   context.motifUsage.melody[baseMelody.id] =
     (context.motifUsage.melody[baseMelody.id] ?? 0) + 1;
@@ -2259,7 +2322,9 @@ function createPhraseContext(
       primaryMelody: baseMelody.id,
       primaryMelodyRhythm: baseMelodyRhythm.id,
       reprisesHook: hookExact,
-      hookReuse: hookExact ? "exact" : hookVaried ? "varied" : "none"
+      hookReuse: hookExact ? "exact" : hookVaried ? "varied" : "none",
+      hookVariationSource,
+      hookOriginalMelody: hookVaried ? cachedHook?.melodyId : undefined
     });
   }
 
@@ -2268,6 +2333,7 @@ function createPhraseContext(
     phraseMeasures,
     isFirstPhrase,
     phraseStartMeasureIndex,
+    phraseIndex,
     cachedHook,
     baseRhythm,
     baseMelody,
@@ -2330,7 +2396,7 @@ function processSinglePhrase(
     }
 
     // Generate bass for this measure
-    generateBassForMeasure(measureContext, phase1, section, context, results.bass);
+    const bassId = generateBassForMeasure(measureContext, phase1, section, context, results.bass);
 
     // Generate accompaniment for this measure
     generateAccompanimentForMeasure(
@@ -2342,12 +2408,28 @@ function processSinglePhrase(
     );
 
     // Generate drums for this measure
-    generateDrumsForMeasure(
+    const drumId = generateDrumsForMeasure(
       measureContext,
       section,
       context,
       results.drums
     );
+
+    context.motifSelectionDiagnostics.motifSequence.push({
+      sectionId: section.id,
+      templateId: section.templateId,
+      occurrenceIndex: section.occurrenceIndex,
+      phraseIndex: phraseContext.phraseIndex,
+      measureIndex: measureContext.globalMeasureIndex,
+      measureInSection: measureContext.measureInSection,
+      texture: section.texture,
+      chord: resolveChordAtBeat(phase1, measureContext.measureStartBeat),
+      rhythm: measureContext.rhythmMotif.id,
+      melody: baseMelody.id,
+      melodyRhythm: baseMelodyRhythm.id,
+      bass: bassId,
+      drums: drumId
+    });
 
     // Update last motifs
     context.lastMotifs.rhythm = measureContext.rhythmMotif;
@@ -2381,11 +2463,15 @@ function createMeasureContext(
   }
 
   const measureKey = cacheKey(functionTag, requiredTags);
-  const measureCache = getOrCreateTemplateCache(context.caches.template, section.templateId, measureKey);
+  const measureCache = getOrCreateTemplateCache(
+    context.caches.template,
+    templateCacheNamespace(section, options.experiments),
+    measureKey
+  );
 
   // Control variation vs exact repetition using sectionRepeatBias
   // Higher bias = more repetition, lower bias = more variation
-  const repeatBias = options.sectionRepeatBias ?? 0.3;
+  const repeatBias = options.sectionRepeatBias ?? DEFAULT_SECTION_REPEAT_BIAS;
   const shouldVaryByPosition = phraseOffset > 0 || !isFirstPhrase || section.occurrenceIndex > 1;
   const preferVariation =
     !repriseHook(section) &&
@@ -2393,10 +2479,13 @@ function createMeasureContext(
     context.rng() > repeatBias;
   
   let rhythmMotif = measureCache.rhythm ? rhythmById.get(measureCache.rhythm) : undefined;
+  let rhythmSource: MotifCacheSource = rhythmMotif ? "template_cache" : "base_reuse";
   
   if (!rhythmMotif) {
     if (preferVariation) {
-      rhythmMotif = pickRhythmVariation(baseRhythm, functionTag, requiredTags, context.rng, context.usedMotifs.rhythms) ?? baseRhythm;
+      const variation = pickRhythmVariation(baseRhythm, functionTag, requiredTags, context.rng, context.usedMotifs.rhythms);
+      rhythmMotif = variation ?? baseRhythm;
+      if (variation) rhythmSource = "variation";
     } else {
       rhythmMotif = baseRhythm;
     }
@@ -2404,6 +2493,7 @@ function createMeasureContext(
     const variation = pickRhythmVariation(baseRhythm, functionTag, requiredTags, context.rng, context.usedMotifs.rhythms);
     if (variation) {
       rhythmMotif = variation;
+      rhythmSource = "variation";
     }
   }
   
@@ -2418,11 +2508,20 @@ function createMeasureContext(
       context.usedMotifs.rhythms,
       context.motifSelectionDiagnostics
     );
+    rhythmSource = "new_selection";
   }
   
   measureCache.rhythm = rhythmMotif.id;
   context.motifUsage.rhythm[rhythmMotif.id] = (context.motifUsage.rhythm[rhythmMotif.id] ?? 0) + 1;
   context.usedMotifs.rhythms.add(rhythmMotif.id);
+  context.motifSelectionDiagnostics.cacheEvents.push({
+    sectionId: section.id,
+    phraseIndex: phraseContext.phraseIndex,
+    measureIndex: globalMeasureIndex,
+    category: "rhythm",
+    motifId: rhythmMotif.id,
+    source: rhythmSource
+  });
 
   return {
     measureInSection,
@@ -2432,6 +2531,7 @@ function createMeasureContext(
     requiredTags,
     isHookMeasure,
     phraseOffset,
+    phraseIndex: phraseContext.phraseIndex,
     rhythmMotif
   };
 }
@@ -2478,7 +2578,8 @@ function generateMelodyForMeasure(
         durationBeats: step.durationBeats,
         degree,
         velocity,
-        sectionId: section.id
+        sectionId: section.id,
+        motifId: baseMelody.id
       });
       
       cursors.melodyDegreeCursor++;
@@ -2499,10 +2600,11 @@ function generateBassForMeasure(
   section: SectionDefinition,
   context: MotifContext,
   bassOutput: AbstractNote[]
-): void {
+): string {
   const { measureStartBeat, measureInSection } = measureContext;
   
   let bassPattern = context.caches.bassPattern.get(section.id);
+  const source: MotifCacheSource = bassPattern ? "template_cache" : "new_selection";
   if (!bassPattern) {
     bassPattern = resolveBassPattern(
       section,
@@ -2519,6 +2621,14 @@ function generateBassForMeasure(
   }
   context.motifUsage.bass[bassPattern.id] = (context.motifUsage.bass[bassPattern.id] ?? 0) + 1;
   context.usedMotifs.bassPatterns.add(bassPattern.id);
+  context.motifSelectionDiagnostics.cacheEvents.push({
+    sectionId: section.id,
+    phraseIndex: measureContext.phraseIndex,
+    measureIndex: measureContext.globalMeasureIndex,
+    category: "bass",
+    motifId: bassPattern.id,
+    source
+  });
   
   const currentChord = resolveChordAtBeat(phase1, measureStartBeat);
   const nextChord = resolveChordAtBeat(phase1, measureStartBeat + BEATS_PER_MEASURE);
@@ -2532,6 +2642,7 @@ function generateBassForMeasure(
       bassPattern
     )
   );
+  return bassPattern.id;
 }
 
 /**
@@ -2569,7 +2680,7 @@ function generateDrumsForMeasure(
   section: SectionDefinition,
   context: MotifContext,
   drumsOutput: DrumHit[]
-): void {
+): string | undefined {
   const { measureStartBeat, measureInSection, requiredTags } = measureContext;
   
   const isSectionFinalMeasure = measureInSection === section.measures - 1;
@@ -2577,9 +2688,14 @@ function generateDrumsForMeasure(
     isSectionFinalMeasure || (section.measures > 2 && measureInSection === section.measures - 2);
   
   const drumKey = cacheKey(`${measureInSection}:${shouldForceFill ? "fill" : "beat"}`, requiredTags);
-  const drumCache = getOrCreateTemplateCache(context.caches.template, section.templateId, drumKey);
+  const drumCache = getOrCreateTemplateCache(
+    context.caches.template,
+    templateCacheNamespace(section, context.experiments),
+    drumKey
+  );
   
   let drumPattern = drumCache.drum ? drumById.get(drumCache.drum) : undefined;
+  const source: MotifCacheSource = drumPattern ? "template_cache" : "new_selection";
   
   if (!drumPattern) {
     drumPattern = selectDrumPattern(
@@ -2605,6 +2721,14 @@ function generateDrumsForMeasure(
     context.usedMotifs.drums.add(drumPattern.id);
     drumsOutput.push(...generateDrumHitsFromPattern(drumPattern.pattern, measureStartBeat, section.id));
     context.lastMotifs.drumPatternId = drumPattern.id;
+    context.motifSelectionDiagnostics.cacheEvents.push({
+      sectionId: section.id,
+      phraseIndex: measureContext.phraseIndex,
+      measureIndex: measureContext.globalMeasureIndex,
+      category: "drums",
+      motifId: drumPattern.id,
+      source
+    });
   }
   
   // Handle transitions at section end
@@ -2632,6 +2756,7 @@ function generateDrumsForMeasure(
       context.lastMotifs.transitionId = transitionResult.motifId;
     }
   }
+  return drumPattern?.id;
 }
 
 /**
@@ -2657,9 +2782,25 @@ function convertMelodyToMidi(
     );
     const baseMidi = scaleDegreeToMidi(note.degree, phase1.scaleDegrees, baseRegister);
     const chord = resolveChordAtBeat(phase1, note.startBeat);
-    const midi = isStrongBeat(note.startBeat)
+    const strongBeat = isStrongBeat(note.startBeat);
+    const midi = strongBeat
       ? quantizeMidiToChord(baseMidi, chord)
-      : ensureConsonantPitch(baseMidi, chord);
+      : context.experiments?.weakBeatQuantization === "scale"
+        ? baseMidi
+        : ensureConsonantPitch(baseMidi, chord);
+    context.motifSelectionDiagnostics.melodyPitch.push({
+      sectionId: note.sectionId,
+      measureIndex,
+      startBeat: note.startBeat,
+      durationBeats: note.durationBeats,
+      motifId: note.motifId,
+      degree: note.degree,
+      scaleMidi: baseMidi,
+      correctedMidi: midi,
+      velocity: note.velocity,
+      strongBeat,
+      changed: baseMidi !== midi
+    });
     return { ...note, midi };
   });
 }
@@ -2872,21 +3013,6 @@ export function selectMotifs(options: PipelineCompositionOptions, phase1: Struct
   };
 }
 
-function convertToBeats(value: number): number {
-  switch (value) {
-    case 2:
-      return 2;    // 2分音符 = 2拍
-    case 4:
-      return 1;    // 4分音符 = 1拍
-    case 8:
-      return 0.5;  // 8分音符 = 0.5拍
-    case 16:
-      return 0.25; // 16分音符 = 0.25拍
-    default:
-      return 0.25;
-  }
-}
-
 function selectDrumPattern(
   measureIndex: number,
   totalMeasures: number,
@@ -3021,7 +3147,7 @@ function selectDrumPattern(
     }
   }
   const pool = preferUnused(candidates, used);
-  return pickWithAvoid(pool, rng, lastPatternId);
+  return pickWithSelectionDiagnostics(pool, rng, lastPatternId, diagnostics, "drums");
 }
 
 function preferUnused<T extends { id?: string }>(candidates: T[], used: Set<string>): T[] {

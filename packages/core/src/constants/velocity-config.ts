@@ -31,8 +31,11 @@ export const VELOCITY_GLOBAL = {
  * chiptune channel differences.
  */
 export const VELOCITY_CHANNEL_SCALE = {
-  /** Triangle channel base scale (boosted for prominence) */
-  TRIANGLE_BASE: 0.85,
+  /** Triangle channel base scale (kept at full strength for audibility) */
+  TRIANGLE_BASE: 1.0,
+
+  /** Low triangle bass compensation for weak fundamental perception below E3 */
+  TRIANGLE_LOW_RANGE_BOOST: 1.1,
 
   /** Triangle non-bass role additional scale (full strength) */
   TRIANGLE_NON_BASS: 1.0,
@@ -40,7 +43,7 @@ export const VELOCITY_CHANNEL_SCALE = {
   /** Bass role base scale (all channels) */
   BASS_BASE: 0.7,
 
-  /** Bass low-range additional scale (below E3) */
+  /** Square-bass low-range attenuation (below E3) */
   BASS_LOW_RANGE: 0.85,
 
   /** Square channel bass role additional scale (reduced to de-emphasize square) */

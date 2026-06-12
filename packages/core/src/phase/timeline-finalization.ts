@@ -7,6 +7,7 @@ import {
   TimedEvent,
   MotifSelectionDiagnostics
 } from "../types.js";
+import { analyzeTheory } from "./theory-audit.js";
 
 interface TimelineFinalizationResult {
   events: Event[];
@@ -43,6 +44,7 @@ export function finalizeTimeline(
     })),
     loopWindow: computeLoopWindow(events),
     loopIntegrity: computeLoopIntegrity(events, totalDuration),
+    theoryAudit: analyzeTheory(phase1, events, totalBeats),
     motifUsage,
     sectionMotifPlan,
     motifSelection
