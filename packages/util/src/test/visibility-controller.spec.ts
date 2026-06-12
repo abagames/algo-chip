@@ -5,6 +5,39 @@ import { setImmediate as waitImmediate } from "node:timers/promises";
 import type { AudioSession } from "../types.js";
 import { createVisibilityController } from "../visibility.js";
 
+function createAudioSessionFixture(
+  overrides: Partial<AudioSession> = {}
+): AudioSession {
+  return {
+    generateBgm: async () => {
+      throw new Error("not implemented");
+    },
+    playBgm: async () => {
+      throw new Error("not implemented");
+    },
+    stopBgm: () => {},
+    stopAllAudio: () => {},
+    pauseBgm: () => null,
+    resumeBgm: async () => {},
+    setBgmVolume: () => {},
+    configureSeDefaults: () => {},
+    generateSe: () => {
+      throw new Error("not implemented");
+    },
+    playSe: async () => {
+      throw new Error("not implemented");
+    },
+    triggerSe: async () => {},
+    cancelScheduledSe: () => {},
+    getActiveTimeline: () => null,
+    getAudioContext: () => null,
+    resumeAudioContext: () => {},
+    suspendAudioContext: () => {},
+    close: async () => {},
+    ...overrides
+  } satisfies AudioSession;
+}
+
 class FakeVisibilityDocument {
   hidden = false;
   private listeners = new Set<() => void>();
@@ -57,7 +90,7 @@ describe("createVisibilityController", () => {
       lastResumeOffset: undefined as number | undefined
     };
 
-    const session = {
+    const session = createAudioSessionFixture({
       pauseBgm: () => {
         sessionState.pauseCalls += 1;
         return 1.5;
@@ -69,34 +102,14 @@ describe("createVisibilityController", () => {
       cancelScheduledSe: () => {
         sessionState.cancelCalls += 1;
       },
-      // Unused interface members
-      generateBgm: async () => {
-        throw new Error("not implemented");
-      },
-      generateSe: () => {
-        throw new Error("not implemented");
-      },
-      playBgm: async () => {
-        throw new Error("not implemented");
-      },
-      playSe: async () => {
-        throw new Error("not implemented");
-      },
-      stopBgm: () => {},
-      stopAllAudio: () => {},
-      setBgmVolume: () => {},
-      configureSeDefaults: () => {},
-      triggerSe: async () => {},
       getActiveTimeline: () => ({ startTime: 0, loop: true, meta: {} }),
-      getAudioContext: () => null,
-      resumeAudioContext: async () => {
+      resumeAudioContext: () => {
         sessionState.resumeCtxCalls += 1;
       },
-      suspendAudioContext: async () => {
+      suspendAudioContext: () => {
         sessionState.suspendCtxCalls += 1;
-      },
-      close: async () => {}
-    } as unknown as AudioSession;
+      }
+    });
 
     const fakeDoc = new FakeVisibilityDocument();
     const pauseOffsets: Array<number | null> = [];
@@ -142,7 +155,7 @@ describe("createVisibilityController", () => {
       cancelCalls: 0
     };
 
-    const session = {
+    const session = createAudioSessionFixture({
       pauseBgm: () => {
         sessionState.pauseCalls += 1;
         return null;
@@ -153,34 +166,13 @@ describe("createVisibilityController", () => {
       cancelScheduledSe: () => {
         sessionState.cancelCalls += 1;
       },
-      suspendAudioContext: async () => {
+      suspendAudioContext: () => {
         sessionState.suspendCtxCalls += 1;
       },
-      resumeAudioContext: async () => {
+      resumeAudioContext: () => {
         sessionState.resumeCtxCalls += 1;
-      },
-      // Unused members
-      generateBgm: async () => {
-        throw new Error("not implemented");
-      },
-      generateSe: () => {
-        throw new Error("not implemented");
-      },
-      playBgm: async () => {
-        throw new Error("not implemented");
-      },
-      playSe: async () => {
-        throw new Error("not implemented");
-      },
-      stopBgm: () => {},
-      stopAllAudio: () => {},
-      setBgmVolume: () => {},
-      configureSeDefaults: () => {},
-      triggerSe: async () => {},
-      getActiveTimeline: () => null,
-      getAudioContext: () => null,
-      close: async () => {}
-    } as unknown as AudioSession;
+      }
+    });
 
     const fakeDoc = new FakeVisibilityDocument();
     const resumeEvents: Array<{ offsetSeconds: number | null; resumed: boolean }> = [];
@@ -222,7 +214,7 @@ describe("createVisibilityController", () => {
       cancelCalls: 0
     };
 
-    const session = {
+    const session = createAudioSessionFixture({
       pauseBgm: () => {
         sessionState.pauseCalls += 1;
         return null;
@@ -233,34 +225,14 @@ describe("createVisibilityController", () => {
       cancelScheduledSe: () => {
         sessionState.cancelCalls += 1;
       },
-      suspendAudioContext: async () => {
+      suspendAudioContext: () => {
         sessionState.suspendCtxCalls += 1;
       },
-      resumeAudioContext: async () => {
+      resumeAudioContext: () => {
         sessionState.resumeCtxCalls += 1;
       },
-      getActiveTimeline: () => null,
-      // Unused members
-      generateBgm: async () => {
-        throw new Error("not implemented");
-      },
-      generateSe: () => {
-        throw new Error("not implemented");
-      },
-      playBgm: async () => {
-        throw new Error("not implemented");
-      },
-      playSe: async () => {
-        throw new Error("not implemented");
-      },
-      stopBgm: () => {},
-      stopAllAudio: () => {},
-      setBgmVolume: () => {},
-      configureSeDefaults: () => {},
-      triggerSe: async () => {},
-      getAudioContext: () => null,
-      close: async () => {}
-    } as unknown as AudioSession;
+      getActiveTimeline: () => null
+    });
 
     const fakeDoc = new FakeVisibilityDocument();
 
@@ -280,5 +252,50 @@ describe("createVisibilityController", () => {
     assert.strictEqual(sessionState.resumeBgmCalls, 0);
 
     detach();
+  });
+
+  it("reports a failed resume without losing the captured offset", async () => {
+    const expectedError = new Error("resume failed");
+    const resumeEvents: Array<{
+      offsetSeconds: number | null;
+      resumed: boolean;
+    }> = [];
+    const loggedErrors: unknown[][] = [];
+    const originalConsoleError = console.error;
+    console.error = (...args: unknown[]) => {
+      loggedErrors.push(args);
+    };
+
+    try {
+      const session = createAudioSessionFixture({
+        pauseBgm: () => 2.25,
+        resumeBgm: async () => {
+          throw expectedError;
+        },
+        getActiveTimeline: () => ({ startTime: 0, loop: true, meta: {} })
+      });
+      const fakeDoc = new FakeVisibilityDocument();
+      const detach = createVisibilityController(session, {
+        documentRef: fakeDoc as unknown as Document,
+        onResume: (info) => {
+          resumeEvents.push(info);
+        }
+      });
+
+      fakeDoc.trigger(true);
+      fakeDoc.trigger(false);
+      await waitImmediate();
+
+      assert.deepStrictEqual(resumeEvents, [
+        { offsetSeconds: 2.25, resumed: false }
+      ]);
+      assert.deepStrictEqual(loggedErrors, [
+        ["Visibility resume failed:", expectedError]
+      ]);
+
+      detach();
+    } finally {
+      console.error = originalConsoleError;
+    }
   });
 });

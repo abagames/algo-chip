@@ -59,20 +59,73 @@ const DEFAULT_LOOKAHEAD = 0.1;
  *
  * @internal
  */
-class AudioSessionImpl implements AudioSession {
+export type SessionSynthesizer = Pick<
+  AlgoChipSynthesizer,
+  "init" | "play" | "playLoop" | "stop" | "masterGain"
+>;
+
+export type SessionSoundEffectController = Pick<
+  SoundEffectController,
+  "play" | "resetDucking" | "cancelPendingJobs"
+>;
+
+export interface AudioSessionDependencies {
+  generateComposition: typeof generateComposition;
+  createAudioContext(): AudioContext;
+  createSynthesizer(
+    context: AudioContext,
+    options: { workletBasePath: string; gainNode?: GainNode }
+  ): SessionSynthesizer;
+  createSeGenerator(): Pick<SEGenerator, "generateSE">;
+  createSoundEffectController(
+    context: AudioContext,
+    seSynth: SessionSynthesizer,
+    getTimeline: () => ActiveTimeline | null,
+    bgmGain: GainNode,
+    getBgmBaseVolume: () => number
+  ): SessionSoundEffectController;
+}
+
+const DEFAULT_DEPENDENCIES: AudioSessionDependencies = {
+  generateComposition,
+  createAudioContext: () =>
+    new AudioContext({
+      sampleRate: DEFAULT_SAMPLE_RATE,
+      latencyHint: "interactive",
+    }),
+  createSynthesizer: (context, options) =>
+    new AlgoChipSynthesizer(context, options),
+  createSeGenerator: () => new SEGenerator(),
+  createSoundEffectController: (
+    context,
+    seSynth,
+    getTimeline,
+    bgmGain,
+    getBgmBaseVolume
+  ) =>
+    new SoundEffectController(
+      context,
+      seSynth as AlgoChipSynthesizer,
+      getTimeline,
+      bgmGain,
+      getBgmBaseVolume
+    ),
+};
+
+export class AudioSessionImpl implements AudioSession {
   private context: AudioContext | null;
   private readonly ownsContext: boolean;
   private readonly workletBasePath: string;
   private readonly gainNode: GainNode | null;
 
-  private bgmSynth: AlgoChipSynthesizer | null = null;
-  private seSynth: AlgoChipSynthesizer | null = null;
+  private bgmSynth: SessionSynthesizer | null = null;
+  private seSynth: SessionSynthesizer | null = null;
   private bgmGainBase = 1.0;
   private seGainBase = 1.0;
 
-  private readonly seGenerator = new SEGenerator();
+  private readonly seGenerator: Pick<SEGenerator, "generateSE">;
   private seDefaults: SePlaybackDefaults;
-  private soundEffectController: SoundEffectController | null = null;
+  private soundEffectController: SessionSoundEffectController | null = null;
 
   private activeTimeline: ActiveTimeline | null = null;
   private lastBgm: PipelineResult | null = null;
@@ -85,7 +138,10 @@ class AudioSessionImpl implements AudioSession {
    *
    * @param options - Session configuration options.
    */
-  constructor(private readonly options: CreateSessionOptions = {}) {
+  constructor(
+    private readonly options: CreateSessionOptions = {},
+    private readonly dependencies: AudioSessionDependencies = DEFAULT_DEPENDENCIES
+  ) {
     if (options.audioContext) {
       this.context = options.audioContext;
       this.ownsContext = false;
@@ -101,6 +157,7 @@ class AudioSessionImpl implements AudioSession {
       ...(options.seDefaults ?? {}),
     };
     this.bgmVolume = Math.max(0, options.bgmVolume ?? 1.0);
+    this.seGenerator = dependencies.createSeGenerator();
   }
 
   /**
@@ -124,7 +181,7 @@ class AudioSessionImpl implements AudioSession {
    * @returns The generated composition result with events and metadata.
    */
   async generateBgm(options: CompositionOptions): Promise<PipelineResult> {
-    const result = await generateComposition(options);
+    const result = await this.dependencies.generateComposition(options);
     this.lastBgm = result;
     return result;
   }
@@ -341,17 +398,18 @@ class AudioSessionImpl implements AudioSession {
    * @param options - Combined generation and playback options.
    */
   async triggerSe(options: TriggerSeOptions): Promise<void> {
-    const generationResult = this.generateSe({
-      type: options.type,
-      seed: options.seed,
-      templateId: options.templateId,
-      baseFrequency: options.baseFrequency,
-    });
+    const {
+      duckingDb,
+      volume,
+      quantize,
+      ...generationOptions
+    } = options;
+    const generationResult = this.generateSe(generationOptions);
 
     await this.playSe(generationResult, {
-      duckingDb: options.duckingDb,
-      volume: options.volume,
-      quantize: options.quantize,
+      duckingDb,
+      volume,
+      quantize,
     });
   }
 
@@ -429,10 +487,7 @@ class AudioSessionImpl implements AudioSession {
   private ensureContext(resume: boolean): AudioContext {
     if (!this.context) {
       try {
-        this.context = new AudioContext({
-          sampleRate: DEFAULT_SAMPLE_RATE,
-          latencyHint: "interactive",
-        });
+        this.context = this.dependencies.createAudioContext();
       } catch (error) {
         const reason = error instanceof Error ? error.message : String(error);
         throw new Error(
@@ -462,7 +517,7 @@ class AudioSessionImpl implements AudioSession {
     if (this.bgmSynth) {
       return;
     }
-    this.bgmSynth = new AlgoChipSynthesizer(ctx, {
+    this.bgmSynth = this.dependencies.createSynthesizer(ctx, {
       workletBasePath: this.workletBasePath,
       gainNode: this.gainNode ?? undefined,
     });
@@ -484,7 +539,7 @@ class AudioSessionImpl implements AudioSession {
     if (this.seSynth) {
       return;
     }
-    this.seSynth = new AlgoChipSynthesizer(ctx, {
+    this.seSynth = this.dependencies.createSynthesizer(ctx, {
       workletBasePath: this.workletBasePath,
       gainNode: this.gainNode ?? undefined,
     });
@@ -511,7 +566,7 @@ class AudioSessionImpl implements AudioSession {
         "Sound effect controller requires both BGM and SE synthesizers."
       );
     }
-    this.soundEffectController = new SoundEffectController(
+    this.soundEffectController = this.dependencies.createSoundEffectController(
       ctx,
       this.seSynth,
       () => this.activeTimeline,
