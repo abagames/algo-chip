@@ -24,6 +24,17 @@ authoritative specs for the full story.
 5. Publishing (manual): run `npm run build:pages`, verify `docs/`, then commit
    generated artifacts.
 
+## Backlog / TODO Protocol
+
+- `BACKLOG.md` is the source of truth for pending improvements, priorities, and
+  completion criteria. `TODO.md` contains only the work expected next.
+- Before starting tracked work, mark its backlog item `進行中` and its TODO
+  task `[-]`. Update subtask checkboxes as work progresses, not only at the end.
+- Record newly discovered work in `BACKLOG.md` before expanding the current
+  scope. Add it to `TODO.md` only when it becomes an immediate task.
+- Complete or reprioritize the matching entries in both files in the same
+  change as the implementation. Record the validation commands used.
+
 ## Architecture Snapshot
 
 - **Five-phase pipeline** (`score.md §3`): Structure Planning → Motif Selection
