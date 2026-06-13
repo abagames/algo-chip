@@ -27,8 +27,9 @@ class NoiseProcessor extends AudioWorkletProcessor {
     if (event == null) {
       return;
     }
+    // Immediate commands bypass the queue
     if (event.type === "clear") {
-      this.applyEvent(event);
+      this.applyEvent(event, this.sampleFrame);
       return;
     }
     if (typeof event.sampleFrame !== "number") {
@@ -38,7 +39,7 @@ class NoiseProcessor extends AudioWorkletProcessor {
     this.eventQueue.sort((a, b) => a.sampleFrame - b.sampleFrame);
   }
 
-  applyEvent(event) {
+  applyEvent(event, currentFrame = this.sampleFrame) {
     switch (event.type) {
       case "noteOn": {
         this.mode = event.mode === "long" ? "long" : "short";
@@ -65,16 +66,14 @@ class NoiseProcessor extends AudioWorkletProcessor {
         if (event.param === "mode") {
           this.mode = event.value === "long" ? "long" : "short";
         }
-        if (event.param === "periodSamples" && typeof event.value === "number") {
-          this.periodSamples = Math.max(1, Math.round(event.value));
-          this.periodCounter = Math.min(this.periodCounter, this.periodSamples);
-        }
         if (event.param === "periodIndex" && typeof event.value === "number") {
           const index = Math.max(0, Math.min(NOISE_PERIOD_TABLE.length - 1, Math.round(event.value)));
           this.periodIndex = index;
-          const periodCycles = NOISE_PERIOD_TABLE[index] ?? NOISE_PERIOD_TABLE[NOISE_PERIOD_TABLE.length - 1];
-          const periodSeconds = (periodCycles * 16) / CHIP_BASE_CLOCK;
-          this.periodSamples = Math.max(1, Math.round(periodSeconds * sampleRate));
+          this.periodSamples = this.periodIndexToSamples(index);
+          this.periodCounter = Math.min(this.periodCounter, this.periodSamples);
+        }
+        if (event.param === "periodSamples" && typeof event.value === "number") {
+          this.periodSamples = Math.max(1, Math.round(event.value));
           this.periodCounter = Math.min(this.periodCounter, this.periodSamples);
         }
         break;
@@ -90,6 +89,12 @@ class NoiseProcessor extends AudioWorkletProcessor {
       default:
         break;
     }
+  }
+
+  periodIndexToSamples(index) {
+    const periodCycles = NOISE_PERIOD_TABLE[index] ?? NOISE_PERIOD_TABLE[NOISE_PERIOD_TABLE.length - 1];
+    const periodSeconds = (periodCycles * 16) / CHIP_BASE_CLOCK;
+    return Math.max(1, Math.round(periodSeconds * sampleRate));
   }
 
   stepRegister() {
@@ -110,7 +115,7 @@ class NoiseProcessor extends AudioWorkletProcessor {
     for (let i = 0; i < output.length; i++) {
       const absoluteFrame = this.sampleFrame + i;
       while (this.eventQueue.length && this.eventQueue[0].sampleFrame <= absoluteFrame) {
-        this.applyEvent(this.eventQueue.shift());
+        this.applyEvent(this.eventQueue.shift(), absoluteFrame);
       }
 
       if (this.periodCounter <= 0) {

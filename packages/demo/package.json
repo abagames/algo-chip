@@ -4,8 +4,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
+    "dev": "node scripts/sync-worklets.mjs && vite",
+    "build": "node scripts/sync-worklets.mjs && vite build",
     "preview": "vite preview"
   },
   "dependencies": {
