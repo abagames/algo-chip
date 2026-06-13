@@ -27,7 +27,7 @@ class TriangleProcessor extends AudioWorkletProcessor {
     }
     // Immediate commands bypass the queue
     if (event.type === "clear") {
-      this.applyEvent(event);
+      this.applyEvent(event, this.sampleFrame);
       return;
     }
     if (typeof event.sampleFrame !== "number") {
@@ -37,7 +37,7 @@ class TriangleProcessor extends AudioWorkletProcessor {
     this.eventQueue.sort((a, b) => a.sampleFrame - b.sampleFrame);
   }
 
-  applyEvent(event) {
+  applyEvent(event, currentFrame = this.sampleFrame) {
     switch (event.type) {
       case "noteOn":
         this.baseFrequency = event.frequency || 0;
@@ -59,9 +59,13 @@ class TriangleProcessor extends AudioWorkletProcessor {
             const targetFrequency = event.value;
             const durationSamples = Math.max(1, Math.round(event.rampDuration * sampleRate));
             this.slideCurve = event.curve ?? "linear";
+            const frame =
+              typeof event.sampleFrame === "number" ? event.sampleFrame : currentFrame;
+            const currentFrequency = this.computeFrequency(frame);
+            this.baseFrequency = currentFrequency;
             this.slide = {
-              startFrame: event.sampleFrame,
-              startFrequency: this.baseFrequency,
+              startFrame: frame,
+              startFrequency: currentFrequency,
               targetFrequency: targetFrequency,
               durationSamples: durationSamples
             };
@@ -124,7 +128,7 @@ class TriangleProcessor extends AudioWorkletProcessor {
     for (let i = 0; i < output.length; i++) {
       const absoluteFrame = this.sampleFrame + i;
       while (this.eventQueue.length && this.eventQueue[0].sampleFrame <= absoluteFrame) {
-        this.applyEvent(this.eventQueue.shift());
+        this.applyEvent(this.eventQueue.shift(), absoluteFrame);
       }
 
       const frequency = this.computeFrequency(absoluteFrame);
