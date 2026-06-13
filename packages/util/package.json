@@ -1,6 +1,7 @@
 {
   "name": "@algo-chip/util",
   "version": "1.0.0",
+  "private": true,
   "description": "Shared session and playback helpers for Algo Chip",
   "type": "module",
   "main": "./dist/index.js",

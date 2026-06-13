@@ -1,6 +1,7 @@
 {
   "name": "@algo-chip/core",
   "version": "1.0.0",
+  "private": true,
   "description": "High-quality automatic BGM composition engine with chiptune synthesis and Web Audio playback",
   "type": "module",
   "main": "./dist/index.js",
@@ -14,8 +15,7 @@
   },
   "files": [
     "dist",
-    "worklets",
-    "README.md"
+    "worklets"
   ],
   "scripts": {
     "build": "vite build",
