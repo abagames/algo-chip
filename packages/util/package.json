@@ -19,14 +19,14 @@
   "scripts": {
     "build": "vite build",
     "dev": "vite build --watch",
-    "test": "node --loader ts-node/esm --test src/test/**/*.spec.ts"
+    "test": "node --import tsx --test src/test/**/*.spec.ts"
   },
   "dependencies": {
     "@algo-chip/core": "*"
   },
   "devDependencies": {
     "@types/node": "^20.14.8",
-    "ts-node": "^10.9.2",
+    "tsx": "^4.19.2",
     "typescript": "^5.4.5",
     "vite": "^5.3.4",
     "vite-plugin-dts": "^4.5.4"
